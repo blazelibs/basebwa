@@ -1,0 +1,6 @@
+== How to Convert Default Pysmvt App to pysapp ==
+
+1. add ElixirApp middleware
+2. Settings inherit from pysapp settings
+3. Add self.db.url to settings
+4. Remove static, etc. routing routes (from one at least)
