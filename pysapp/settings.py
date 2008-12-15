@@ -8,6 +8,9 @@ class Default(DefaultSettings):
     def __init__(self, *args):
         DefaultSettings.__init__(self, *args)
         
+        self.name.full = 'pysapp application'
+        self.name.short = 'pysapp app'
+        
         # application modules from our application or supporting applications
         self.modules.users.enabled = True
         self.modules.apputil.enabled = True
@@ -19,7 +22,12 @@ class Default(DefaultSettings):
             Rule('/<file>', endpoint='static', build_only=True),
             Rule('/c/<file>', endpoint='styles', build_only=True),
             Rule('/js/<file>', endpoint='javascript', build_only=True),
+            Rule('/control-panel', endpoint='apputil:ControlPanel')
         ]
+        #######################################################################
+        # TEMPLATES
+        #######################################################################
+        self.template.admin = 'admin.html'
         
         ################################################################
         # DATABASE

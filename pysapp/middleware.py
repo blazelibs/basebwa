@@ -30,19 +30,25 @@ class SQLAlchemyApp(object):
         self.container = SQLAlchemyContainer()
         db._push_object(self.container)
         self.loadmodels()        
-        
+    
+    def start_request(self):
+        db.sess = self.container.Session()
+    
     def __call__(self, environ, start_response):
         
         if environ.has_key('paste.registry'):
             environ['paste.registry'].register(db, self.container)
-        db.sess = self.container.Session()
+        self.start_request()
         environ['sqlalchemy.sess'] = db.sess
         try:
             return self.application(environ, start_response)
         finally:
             del environ['sqlalchemy.sess']
-            db.sess = None
-            db.Session.remove()
+            self.end_request()
+    
+    def end_request(self):
+        db.sess = None
+        db.Session.remove()
     
     def loadmodels(self):
         for module in settings.modules.keys():
