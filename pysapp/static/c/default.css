@@ -174,13 +174,30 @@ form.generated {
 }
 
 form.generated div.row {
-    width: 100%;
-    overflow: hidden;
     padding: 0.4em 0 0.4em 0;
     margin: 0;
     border: solid 1px #CCCCCC;
     border-top: none;
 }
+
+/* START: Expand row around floated child elements */
+/* http://csscreator.com/?q=attributes/containedfloat.php */
+form.generated div.row:after{
+    content: "."; 
+    display: block; 
+    height: 0; 
+    font-size:0;	
+    clear: both; 
+    visibility:hidden;
+}
+	
+form.generated div.row{display: inline-block;}
+
+/* Hides from IE Mac \*/
+* html form.generated div.row {height: 1%;}
+form.generated div.row{display:block;}
+/* End Hack */ 
+/* END: Expand row around floated child elements */
 
 form.generated div.row.first {
     border-top: solid 1px #CCCCCC;
