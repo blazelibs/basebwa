@@ -4,3 +4,5 @@
 2. Settings inherit from pysapp settings
 3. Add self.db.url to settings
 4. Remove static, etc. routing routes (from one at least)
+5. Add the pysapp as supporting app
+6. Adjust template to use default CSS
