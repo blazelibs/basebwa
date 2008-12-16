@@ -7,3 +7,4 @@
 5. Add the pysapp as supporting app
 6. Adjust template to use default CSS and remove default css from template.css
 7. adjust default.html to have CP and user links in nav
+8. add user settings so we don't get prompted on initmod

@@ -31,5 +31,10 @@ setup(
         "https://svn.rcslocal.com:8443/svn/pysmvt/pysmvt/trunk/#egg=pysmvt-dev",
         "https://svn.rcslocal.com:8443/svn/pysmvt/pysform/trunk/#egg=pysform-dev"
     ],
+    entry_points="""
+    [pysmvt.pysmvt_project_template]
+    pysapp = pysapp.lib.paster_tpl:ProjectTemplate
+
+    """,
     zip_safe=False
 )
