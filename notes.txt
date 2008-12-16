@@ -10,7 +10,18 @@
 8. add user settings so we don't get prompted on initmod
 9. Add user message view to default template
 
+== Steps for Installation ==
+1. Install Python
+2. install setuptools (includes easy_install)
+3. install virtualenv `easy_install virtualenv`
+4. make a staging area `mkdir myproj-staging`
+5. `cd myproj-staging`
+6. Create a new virtual environement `virtualenv ENV --no-site-packages`
+7. Activate the virtual environment (see: http://pypi.python.org/pypi/virtualenv#activate-script)
+8. install pysapp & dependencies `easy_install pysapp`
+
 == Steps for creating a working application ==
+
 1. `pysmvt project -t pysapp <myapp>` replace <myapp> with your project name
 2. answer the questions that come up
 3. when prompted to overwrite, type `all y`
@@ -23,6 +34,9 @@
     settings profile for your user
 10. `pysmvt serve <user>` run a development http server with the user's settings
     profile
+    
+== Creating a new application module ==
+1. `pysmvt module <mymod>` where <mymod> is the name of the module you want to create
 
 == TODO ==
  * Get rid of template overrides
