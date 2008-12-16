@@ -7,7 +7,6 @@ class ProjectTemplate(Template):
     _template_dir = ('pysapp', 'lib/paster_tpls/project')
     template_renderer = staticmethod(paste_script_template_renderer)
     summary = "A basic pysmvt project using pysapp as a supporting app"
-    required_templates = ['pysmvt']
     vars = [
         var('description', 'One-line description of the package'),
         var('author', 'Your name'),

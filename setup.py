@@ -24,7 +24,6 @@ Steps for creating a working application
 
 #. `pysmvt project -t pysapp <myapp>` replace <myapp> with your project name
 #. answer the questions that come up
-#. when prompted to overwrite, type `all y`
 #. write down "Login Details", referred to hereafter as <user> & <pass>
 #. `cd <myapp>-dist`
 #. `python setup.py -q develop`
