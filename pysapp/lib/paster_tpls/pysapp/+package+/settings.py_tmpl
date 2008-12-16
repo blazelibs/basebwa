@@ -1,20 +1,25 @@
 from os import path
 from werkzeug.routing import Rule
 from pysmvt.config import DefaultSettings
+import pysapp.settings
 
 basedir = path.dirname(path.abspath(__file__))
 appname = path.basename(basedir)
 
-class Default(DefaultSettings):
+class Default(pysapp.settings.Default):
     """ Default settings should be good for production.  User-specific
     development environments can be created below.  """
     
     def __init__(self):
         # call parent init to setup default settings
-        DefaultSettings.__init__(self, appname, basedir)
+        pysapp.settings.Default.__init__(self, appname, basedir)
+        
+        # can be used for display purposes through the app
+        self.name.full = '{{project}}'
+        self.name.short = '{{project}}'
         
         # supporting applications
-        self.supporting_apps = []
+        self.supporting_apps = ['pysapp']
         
         # application modules from our application or supporting applications
         self.modules.default.enabled = True
@@ -23,12 +28,13 @@ class Default(DefaultSettings):
         # ROUTING
         #######################################################################
         self.routing.routes.extend([
-            # used with pysmvt.routing.style_url|static_url|js_url
-            Rule('/<file>', endpoint='static', build_only=True),
-            Rule('/c/<file>', endpoint='styles', build_only=True),
-            Rule('/js/<file>', endpoint='javascript', build_only=True),
             Rule('/', defaults={}, endpoint='default:Index')
         ])
+        
+        #######################################################################
+        # DATABASE
+        #######################################################################
+        self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'application.db')
         
         #######################################################################
         # EMAIL ADDRESSES
@@ -74,6 +80,13 @@ class {{username}}(Default):
         # by the system.  Useful for debugging.  Original recipient information
         # will be added to the body of the email
         self.emails.override = '{{programmer_email}}'
+        
+        #######################################################################
+        # USERS: DEFAULT ADMIN
+        #######################################################################
+        self.modules.users.admin.username = '{{username.lower()}}'
+        self.modules.users.admin.password = '{{password}}'
+        self.modules.users.admin.email = '{{programmer_email}}'
         
         #######################################################################
         # EXCEPTION HANDLING

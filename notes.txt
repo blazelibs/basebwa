@@ -8,3 +8,22 @@
 6. Adjust template to use default CSS and remove default css from template.css
 7. adjust default.html to have CP and user links in nav
 8. add user settings so we don't get prompted on initmod
+9. Add user message view to default template
+
+== Steps for creating a working application ==
+1. `pysmvt project -t pysapp <myapp>` replace <myapp> with your project name
+2. answer the questions that come up
+3. when prompted to overwrite, type `all y`
+4. write down "Login Details", referred to hereafter as <user> & <pass>
+5. `cd <myapp>-dist`
+6. `python setup.py develop`
+7. `cd <myapp>`
+8. `pysmvt broadcast initdb` setup the database tables
+9. `pysmvt broadcast initmod -p <user>` let modules set themselves up, use the
+    settings profile for your user
+10. `pysmvt broadcast initmod`
+11. `pysmvt serve <user>` run a development http serve with the user's settings
+    profile
+
+== TODO ==
+ * Get rid of template overrides

@@ -46,6 +46,13 @@ class SQLAlchemyApp(object):
             del environ['sqlalchemy.sess']
             self.end_request()
     
+    def console_dispatch(self, callable, environ=None):
+        self.start_request()
+        try:
+            self.application.console_dispatch(callable, environ)
+        finally:
+            self.end_request()
+
     def end_request(self):
         db.sess = None
         db.Session.remove()
