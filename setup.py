@@ -35,6 +35,8 @@ setup(
     [pysmvt.pysmvt_project_template]
     pysapp = pysapp.lib.paster_tpl:ProjectTemplate
 
+    [pysmvt.pysmvt_module_template]
+    pysapp = pysapp.lib.paster_tpl:ModuleTemplate
     """,
     zip_safe=False
 )

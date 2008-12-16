@@ -4,7 +4,7 @@ from pysutils import randchars
 
 class ProjectTemplate(Template):
 
-    _template_dir = ('pysapp', 'lib/paster_tpls/pysapp')
+    _template_dir = ('pysapp', 'lib/paster_tpls/project')
     template_renderer = staticmethod(paste_script_template_renderer)
     summary = "A basic pysmvt project using pysapp as a supporting app"
     required_templates = ['pysmvt']
@@ -27,3 +27,16 @@ class ProjectTemplate(Template):
         print '-'*70
         print 'admin & profile user: %s' % vars['username'].lower()
         print 'admin password: %s' % vars['password']
+        
+class ModuleTemplate(Template):
+
+    _template_dir = ('pysapp', 'lib/paster_tpls/module')
+    template_renderer = staticmethod(paste_script_template_renderer)
+    summary = "A pysmvt application module built in pysapp style"
+    
+    def post(self, command, output_dir, vars):
+        print ''
+        print '-'*70
+        print 'Action Required: enabled module in settings.py'
+        print '-'*70
+        print 'self.modules.%s.enabled = True' % vars['modname']

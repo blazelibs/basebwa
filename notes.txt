@@ -16,13 +16,12 @@
 3. when prompted to overwrite, type `all y`
 4. write down "Login Details", referred to hereafter as <user> & <pass>
 5. `cd <myapp>-dist`
-6. `python setup.py develop`
+6. `python setup.py -q develop`
 7. `cd <myapp>`
 8. `pysmvt broadcast initdb` setup the database tables
 9. `pysmvt broadcast initmod -p <user>` let modules set themselves up, use the
     settings profile for your user
-10. `pysmvt broadcast initmod`
-11. `pysmvt serve <user>` run a development http serve with the user's settings
+10. `pysmvt serve <user>` run a development http server with the user's settings
     profile
 
 == TODO ==
