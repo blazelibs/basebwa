@@ -5,7 +5,8 @@ Introduction
 pysapp is a library designed as a "supporting application" for
 `pysmvt <http://pypi.python.org/pypi/pysmvt/>`_ applications.
 
-Documentation and example applications are not yet available.
+Example applications will be avilable soon, for now, please follow the steps
+below to get your own default application up and running.
 
 Steps for Installation
 ----------------------
@@ -16,11 +17,14 @@ Steps for Installation
 #. make a staging area `mkdir myproj-staging`
 #. `cd myproj-staging`
 #. Create a new virtual environement `virtualenv ENV --no-site-packages`
-#. `Activate the virtual environment <http://pypi.python.org/pypi/virtualenv#activate-script>`
+#. `Activate the virtual environment (os dependent) <http://pypi.python.org/pypi/virtualenv#activate-script>`_
 #. install pysapp & dependencies `easy_install pysapp`
 
 Steps for creating a working application
 -----------------------------------------
+
+Note: the `pysmvt` command is installed when you install pysapp, which has
+pysmvt as a requirement.
 
 #. `pysmvt project -t pysapp <myapp>` replace <myapp> with your project name
 #. answer the questions that come up
@@ -33,10 +37,15 @@ Steps for creating a working application
    settings profile for your user
 #. `pysmvt serve <user>` run a development http server with the user's settings 
    profile
+#. point your browser at http://localhost:5000/
     
-Creating a new application module
+Creating a New Application Module
 ---------------------------------
-`pysmvt module <mymod>` where <mymod> is the name of the module you want to create
+This step creates a Application Module directory structure in <myapp>/modules/<mymod>:
+
+`pysmvt module <mymod>`
+
+where <mymod> is the name of the module you want to create
 
 
 Current Status
