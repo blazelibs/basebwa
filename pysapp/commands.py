@@ -1,12 +1,14 @@
 from pysmvt import db
 from sqlitefktg4sa import auto_assign
 from pysmvt import commands as cmds
+from pysmvt.script import console_broadcast
 
 def action_module(modname='', template=('t', 'pysapp'),
         interactive=True, verbose=False, overwrite=True):
     """ creates a new module file structure (pysapp default)"""
     cmds.action_module(modname, template, interactive, verbose, overwrite)
 
+@console_broadcast
 def action_pysapp_initdb(sqlite_triggers=True):
     """ initialize the database """
     # create foreign keys for SQLite
@@ -22,4 +24,3 @@ def action_pysapp_initdb(sqlite_triggers=True):
     
     # add a session to the db
     #db.sess = db.Session()
-broadcast_initdb = action_pysapp_initdb
