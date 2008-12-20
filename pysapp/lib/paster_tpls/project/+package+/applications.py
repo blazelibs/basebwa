@@ -37,7 +37,7 @@ def make_wsgi(profile='Default'):
     return app
 
 def make_console(profile='Default'):
-    config.appinit(settingsmod, profile, **kwargs)
+    config.appinit(settingsmod, profile)
     app = Application()
     app = ElixirApp(app)
     return app
