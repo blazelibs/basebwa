@@ -275,9 +275,11 @@ form.generated span.required-star {
 }
 
 form.generated input.text,
-form.generated input.password {
+form.generated input.password,
+form.generated input.file {
     margin: 0;
     padding: 0;
+	/* the width doesn't actually seem to affect the file input */
     width: 175px;
 }
 

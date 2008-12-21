@@ -27,7 +27,8 @@ class Form(Pysform):
         # don't want to repeat the assignment and is_submitted can be used
         # more than once
         if not self._request_submitted:
-            self.set_submitted(rg.request.form)
-            self.set_files(rg.request.files)
+            tosubmit = rg.request.form.copy()
+            tosubmit.update(rg.request.files)
+            self.set_submitted(tosubmit)
             self._request_submitted = True
         return Pysform.is_submitted(self)
