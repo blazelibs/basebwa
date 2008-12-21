@@ -203,17 +203,20 @@ form.generated div.row.first {
     border-top: solid 1px #CCCCCC;
 }
 
-form.generated div.odd {
+form.generated div.row.odd {
     background-color: #F6F6F6;
 }
 
-form.generated div.even {
+form.generated div.row.even {
     background-color: #FFF;
 }
 
 /* remove background colors and borders from a submit button so it appears
   below the form */
-form.generated div.row.submit {
+form.generated div.row.submit,
+form.generated div.row.reset,
+form.generated div.row.cancel,
+form.generated div.row.submit-only {
     background: none;
     border: none;
 }
@@ -225,7 +228,8 @@ form.generated label {
     margin: 0;
 }
 
-form.generated div.field-wrapper {
+form.generated div.field-wrapper,
+form.generated div.group-wrapper {
     position: relative;
     float: left;
     padding: 0 0 0 10px;
@@ -235,8 +239,31 @@ form.generated div.field-wrapper {
 }
 
 /* margin should be the label width plus the left padding on the field-wrapper */
-form.generated div.field-wrapper.no-label {
+form.generated div.field-wrapper.no-label,
+form.generated div.group-wrapper.no-label{
     margin-left: 110px;
+}
+
+/* group elements */
+form.generated div.group-wrapper label {
+	float: none;
+	width: auto;
+	padding: 0;
+	margin: 0;
+}
+
+form.generated div.grpel{
+	float: left;
+	margin: 0 15px 0 0;
+}
+
+form.generated div.group-wrapper div.field-wrapper {
+	position: static;
+    float: none;
+    padding: 0 0 0 0;
+    margin: 0;
+    /* IE double-margin bug */
+    display: block;
 }
 
 form.generated span.required-star {
@@ -247,15 +274,11 @@ form.generated span.required-star {
     margin: 0;
 }
 
-form.generated input {
+form.generated input.text,
+form.generated input.password {
     margin: 0;
     padding: 0;
     width: 175px;
-}
-
-/* let submit buttons size themselves */
-form.generated input.submit {
-    width: auto;
 }
 
 /* have to set the width on the checkbox or otherwise the left margin
