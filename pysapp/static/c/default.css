@@ -230,6 +230,7 @@ form.generated label {
 
 form.generated div.field-wrapper,
 form.generated div.group-wrapper {
+	width: 620px;
     position: relative;
     float: left;
     padding: 0 0 0 10px;
@@ -244,7 +245,17 @@ form.generated div.group-wrapper.no-label{
     margin-left: 110px;
 }
 
-/* group elements */
+/****** BEGIN group elements ********/
+form.generated div.group-wrapper div.first,
+form.generated div.group-wrapper div.odd,
+form.generated div.group-wrapper div.even {
+	/* IE 6 doesn't stand the multi-class selectors above, so we need to cancel
+	the styling
+	*/
+	border: none;
+	background: none;
+}
+
 form.generated div.group-wrapper label {
 	float: none;
 	width: auto;
@@ -259,12 +270,13 @@ form.generated div.grpel{
 
 form.generated div.group-wrapper div.field-wrapper {
 	position: static;
+	width: auto;
     float: none;
-    padding: 0 0 0 0;
+    padding: 0;
     margin: 0;
-    /* IE double-margin bug */
     display: block;
 }
+/****** END group elements ********/
 
 form.generated span.required-star {
     position: absolute;
