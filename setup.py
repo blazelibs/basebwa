@@ -47,6 +47,10 @@ This step creates a Application Module directory structure in <myapp>/modules/<m
 
 where <mymod> is the name of the module you want to create
 
+Questions & Comments
+---------------------
+
+Please visit: http://groups.google.com/group/pyslibs
 
 Current Status
 ---------------
