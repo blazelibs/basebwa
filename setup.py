@@ -89,7 +89,7 @@ setup(
     install_requires = [
         "Elixir>=0.6.1",
         "pysmvt>=dev",
-        "pyhtmlquickform>=dev",
+        "pysform>=dev",
         "SQLiteFKTG4SA>=dev",
     ],
     entry_points="""

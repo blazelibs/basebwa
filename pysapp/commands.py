@@ -1,6 +1,7 @@
 from pysmvt import db
 from sqlitefktg4sa import auto_assign
 from pysmvt import commands as cmds
+from pysmvt import modimport
 from pysmvt.script import console_broadcast
 
 def action_module(modname='', template=('t', 'pysapp'),
@@ -24,3 +25,8 @@ def action_pysapp_initdb(sqlite_triggers=True):
     
     # add a session to the db
     #db.sess = db.Session()
+
+@console_broadcast
+def action_apputil_initapp():
+    permission_add = modimport('users.actions', 'permission_add')
+    permission_add(name=u'webapp-controlpanel', safe='unique')

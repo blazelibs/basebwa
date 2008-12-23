@@ -29,13 +29,15 @@ class SQLAlchemyApp(object):
         self.application = application
         self.container = SQLAlchemyContainer()
         db._push_object(self.container)
-        self.loadmodels()        
+        self.loadmodels()
     
     def start_request(self):
         db.sess = self.container.Session()
     
     def __call__(self, environ, start_response):
-        
+        if environ.has_key('pysapp.callable_dispatch'):
+            self.callable_dispatch(environ['pysapp.callable_dispatch'])
+            return
         if environ.has_key('paste.registry'):
             environ['paste.registry'].register(db, self.container)
         self.start_request()
@@ -52,7 +54,10 @@ class SQLAlchemyApp(object):
             self.application.console_dispatch(callable, environ)
         finally:
             self.end_request()
-
+    
+    def callable_dispatch(self, callable, environ=None):
+        self.console_dispatch(callable, environ)
+        
     def end_request(self):
         db.sess = None
         db.Session.remove()

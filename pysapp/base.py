@@ -180,16 +180,19 @@ class UpdateCommon(CommonBase):
         self.default(id)
     
     def form_submission(self, id):
-        if self.form.isSubmitted():
-            if self.form.iscancel():
-                redirect(url_for(self.endpoint_manage))
-            elif self.form.isValid():
-                try:
-                    self.do_update(id)
-                except Exception, e:
-                    # if the form can't handle the exception, re-raise it
-                    if self.form.handle_exception(e) == False:
-                        raise
+        if self.form.is_cancel():
+            redirect(url_for(self.endpoint_manage))
+        if self.form.is_valid():
+            try:
+                self.do_update(id)
+            except Exception, e:
+                # if the form can't handle the exception, re-raise it
+                if not self.form.handle_exception(e):
+                    raise
+        elif self.form.is_submitted():
+            # form was submitted, but invalid, assign form errors to user
+            # messages
+            self.form.assign_user_errors()
     
     def do_update(self, id):
         self.action_update(id, **self.form.get_values())
