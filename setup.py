@@ -33,6 +33,7 @@ pysmvt as a requirement.
 #. `python setup.py -q develop`
 #. `cd <myapp>`
 #. `pysmvt broadcast initdb` setup the database tables
+#. `pysmvt broadcast initapp` setup the database tables
 #. `pysmvt broadcast initmod <user>` let modules set themselves up, use the 
    settings profile for your user
 #. `pysmvt serve <user>` run a development http server with the user's settings 
