@@ -249,7 +249,7 @@ form.generated div.group-wrapper.no-label{
 form.generated div.group-wrapper div.first,
 form.generated div.group-wrapper div.odd,
 form.generated div.group-wrapper div.even {
-	/* IE 6 doesn't stand the multi-class selectors above, so we need to cancel
+	/* IE 6 doesn't understand the multi-class selectors above, so we need to cancel
 	the styling
 	*/
 	border: none;
