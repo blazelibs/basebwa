@@ -11,7 +11,12 @@ class Form(Pysform):
         # don't want to repeat the assignment and is_submitted might be used
         # more than once
         if not self._request_submitted:
-            tosubmit = rg.request.form.copy()
+            tosubmit = {}
+            for key, value in rg.request.form.to_dict(flat=False).iteritems():
+                if len(value) == 1:
+                    tosubmit[key] = value[0]
+                else:
+                    tosubmit[key] = value
             tosubmit.update(rg.request.files)
             self.set_submitted(tosubmit)
             self._request_submitted = True
