@@ -17,7 +17,7 @@ class Form(Pysform):
                     tosubmit[key] = value[0]
                 else:
                     tosubmit[key] = value
-            tosubmit.update(rg.request.files)
+            tosubmit.update(rg.request.files.to_dict())
             self.set_submitted(tosubmit)
             self._request_submitted = True
         return Pysform.is_submitted(self)
