@@ -33,6 +33,7 @@
             <li><a href="<{ index_url() }>">Home</a> | </li>
             <% if sesuser.is_authenticated() %>
             <li><a href="<{ url_for('apputil:ControlPanel')}>">Control Panel</a> | </li>
+            <li><a href="<{ url_for('users:ChangePassword')}>">Change Password</a> | </li>
             <li><a href="<{ url_for('users:Logout') }>">Logout</a></li>
             <% else %>
             <li><a href="<{ url_for('users:Login') }>">Login</a></li>
