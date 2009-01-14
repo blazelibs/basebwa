@@ -321,6 +321,11 @@ form.generated p.error, form.generated ul.errors li {
     color: red;
 }
 
+form.generated p.pinput {
+    margin: 0;
+    padding: 0;
+}
+
 /******************* TABLE GENERATOR *********************/
 
 table.dataTable {
