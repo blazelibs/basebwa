@@ -93,6 +93,9 @@ setup(
         "pysform>=0.1dev",
         "SQLiteFKTG4SA>=dev",
     ],
+    dependency_links = [
+        "https://svn.rcslocal.com:8443/svn/pysmvt/pysform/trunk/#egg=pysform-0.1dev"
+    ],
     entry_points="""
     [pysmvt.pysmvt_project_template]
     pysapp = pysapp.lib.paster_tpl:ProjectTemplate
