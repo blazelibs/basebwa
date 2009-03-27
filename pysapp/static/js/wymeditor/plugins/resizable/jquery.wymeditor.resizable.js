@@ -78,25 +78,7 @@ WYMeditor.editor.prototype.resizable = function(options) {
     // Merge given options with default options. Given options override
     // default ones.
     var final_options = jQuery.extend(default_options, options);
-
-    // Get the jQuery path from the editor, stripping away the jQuery file.
-    // see http://www.oreilly.com/catalog/regex/chapter/ch04.html
-    // The match result array contains the path and the filename.
-    var jQueryPath = wym.computeJqueryPath().match(/^(.*)\/(.*)$/)[1];
-
-    // Make an array of the external JavaScript files required by the plugin.
-    var jQueryPlugins = [jQueryPath + '/jquery.ui.js',
-                         jQueryPath + '/jquery.ui.resizable.js'];
-    
-    // First get the jQuery UI base file
-    $.getScript(jQueryPlugins[0]);
-
-    // Get the jQuery UI resizeable plugin and then init the wymeditor resize
-    // plugin. It is import to do the initialisation after loading the    
-    // necessary jQuery UI files has finished, otherwise the "resizable" method
-    // would not be available.
-    $.getScript(jQueryPlugins[1], function() {     
-        jQuery(wym._box).resizable(final_options);
-    });
+ 
+    jQuery(wym._box).resizable(final_options);
 
 };
