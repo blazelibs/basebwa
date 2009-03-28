@@ -4,6 +4,7 @@ WYMeditor.SKINS['pysapp'] = {
 
         //render following sections as panels
         jQuery(wym._box).find(wym._options.classesSelector)
+          .prependTo("div.wym_area_top")
           .addClass("wym_dropdown")
           .find(WYMeditor.H2)
           .append("<span>&nbsp;&gt;</span>");
@@ -14,6 +15,7 @@ WYMeditor.SKINS['pysapp'] = {
 
         //render "Containers" and "Classes" as panels
         jQuery(wym._box).find(wym._options.containersSelector)
+          .prependTo("div.wym_area_top")
           .addClass("wym_dropdown")
           .find(WYMeditor.H2)
           .append("<span>&nbsp;&gt;</span>");
