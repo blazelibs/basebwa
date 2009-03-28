@@ -141,6 +141,22 @@
 .wym_classes {
     margin-left: 5px;
 }
+
 .wym_tools {
     clear: left;
+}
+
+/*FIX THE MAIN BLOCK COMMING UP AND OVER THE TOOLBAR IN IE7*/
+/* the "*:first-child+html" is a hack that targets IE7 only */
+*:first-child+html .wym_box {
+    position: relative;
+    padding-top: 0px;
+}
+*:first-child+html .wym_area_top {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+*:first-child+html .wym_area_main {
+    margin-top: 60px;
 }
