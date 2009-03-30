@@ -390,3 +390,15 @@ table.manage td a.delete_link {
 .draft-wrapper {
 	background: url(default_imgs/draft.png) repeat;
 }
+
+/* can be put on a dynamically genereated span to make a JS action look
+  like a link.  */
+.js-action-link {
+	font-size: 95%;
+	color: blue;
+	text-decoration: underline;
+}
+.js-action-link:hover {
+	text-decoration: none;
+	cursor: pointer;
+}
