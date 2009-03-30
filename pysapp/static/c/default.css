@@ -386,3 +386,7 @@ table.manage td a.delete_link {
     width: 16px;
     text-indent: -1200px;
 }
+
+.draft-wrapper {
+	background: url(default_imgs/draft.png) repeat;
+}
