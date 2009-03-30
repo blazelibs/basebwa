@@ -22,7 +22,6 @@ class Default(DefaultSettings):
             Rule('/<file>', endpoint='static', build_only=True),
             Rule('/c/<file>', endpoint='styles', build_only=True),
             Rule('/js/<file>', endpoint='javascript', build_only=True),
-            Rule('/control-panel', endpoint='apputil:ControlPanel')
         ]
         #######################################################################
         # TEMPLATES
