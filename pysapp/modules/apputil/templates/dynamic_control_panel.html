@@ -1,0 +1,22 @@
+<{ include_css() }>
+<% extends settings.template.admin %>
+<% block title %>Control Panel | <{super()}><% endblock %>
+<% macro print_link_group(lg) -%>
+    <ul class="link_group">
+    <% for link in lg.links %>
+        <li><a href="<{ url_for(link.endpoint)}>"><{link.text}></a></li>
+    <% endfor %>
+    </ul>
+<%- endmacro %>
+<% block body %>
+    <% for sec in sections %>
+    <% if sesuser.has_perm(sec.has_perm) %>
+    <div class="module_wrapper">
+        <h2><{sec.heading}></h2>
+        <% for lg in sec.groups %>
+            <{ print_link_group(lg) }>
+        <% endfor %>
+    </div>
+    <% endif %>
+    <% endfor %>
+<% endblock body%>

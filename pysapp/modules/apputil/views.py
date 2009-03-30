@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pysmvt import ag, rg, appimportauto
+from pysmvt import ag, rg, appimportauto, settings
 appimportauto('base', ['PublicSnippetView', 'PublicPageView', 'ProtectedPageView'])
 
 class UserMessagesSnippet(PublicSnippetView):
@@ -30,8 +30,7 @@ class Forbidden(PublicPageView):
             self.response.status_code = 403
 
 class BadRequestError(PublicPageView):
-    
-    def default(self):
+        def default(self):
         if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
             # Bad Request
             self.response.status_code = 400
@@ -55,3 +54,22 @@ class ControlPanel(ProtectedPageView):
         
     def default(self):
         pass
+    
+class DynamicControlPanel(ProtectedPageView):
+    def prep(self):
+        self.require = 'webapp-controlpanel'
+        
+    def default(self):
+        sections = []
+        for mod in settings.modules:
+            try:
+                if mod.cp_nav.enabled:
+                    sections.append(mod.cp_nav.section)
+            except AttributeError:
+                pass
+        
+        def seccmp(first, second):
+            return cmp(first.heading.lower(), second.heading.lower())
+        sections.sort(seccmp)
+        self.assign('sections', sections)
+        
