@@ -443,4 +443,40 @@ class TestDelete(object):
         assert el.parentid == 7
         assert el.depth == 4
     
+    def test_delete_ptc_not_child(self):
+        """
+        Delete a node and a non-child node
+        """
+        
+        tv = session.query(Node).filter_by(name='Televisions').one()
+        #lcd = session.query(Node).filter_by(name='LCD').one()
+        mp3 = session.query(Node).filter_by(name='MP3 Players').one()
+        session.delete(mp3)
+        session.delete(tv)
+        try:
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        print_nodes()
+        el = session.query(Node).filter_by(name='Electronics').one()
+        assert el.ledge == 1
+        assert el.redge == 8
+        assert el.parentid is None
+        assert el.depth == 1
+        el = session.query(Node).filter_by(name='Portable Electronics').one()
+        assert el.ledge == 2
+        assert el.redge == 7
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='CD Players').one()
+        assert el.ledge == 3
+        assert el.redge == 4
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='2-Way Radios').one()
+        assert el.ledge == 5
+        assert el.redge == 6
+        assert el.parentid == 3
+        assert el.depth == 3
     
