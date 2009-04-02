@@ -19,10 +19,14 @@ class MultipleAnchorsError(NestedSetException):
     """
         Used when a node has more than one anchor point.
     """
-    
+        
+class MultipleDeletesError(NestedSetException):
+    """
+        Can only delete one node at a time.  Issue a commit() between
+        deletes.
+    """
 class NestedSetExtension(MapperExtension):
     
-    _nodes_getting_deleted = {}
     _node_delete_count = 0
     
     def __init__(self, pkname='id'):
@@ -139,43 +143,38 @@ class NestedSetExtension(MapperExtension):
 
     def before_delete(self, mapper, connection, instance):
         self._node_delete_count += 1
-        self._nodes_getting_deleted[getattr(instance, self.pkname)] = (instance.ledge, instance.redge)
-            
+        
     def after_delete(self, mapper, connection, instance):
-        delete_and_shift = True
-        for nid, nvalues in self._nodes_getting_deleted.items():
-            if getattr(instance, self.pkname) != nid \
-                and instance.ledge > nvalues[0] \
-                and instance.ledge < nvalues[1]:
-                delete_and_shift = False
-                print "skipping %s because it is a child of %s" % (instance, nid)
-        if delete_and_shift:
-            nodetbl = mapper.mapped_table
-            width = instance.redge - instance.ledge + 1
-            
-            # delete the node's children
-            connection.execute(
-                nodetbl.delete(
-                    and_(
-                            nodetbl.c.ledge > instance.ledge,
-                            nodetbl.c.ledge < instance.redge
-                         )
-                )
+        if self._node_delete_count > 1:
+            raise MultipleDeletesError
+        self._node_delete_count = 0
+        
+        nodetbl = mapper.mapped_table
+        width = instance.redge - instance.ledge + 1
+        
+        # delete the node's children
+        connection.execute(
+            nodetbl.delete(
+                and_(
+                        nodetbl.c.ledge > instance.ledge,
+                        nodetbl.c.ledge < instance.redge
+                     )
             )
-            
-            # close the gap
-            connection.execute(
-                   nodetbl.update() \
-                       .where(
-                           nodetbl.c.redge > instance.ledge
-                       ).values(
-                           ledge = case(
-                                   [(nodetbl.c.ledge > instance.redge, nodetbl.c.ledge - width)],
-                                   else_ = nodetbl.c.ledge
-                                 ),
-                           redge = nodetbl.c.redge - width
-                       )
-               )
+        )
+        
+        # close the gap
+        connection.execute(
+               nodetbl.update() \
+                   .where(
+                       nodetbl.c.redge > instance.ledge
+                   ).values(
+                       ledge = case(
+                               [(nodetbl.c.ledge > instance.redge, nodetbl.c.ledge - width)],
+                               else_ = nodetbl.c.ledge
+                             ),
+                       redge = nodetbl.c.redge - width
+                   )
+           )
 
             
     # before_update() would be needed to support moving of nodes
