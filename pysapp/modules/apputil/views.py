@@ -30,7 +30,8 @@ class Forbidden(PublicPageView):
             self.response.status_code = 403
 
 class BadRequestError(PublicPageView):
-        def default(self):
+    
+    def default(self):
         if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
             # Bad Request
             self.response.status_code = 400
