@@ -181,6 +181,7 @@ class NestedSetExtension(MapperExtension):
             turedge = tu_node_data['redge']
             tudepth = tu_node_data['depth']
             tuparentid = tu_node_data['parentid']
+            tuwidth = turedge - tuledge + 1
             
             # get fresh anchor from the DB in case the instance was updated
             anc_node_data = connection.execute(
@@ -202,58 +203,109 @@ class NestedSetExtension(MapperExtension):
                 if tuparentid == getattr(anchor, self.pkname):
                     return
                 if tuledge > ancledge:
-                    treeshift  = ancledge - tuledge + 1;
-                    leftbound  = ancledge+1;
-                    rightbound = tuledge-1;
-                    tuwidth     = turedge-tuledge+1;
-                    leftrange  = turedge;
-                    rightrange = ancledge;
+                    instance_children_shift = ancledge - tuledge + 1
+                    left_bound_of_displaced  = ancledge+1
+                    right_bound_of_displaced = tuledge-1
+                    displaced_shift = turedge-tuledge+1
+                    right_boundary_for_ledge  = turedge
+                    left_boundary_for_redge = ancledge
                 else:
-                    treeshift  = ancledge - turedge;
-                    leftbound  = turedge + 1;
-                    rightbound = ancledge;
-                    tuwidth     = tuledge-turedge-1;
-                    leftrange  = ancledge+1;
-                    rightrange = tuledge;
+                    instance_children_shift = ancledge - turedge
+                    left_bound_of_displaced  = turedge + 1
+                    right_bound_of_displaced = ancledge
+                    displaced_shift = tuledge-turedge-1
+                    right_boundary_for_ledge  = ancledge+1
+                    left_boundary_for_redge = tuledge
+                children_depth = ancdepth-tudepth+1
                 
                 instance.parentid = getattr(anchor, self.pkname)
                 instance.ledge = ancledge + 1 
                 instance.redge = ancledge + 1 + (turedge - tuledge)
                 instance.depth = ancdepth + 1
             else:
+                if ancparentid is None:
+                    raise NestedSetException('It is not valid to request a'
+                        ' sibling update on the root node since only one root'
+                        ' node is supported.')
+                    
                 if instance.upper_sibling:
                     if (ancredge + 1) == tuledge:
                         # anchor is already the upper sibling
                         return
+                    if tuledge > ancledge:
+                        left_bound_of_displaced  = ancredge + 1
+                        instance_children_shift = left_bound_of_displaced - tuledge
+                        right_bound_of_displaced = tuledge-1
+                        displaced_shift = turedge-tuledge+1
+                        right_boundary_for_ledge  = turedge
+                        left_boundary_for_redge = left_bound_of_displaced
+                        
+                        instance.ledge = ancredge + 1
+                        instance.redge = ancredge + 1 + (turedge - tuledge)
+                    else:
+                        left_bound_of_displaced  = turedge + 1
+                        instance_children_shift = ancredge - tuledge + 1 - (turedge-tuledge+1)
+                        right_bound_of_displaced = ancredge
+                        displaced_shift = tuledge-turedge-1
+                        right_boundary_for_ledge  = ancledge+1
+                        left_boundary_for_redge = tuledge
+                        
+                        instance.ledge = ancredge - (turedge - tuledge)
+                        instance.redge = ancredge
+                    
                 else:
                     if (turedge+1) == ancledge:
                         # anchor is already lower sibling
                         return
+                    if tuledge > ancledge:
+                        left_bound_of_displaced  = ancledge
+                        instance_children_shift = left_bound_of_displaced - tuledge
+                        right_bound_of_displaced = tuledge-1
+                        displaced_shift = turedge-tuledge+1
+                        right_boundary_for_ledge  = turedge
+                        left_boundary_for_redge = left_bound_of_displaced
+                        
+                        instance.ledge = ancledge
+                        instance.redge = ancledge + (turedge - tuledge)
+                    else:
+                        left_bound_of_displaced  = turedge + 1
+                        instance_children_shift = ancledge - turedge -1
+                        right_bound_of_displaced = ancledge - 1
+                        displaced_shift = tuledge-turedge-1
+                        right_boundary_for_ledge  = ancledge-1
+                        left_boundary_for_redge = tuledge
+                        
+                        instance.ledge = ancledge - 1 - + (turedge - tuledge)
+                        instance.redge = ancledge - 1 
+                
+                children_depth = ancdepth-tudepth
+                instance.parentid = ancparentid
+                instance.depth = ancdepth
 
             connection.execute(
                 nodetbl.update() \
                     .where(
                         or_(
-                            nodetbl.c.ledge < leftrange,
-                            nodetbl.c.redge > rightrange
+                            nodetbl.c.ledge < right_boundary_for_ledge,
+                            nodetbl.c.redge > left_boundary_for_redge
                             )
                     ).values(
                         ledge = case(
                                 [
-                                    (nodetbl.c.ledge.between(leftbound,rightbound), nodetbl.c.ledge + tuwidth),
-                                    (nodetbl.c.ledge.between(tuledge,turedge), nodetbl.c.ledge + treeshift)
+                                    (nodetbl.c.ledge.between(left_bound_of_displaced,right_bound_of_displaced), nodetbl.c.ledge + displaced_shift),
+                                    (nodetbl.c.ledge.between(tuledge,turedge), nodetbl.c.ledge + instance_children_shift)
                                 ],
                                 else_ = nodetbl.c.ledge
                               ),
                         redge = case(
                                 [
-                                    (nodetbl.c.redge.between(leftbound,rightbound), nodetbl.c.redge + tuwidth),
-                                    (nodetbl.c.redge.between(tuledge,turedge), nodetbl.c.redge + treeshift)
+                                    (nodetbl.c.redge.between(left_bound_of_displaced,right_bound_of_displaced), nodetbl.c.redge + displaced_shift),
+                                    (nodetbl.c.redge.between(tuledge,turedge), nodetbl.c.redge + instance_children_shift)
                                 ],
                                 else_ = nodetbl.c.redge
                               ),
                         depth = case(
-                                [(nodetbl.c.redge.between(tuledge,turedge), nodetbl.c.depth + (ancdepth-tudepth+1))],
+                                [(nodetbl.c.redge.between(tuledge,turedge), nodetbl.c.depth + children_depth)],
                                 else_ = nodetbl.c.depth
                               ),
                     )

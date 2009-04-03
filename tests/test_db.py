@@ -750,15 +750,269 @@ class TestUpdate(object):
         session.commit()
         
         check_for_no_updates()
-        
-    def test_siblings(self):
-        plasma = session.query(Node).filter_by(name='Plasma').one()
+    
+    def test_lower_sibling_1(self):
+        mp3 = session.query(Node).filter_by(name='MP3 Players').one()
         lcd = session.query(Node).filter_by(name='LCD').one()
-        lcd.upper_sibling = plasma
         # required to make the object "dirty" so that the update will work
-        #lcd.name = lcd.name
-        #session.commit()
+        mp3.name = mp3.name
+        mp3.lower_sibling = lcd
+        session.commit()
+        
+        el = session.query(Node).filter_by(name='Electronics').one()
+        assert el.ledge == 1
+        assert el.redge == 20
+        assert el.parentid is None
+        assert el.depth == 1
+        el = session.query(Node).filter_by(name='Televisions').one()
+        assert el.ledge == 2
+        assert el.redge == 13
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='Tube').one()
+        assert el.ledge == 3
+        assert el.redge == 4
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='MP3 Players').one()
+        assert el.ledge == 5
+        assert el.redge == 8
+        assert el.parentid == 2
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Flash').one()
+        assert el.ledge == 6
+        assert el.redge == 7
+        assert el.parentid == 7
+        assert el.depth == 4
+        el = session.query(Node).filter_by(name='LCD').one()
+        assert el.ledge == 9
+        assert el.redge == 10
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Plasma').one()
+        assert el.ledge == 11
+        assert el.redge == 12
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Portable Electronics').one()
+        assert el.ledge == 14
+        assert el.redge == 19
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='CD Players').one()
+        assert el.ledge == 15
+        assert el.redge == 16
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='2-Way Radios').one()
+        assert el.ledge == 17
+        assert el.redge == 18
+        assert el.parentid == 3
+        assert el.depth == 3
+        
+    def test_upper_sibling_1(self):
+        mp3 = session.query(Node).filter_by(name='MP3 Players').one()
+        tube = session.query(Node).filter_by(name='Tube').one()
+        # required to make the object "dirty" so that the update will work
+        mp3.name = mp3.name
+        mp3.upper_sibling = tube
+        session.commit()
+        
+        el = session.query(Node).filter_by(name='Electronics').one()
+        assert el.ledge == 1
+        assert el.redge == 20
+        assert el.parentid is None
+        assert el.depth == 1
+        el = session.query(Node).filter_by(name='Televisions').one()
+        assert el.ledge == 2
+        assert el.redge == 13
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='Tube').one()
+        assert el.ledge == 3
+        assert el.redge == 4
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='MP3 Players').one()
+        assert el.ledge == 5
+        assert el.redge == 8
+        assert el.parentid == 2
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Flash').one()
+        assert el.ledge == 6
+        assert el.redge == 7
+        assert el.parentid == 7
+        assert el.depth == 4
+        el = session.query(Node).filter_by(name='LCD').one()
+        assert el.ledge == 9
+        assert el.redge == 10
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Plasma').one()
+        assert el.ledge == 11
+        assert el.redge == 12
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Portable Electronics').one()
+        assert el.ledge == 14
+        assert el.redge == 19
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='CD Players').one()
+        assert el.ledge == 15
+        assert el.redge == 16
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='2-Way Radios').one()
+        assert el.ledge == 17
+        assert el.redge == 18
+        assert el.parentid == 3
+        assert el.depth == 3
+        
+    def test_upper_sibling_2(self):
+        mp3 = session.query(Node).filter_by(name='MP3 Players').one()
+        tway = session.query(Node).filter_by(name='2-Way Radios').one()
+        # required to make the object "dirty" so that the update will work
+        mp3.name = mp3.name
+        mp3.upper_sibling = tway
+        session.commit()
+        
+        el = session.query(Node).filter_by(name='Electronics').one()
+        assert el.ledge == 1
+        assert el.redge == 20
+        assert el.parentid is None
+        assert el.depth == 1
+        el = session.query(Node).filter_by(name='Televisions').one()
+        assert el.ledge == 2
+        assert el.redge == 9
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='Tube').one()
+        assert el.ledge == 3
+        assert el.redge == 4
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='LCD').one()
+        assert el.ledge == 5
+        assert el.redge == 6
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Plasma').one()
+        assert el.ledge == 7
+        assert el.redge == 8
+        assert el.parentid == 2 
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Portable Electronics').one()
+        assert el.ledge == 10
+        assert el.redge == 19
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='CD Players').one()
+        assert el.ledge == 11
+        assert el.redge == 12
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='2-Way Radios').one()
+        assert el.ledge == 13
+        assert el.redge == 14
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='MP3 Players').one()
+        assert el.ledge == 15
+        assert el.redge == 18
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Flash').one()
+        assert el.ledge == 16
+        assert el.redge == 17
+        assert el.parentid == 7
+        assert el.depth == 4
+    
+    def test_upper_sibling_3(self):
+        pes = session.query(Node).filter_by(name='Portable Electronics').one()
+        tvs = session.query(Node).filter_by(name='Televisions').one()
+        tvs.name = tvs.name
+        tvs.upper_sibling = pes
+        session.commit()
+        
+        pes.name = pes.name
+        pes.upper_sibling = tvs
+        session.commit()
+        
         check_for_no_updates()
+    
+    def test_lower_sibling_2(self):
+        cd = session.query(Node).filter_by(name='CD Players').one()
+        tvs = session.query(Node).filter_by(name='Televisions').one()
+        tvs.name = tvs.name
+        tvs.lower_sibling = cd
+        session.commit()
+        
+        el = session.query(Node).filter_by(name='Electronics').one()
+        assert el.ledge == 1
+        assert el.redge == 20
+        assert el.parentid is None
+        assert el.depth == 1
+        el = session.query(Node).filter_by(name='Portable Electronics').one()
+        assert el.ledge == 2
+        assert el.redge == 19
+        assert el.parentid == 1
+        assert el.depth == 2
+        el = session.query(Node).filter_by(name='MP3 Players').one()
+        assert el.ledge == 3
+        assert el.redge == 6
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Flash').one()
+        assert el.ledge == 4
+        assert el.redge == 5
+        assert el.parentid == 7
+        assert el.depth == 4
+        el = session.query(Node).filter_by(name='Televisions').one()
+        assert el.ledge == 7
+        assert el.redge == 14
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='Tube').one()
+        assert el.ledge == 8
+        assert el.redge == 9
+        assert el.parentid == 2 
+        assert el.depth == 4
+        el = session.query(Node).filter_by(name='LCD').one()
+        assert el.ledge == 10
+        assert el.redge == 11
+        assert el.parentid == 2 
+        assert el.depth == 4
+        el = session.query(Node).filter_by(name='Plasma').one()
+        assert el.ledge == 12
+        assert el.redge == 13
+        assert el.parentid == 2 
+        assert el.depth == 4
+        el = session.query(Node).filter_by(name='CD Players').one()
+        assert el.ledge == 15
+        assert el.redge == 16
+        assert el.parentid == 3
+        assert el.depth == 3
+        el = session.query(Node).filter_by(name='2-Way Radios').one()
+        assert el.ledge == 17
+        assert el.redge == 18
+        assert el.parentid == 3
+        assert el.depth == 3
+        
+    def test_root_sibling(self):
+        mp3 = session.query(Node).filter_by(name='MP3 Players').one()
+        elc = session.query(Node).filter_by(name='Electronics').one()
+        # required to make the object "dirty" so that the update will work
+        mp3.name = mp3.name
+        mp3.lower_sibling = elc
+        try:
+            session.commit()
+            assert False, 'should have got silbling of root exception'
+        except NestedSetException, e:
+            session.rollback()
+            if 'a sibling update on the root node' not in str(e):
+                raise
+
         
 def check_for_no_updates():       
     el = session.query(Node).filter_by(name='Electronics').one()
