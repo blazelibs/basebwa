@@ -25,9 +25,17 @@ class MultipleDeletesError(NestedSetException):
         Can only delete one node at a time.  Issue a commit() between
         deletes.
     """
+    
+class MultipleUpdatesError(NestedSetException):
+    """
+        Can only update one node at a time.  Issue a commit() between
+        updates.
+    """
+
 class NestedSetExtension(MapperExtension):
     
     _node_delete_count = 0
+    _node_update_count = 0
     
     def __init__(self, pkname='id'):
         self.pkname = pkname
@@ -82,7 +90,7 @@ class NestedSetExtension(MapperExtension):
                 # children increase depth
                 ndepth = ancnode.depth + 1
                 # parent
-                nparentid = ancnode.id
+                nparentid = getattr(ancnode, self.pkname)
             else:
                 if instance.upper_sibling:
                     ancnode = connection.execute(
@@ -140,6 +148,126 @@ class NestedSetExtension(MapperExtension):
         instance.redge = nleft + 1
         instance.parentid = nparentid
         instance.depth = ndepth
+
+    def before_update(self, mapper, connection, instance):
+        nodetbl = mapper.mapped_table
+        self._node_update_count += 1
+        try:
+            # only one anchor can be given
+            anchor_count = 0
+            if instance.parent:
+                anchor_count += 1
+                anchor = instance.parent
+            if instance.upper_sibling:
+                anchor_count += 1
+                anchor = instance.upper_sibling
+            if instance.lower_sibling:
+                anchor_count += 1
+                anchor = instance.lower_sibling
+            if anchor_count > 1:
+                raise MultipleAnchorsError('Nested set nodes can only have one anchor (parent, upper sibling, or lower sibling)')
+            if anchor_count == 0:
+                """
+                    assume the object is being updated for other reasons, tree position
+                    is staying the same.
+                """
+                return
+                
+            # get fresh data from the DB in case this instance has been updated
+            tu_node_data = connection.execute(
+                            select([nodetbl]).where(getattr(nodetbl.c, self.pkname) == getattr(instance, self.pkname))
+                        ).fetchone()
+            tuledge = tu_node_data['ledge']
+            turedge = tu_node_data['redge']
+            tudepth = tu_node_data['depth']
+            tuparentid = tu_node_data['parentid']
+            
+            # get fresh anchor from the DB in case the instance was updated
+            anc_node_data = connection.execute(
+                            select([nodetbl]).where(getattr(nodetbl.c, self.pkname) == getattr(anchor, self.pkname))
+                        ).fetchone()
+            ancledge = anc_node_data['ledge']
+            ancredge = anc_node_data['redge']
+            ancdepth = anc_node_data['depth']
+            ancparentid = anc_node_data['parentid']
+            
+            if getattr(anchor, self.pkname) == getattr(instance, self.pkname):
+                raise NestedSetException('A nodes anchor can not be iteself.')
+                
+            if ancledge > tuledge and ancledge < turedge:
+                raise NestedSetException('A nodes anchor can not be one of its children.')
+            
+            if instance.parent:
+                # if the nodes parent is already the requested parent, do nothing
+                if tuparentid == getattr(anchor, self.pkname):
+                    return
+                if tuledge > ancledge:
+                    treeshift  = ancledge - tuledge + 1;
+                    leftbound  = ancledge+1;
+                    rightbound = tuledge-1;
+                    tuwidth     = turedge-tuledge+1;
+                    leftrange  = turedge;
+                    rightrange = ancledge;
+                else:
+                    treeshift  = ancledge - turedge;
+                    leftbound  = turedge + 1;
+                    rightbound = ancledge;
+                    tuwidth     = tuledge-turedge-1;
+                    leftrange  = ancledge+1;
+                    rightrange = tuledge;
+                
+                instance.parentid = getattr(anchor, self.pkname)
+                instance.ledge = ancledge + 1 
+                instance.redge = ancledge + 1 + (turedge - tuledge)
+                instance.depth = ancdepth + 1
+            else:
+                if instance.upper_sibling:
+                    if (ancredge + 1) == tuledge:
+                        # anchor is already the upper sibling
+                        return
+                else:
+                    if (turedge+1) == ancledge:
+                        # anchor is already lower sibling
+                        return
+
+            connection.execute(
+                nodetbl.update() \
+                    .where(
+                        or_(
+                            nodetbl.c.ledge < leftrange,
+                            nodetbl.c.redge > rightrange
+                            )
+                    ).values(
+                        ledge = case(
+                                [
+                                    (nodetbl.c.ledge.between(leftbound,rightbound), nodetbl.c.ledge + tuwidth),
+                                    (nodetbl.c.ledge.between(tuledge,turedge), nodetbl.c.ledge + treeshift)
+                                ],
+                                else_ = nodetbl.c.ledge
+                              ),
+                        redge = case(
+                                [
+                                    (nodetbl.c.redge.between(leftbound,rightbound), nodetbl.c.redge + tuwidth),
+                                    (nodetbl.c.redge.between(tuledge,turedge), nodetbl.c.redge + treeshift)
+                                ],
+                                else_ = nodetbl.c.redge
+                              ),
+                        depth = case(
+                                [(nodetbl.c.redge.between(tuledge,turedge), nodetbl.c.depth + (ancdepth-tudepth+1))],
+                                else_ = nodetbl.c.depth
+                              ),
+                    )
+            )
+        except:
+            self._node_update_count -= 1
+            raise
+
+    def after_update(self, mapper, connection, instance):
+        try:
+            if self._node_update_count > 1:
+                raise MultipleUpdatesError
+        finally:
+            self._node_update_count = 0
 
     def before_delete(self, mapper, connection, instance):
         self._node_delete_count += 1
