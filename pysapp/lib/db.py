@@ -202,7 +202,10 @@ class NestedSetExtension(MapperExtension):
                 # if the nodes parent is already the requested parent, do nothing
                 if tuparentid == getattr(anchor, self.pkname):
                     return
+                
                 if tuledge > ancledge:
+                    """ parent from grandchild and parent from right """
+                    ancledgeaftershift = ancledge
                     instance_children_shift = ancledge - tuledge + 1
                     left_bound_of_displaced  = ancledge+1
                     right_bound_of_displaced = tuledge-1
@@ -210,17 +213,20 @@ class NestedSetExtension(MapperExtension):
                     right_boundary_for_ledge  = turedge
                     left_boundary_for_redge = ancledge
                 else:
+                    """ parent from left: make sure we account for our anchor
+                    point shifting. """
+                    ancledgeaftershift = ancledge - tuwidth
                     instance_children_shift = ancledge - turedge
                     left_bound_of_displaced  = turedge + 1
                     right_bound_of_displaced = ancledge
-                    displaced_shift = tuledge-turedge-1
+                    displaced_shift = tuwidth * -1
                     right_boundary_for_ledge  = ancledge+1
                     left_boundary_for_redge = tuledge
                 children_depth = ancdepth-tudepth+1
                 
                 instance.parentid = getattr(anchor, self.pkname)
-                instance.ledge = ancledge + 1 
-                instance.redge = ancledge + 1 + (turedge - tuledge)
+                instance.ledge = ancledgeaftershift + 1 
+                instance.redge = instance.ledge + tuwidth - 1
                 instance.depth = ancdepth + 1
             else:
                 if ancparentid is None:
@@ -232,7 +238,20 @@ class NestedSetExtension(MapperExtension):
                     if (ancredge + 1) == tuledge:
                         # anchor is already the upper sibling
                         return
-                    if tuledge > ancledge:
+                    if tuledge > ancledge and turedge < ancredge:
+                        """ upper sibling from child """
+                        left_bound_of_displaced  = turedge + 1
+                        instance_children_shift = ancredge - turedge
+                        right_bound_of_displaced = ancredge
+                        displaced_shift = tuwidth * -1
+                        right_boundary_for_ledge  = ancredge
+                        left_boundary_for_redge = tuledge
+                        
+                        ancredgeaftershift = ancredge - tuwidth
+                        instance.ledge = ancredgeaftershift + 1
+                        instance.redge = instance.ledge + tuwidth - 1
+                    elif tuledge > ancledge:
+                        """ upper sibling from right"""
                         left_bound_of_displaced  = ancredge + 1
                         instance_children_shift = left_bound_of_displaced - tuledge
                         right_bound_of_displaced = tuledge-1
@@ -243,10 +262,11 @@ class NestedSetExtension(MapperExtension):
                         instance.ledge = ancredge + 1
                         instance.redge = ancredge + 1 + (turedge - tuledge)
                     else:
+                        """ upper sibling from left """
                         left_bound_of_displaced  = turedge + 1
-                        instance_children_shift = ancredge - tuledge + 1 - (turedge-tuledge+1)
+                        instance_children_shift = ancredge - tuledge + 1 - tuwidth
                         right_bound_of_displaced = ancredge
-                        displaced_shift = tuledge-turedge-1
+                        displaced_shift = tuwidth * -1
                         right_boundary_for_ledge  = ancledge+1
                         left_boundary_for_redge = tuledge
                         
@@ -258,6 +278,7 @@ class NestedSetExtension(MapperExtension):
                         # anchor is already lower sibling
                         return
                     if tuledge > ancledge:
+                        """ lower sibling from right and from child """
                         left_bound_of_displaced  = ancledge
                         instance_children_shift = left_bound_of_displaced - tuledge
                         right_bound_of_displaced = tuledge-1
@@ -268,6 +289,7 @@ class NestedSetExtension(MapperExtension):
                         instance.ledge = ancledge
                         instance.redge = ancledge + (turedge - tuledge)
                     else:
+                        """ lower sibling from left """
                         left_bound_of_displaced  = turedge + 1
                         instance_children_shift = ancledge - turedge -1
                         right_bound_of_displaced = ancledge - 1
