@@ -1,7 +1,10 @@
+import logging
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base, \
     DeclarativeMeta, _declarative_constructor
+
+log = logging.getLogger(__name__)
 
 __all__ = [
     'NestedSetExtension'
@@ -167,6 +170,7 @@ class NestedSetExtension(MapperExtension):
             if anchor_count > 1:
                 raise MultipleAnchorsError('Nested set nodes can only have one anchor (parent, upper sibling, or lower sibling)')
             if anchor_count == 0:
+                log.debug('before_update: no anchor given, returning')
                 """
                     assume the object is being updated for other reasons, tree position
                     is staying the same.
@@ -199,12 +203,17 @@ class NestedSetExtension(MapperExtension):
                 raise NestedSetException('A nodes anchor can not be one of its children.')
             
             if instance.parent:
+                log.debug('before_update: anchor is parent')
                 # if the nodes parent is already the requested parent, do nothing
                 if tuparentid == getattr(anchor, self.pkname):
+                    log.debug('before_update: parent requested is already the'
+                              ' current parent, returning')
                     return
                 
                 if tuledge > ancledge:
                     """ parent from grandchild and parent from right """
+                    log.debug('before_update: parent from grandchild and parent'
+                              ' from right')
                     ancledgeaftershift = ancledge
                     instance_children_shift = ancledge - tuledge + 1
                     left_bound_of_displaced  = ancledge+1
@@ -215,6 +224,7 @@ class NestedSetExtension(MapperExtension):
                 else:
                     """ parent from left: make sure we account for our anchor
                     point shifting. """
+                    log.debug('before_update: parent from left')
                     ancledgeaftershift = ancledge - tuwidth
                     instance_children_shift = ancledge - turedge
                     left_bound_of_displaced  = turedge + 1
@@ -235,11 +245,14 @@ class NestedSetExtension(MapperExtension):
                         ' node is supported.')
                     
                 if instance.upper_sibling:
+                    log.debug('before_update: anchor is upper sibling')
                     if (ancredge + 1) == tuledge:
-                        # anchor is already the upper sibling
+                        log.debug('before_update: anchor is already the upper'
+                                  ' sibling, returning')
                         return
                     if tuledge > ancledge and turedge < ancredge:
-                        """ upper sibling from child """
+                        """ upper sibling from child """    
+                        log.debug('before_update: upper sibling from child')
                         left_bound_of_displaced  = turedge + 1
                         instance_children_shift = ancredge - turedge
                         right_bound_of_displaced = ancredge
@@ -252,6 +265,7 @@ class NestedSetExtension(MapperExtension):
                         instance.redge = instance.ledge + tuwidth - 1
                     elif tuledge > ancledge:
                         """ upper sibling from right"""
+                        log.debug('before_update: upper sibling from right')
                         left_bound_of_displaced  = ancredge + 1
                         instance_children_shift = left_bound_of_displaced - tuledge
                         right_bound_of_displaced = tuledge-1
@@ -263,6 +277,7 @@ class NestedSetExtension(MapperExtension):
                         instance.redge = ancredge + 1 + (turedge - tuledge)
                     else:
                         """ upper sibling from left """
+                        log.debug('before_update: upper sibling from left')
                         left_bound_of_displaced  = turedge + 1
                         instance_children_shift = ancredge - tuledge + 1 - tuwidth
                         right_bound_of_displaced = ancredge
@@ -274,11 +289,15 @@ class NestedSetExtension(MapperExtension):
                         instance.redge = ancredge
                     
                 else:
+                    log.debug('before_update: anchor is lower sibling')
                     if (turedge+1) == ancledge:
-                        # anchor is already lower sibling
+                        log.debug('before_update: anchor is already the lower'
+                                  ' sibling, returning')
                         return
                     if tuledge > ancledge:
                         """ lower sibling from right and from child """
+                        log.debug('before_update: lower sibling from right and'
+                                  ' from child')
                         left_bound_of_displaced  = ancledge
                         instance_children_shift = left_bound_of_displaced - tuledge
                         right_bound_of_displaced = tuledge-1
@@ -290,6 +309,7 @@ class NestedSetExtension(MapperExtension):
                         instance.redge = ancledge + (turedge - tuledge)
                     else:
                         """ lower sibling from left """
+                        log.debug('before_update: lower sibling from left')
                         left_bound_of_displaced  = turedge + 1
                         instance_children_shift = ancledge - turedge -1
                         right_bound_of_displaced = ancledge - 1
