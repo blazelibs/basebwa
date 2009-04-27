@@ -20,11 +20,12 @@ class ProtectedViewMixin(BaseViewMixin):
         # if both of the above are false, require the user to have at least
         # one of the following permissions
         self.require = ()
+        # we want setup() at the front of the call methods
+        BaseViewMixin.__init__(self)
         # setup the methods that will be called
         self._call_methods_stack.append({'method_name':'auth', 'assign_args':True})
         self._call_methods_stack.append({'method_name':'check_if_authorized', 'assign_args':False})
         self._call_methods_stack.append({'method_name':'postauth', 'assign_args':True})
-        BaseViewMixin.__init__(self)
         
     def auth(self, **kwargs):
         if user.is_authenticated():
