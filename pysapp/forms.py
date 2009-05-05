@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from pysmvt import rg, user
 from pysform.form import Form as Pysform
+from pysmvt.routing import current_url
 
 class Form(Pysform):
     def __init__(self, name, **kwargs):
-        Pysform.__init__(self, name, class_='generated', **kwargs)
+        action = kwargs.pop('action', current_url(strip_host=True))
+        Pysform.__init__(self, name, action=action, class_='generated', **kwargs)
         self._request_submitted = False
         
     def is_submitted(self):
