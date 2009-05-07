@@ -186,14 +186,18 @@ class UpdateCommon(CommonBase):
         if self.form.is_valid():
             try:
                 self.do_update(id)
+                return
             except Exception, e:
                 # if the form can't handle the exception, re-raise it
                 if not self.form.handle_exception(e):
                     raise
-        elif self.form.is_submitted():
-            # form was submitted, but invalid, assign form errors to user
-            # messages
-            self.form.assign_user_errors()
+        elif not self.form.is_submitted():
+            # form was not valid, nothing left to do
+            return
+        
+        # form was either invalid or caught an exception, assign error
+        # messages
+        self.form.assign_user_errors()
     
     def do_update(self, id):
         self.action_update(id, **self.form.get_values())
