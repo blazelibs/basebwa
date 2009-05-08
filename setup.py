@@ -24,6 +24,9 @@ Steps for creating a working application
 Note: the `pysmvt` command is installed when you install pysapp, which has
 pysmvt as a requirement.
 
+#. `cd myproj-staging`
+#. `mkdir src`
+#. `cd src`
 #. `pysmvt project -t pysapp <myapp>` replace <myapp> with your project name
 #. answer the questions that come up
 #. write down "Login Details", referred to hereafter as <user> & <pass>
