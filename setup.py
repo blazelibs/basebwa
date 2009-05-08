@@ -72,7 +72,7 @@ except ImportError:
 
 setup(
     name = "pysapp",
-    version = "0.1",
+    version = "0.1.1",
     description = "A pysmvt supporting application",
     long_description = __doc__,
     author = "Randy Syring",

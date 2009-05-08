@@ -26,9 +26,9 @@ class Form(Pysform):
     
     def assign_user_errors(self):
         # set the form error messages first
-        for msg in self.errors:
+        for msg in self._errors:
             user.add_message('error', msg)
         # set element error messages
-        for el in self.submittable_els.values():
+        for el in self._submittable_els.values():
             for msg in el.errors:
                 user.add_message('error', '%s: %s' % (el.label, msg))
