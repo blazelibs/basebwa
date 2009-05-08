@@ -14,9 +14,7 @@ Steps for Installation
 #. Install Python
 #. install setuptools (includes easy_install)
 #. install virtualenv `easy_install virtualenv`
-#. make a staging area `mkdir myproj-staging`
-#. `cd myproj-staging`
-#. Create a new virtual environement `virtualenv ENV --no-site-packages`
+#. Create a new virtual environement `virtualenv myproj-staging --no-site-packages`
 #. `Activate the virtual environment (os dependent) <http://pypi.python.org/pypi/virtualenv#activate-script>`_
 #. install pysapp & dependencies `easy_install pysapp`
 
@@ -56,9 +54,7 @@ Please visit: http://groups.google.com/group/pyslibs
 Current Status
 ---------------
 
-We are currently in an alpha phase which means lots of stuff can change, maybe rapidly, and we are not interested in backwards compatibility at this point.
-
-I am currently using this library for some production websites, but I wouldn't recommend you do that unless you **really** know what you are doing.
+The code for 0.1 is pretty stable.  API, however, will be changing in 0.2.
 
 The unstable `development version
 <https://svn.rcslocal.com:8443/svn/pysmvt/pysapp/trunk/#egg=pysapp-dev>`_.
@@ -73,14 +69,14 @@ except ImportError:
 
 setup(
     name = "pysapp",
-    version = "0.1dev",
+    version = "0.1",
     description = "A pysmvt supporting application",
     long_description = __doc__,
     author = "Randy Syring",
     author_email = "randy@rcs-comp.com",
     url='http://pypi.python.org/pypi/pysapp/',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
       ],
@@ -89,12 +85,9 @@ setup(
     include_package_data=True,
     install_requires = [
         "Elixir>=0.6.1",
-        "pysmvt>=dev",
-        "pysform>=0.1dev",
-        "SQLiteFKTG4SA>=dev",
-    ],
-    dependency_links = [
-        "https://svn.rcslocal.com:8443/svn/pysmvt/pysform/trunk/#egg=pysform-0.1dev"
+        "pysmvt>=0.1",
+        "pysform>=0.1",
+        "SQLiteFKTG4SA>=0.1.1",
     ],
     entry_points="""
     [pysmvt.pysmvt_project_template]
