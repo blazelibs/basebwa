@@ -1,5 +1,6 @@
-from pysmvt.view import HtmlTemplatePage
+from pysmvt import appimportauto
+appimportauto('base', ['PublicPageView'])
 
-class Index(HtmlTemplatePage):
+class Index(PublicPageView):
     def default(self):
         pass

@@ -28,7 +28,8 @@ class Default(pysapp.settings.Default):
         # ROUTING
         #######################################################################
         self.routing.routes.extend([
-            Rule('/', defaults={}, endpoint='default:Index')
+            Rule('/', defaults={}, endpoint='default:Index'),
+            Rule('/control-panel', endpoint='apputil:DynamicControlPanel'),
         ])
         
         #######################################################################
