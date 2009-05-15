@@ -12,7 +12,7 @@ except ImportError:
 class SQLAlchemyContainer(object):
     
     def __init__(self):
-        self.engine = engine_from_config(dict(settings.db), prefix='')   
+        self.engine = engine_from_config(dict(settings.db), prefix='')
         self.meta = MetaData()
         self.Session = scoped_session(sessionmaker(bind=self.engine))
     
@@ -32,7 +32,7 @@ class SQLAlchemyApp(object):
         self.loadmodels()
     
     def start_request(self):
-        db.sess = self.container.Session()
+        db.sess = self.container.Session
     
     def __call__(self, environ, start_response):
         if environ.has_key('pysapp.callable_dispatch'):
@@ -59,7 +59,6 @@ class SQLAlchemyApp(object):
         self.console_dispatch(callable, environ)
         
     def end_request(self):
-        db.sess = None
         db.Session.remove()
     
     def loadmodels(self):
