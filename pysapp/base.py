@@ -1,6 +1,6 @@
 from pysmvt.view import HtmlTemplateSnippet, HtmlTemplatePage, \
         RespondingViewBase, TextTemplateSnippet
-from pysmvt import user, ag, redirect, modimport
+from pysmvt import user, ag, redirect, modimport, settings
 from pysmvt.utils import tolist
 from pysmvt.routing import url_for
 from pysmvt.htmltable import Table, Links, A
@@ -91,16 +91,16 @@ class CommonBase(ProtectedPageView):
         self._cb_action_delete = None
         self._cb_action_list = None
         
-    def get_safe_objname(self):
-        return self.objectname.replace(' ', '_')
-    sobjname = property(get_safe_objname)
+    def get_safe_action_prefix(self):
+        return self.action_prefix.replace(' ', '_')
+    safe_action_prefix = property(get_safe_action_prefix)
     
     def get_action(self, actname):
         localvalue = getattr(self, '_cb_action_%s' % actname)
         if localvalue:
             return localvalue
         actions = modimport( '%s.actions' % self.modulename)
-        func = '%s_%s' % (self.sobjname, actname)
+        func = '%s_%s' % (self.safe_action_prefix, actname)
         try:
             return getattr(actions, func)
         except AttributeError, e:
@@ -131,7 +131,7 @@ class CommonBase(ProtectedPageView):
     action_list = property(get_action_list, set_action_list)
             
 class UpdateCommon(CommonBase):
-    def prep(self, modulename, objectname, classname ):
+    def prep(self, modulename, objectname, classname, action_prefix=None):
         actions = modimport('%s.actions' % modulename)
         forms = modimport('%s.forms' % modulename)
         self.modulename = modulename
@@ -144,6 +144,8 @@ class UpdateCommon(CommonBase):
         self.endpoint_manage = '%s:%sManage' % (modulename, classname)
         self.formcls = getattr(forms, '%sForm' % classname)
         self.pagetitle = '%(actionname)s %(objectname)s'
+        self.extend_from = settings.template.admin
+        self.action_prefix = action_prefix or objectname
         
     def setup(self, id):
         self.determine_add_edit(id)
@@ -214,9 +216,10 @@ class UpdateCommon(CommonBase):
         self.assign('objectname', self.objectname)
         self.assign('pagetitle', self.pagetitle % {'actionname':self.actionname, 'objectname':self.objectname})
         self.assign('formobj', self.form)
+        self.assign('extend_from', self.extend_from)
 
 class ManageCommon(CommonBase):
-    def prep(self, modulename, objectname, objectnamepl, classname):
+    def prep(self, modulename, objectname, objectnamepl, classname, action_prefix=None):
         self.modulename = modulename
         self.require = '%s-manage' % modulename
         actions = modimport('%s.actions' % modulename)
@@ -226,7 +229,9 @@ class ManageCommon(CommonBase):
         self.endpoint_update = '%s:%sUpdate' % (modulename, classname)
         self.endpoint_delete = '%s:%sDelete' % (modulename, classname)
         self.table = Table(class_='dataTable manage')
-
+        self.extend_from = settings.template.admin
+        self.action_prefix = action_prefix or objectname
+        
         # messages that will normally be ok, but could be overriden
         self.pagetitle = 'Manage %(objectnamepl)s'
     
@@ -245,14 +250,16 @@ class ManageCommon(CommonBase):
         self.assign('update_endpoint', self.endpoint_update)
         self.assign('objectname', self.objectname)
         self.assign('objectnamepl', self.objectnamepl)
+        self.assign('extend_from', self.extend_from)
 
 class DeleteCommon(CommonBase):
-    def prep(self, modulename, objectname, classname):
+    def prep(self, modulename, objectname, classname, action_prefix=None):
         self.modulename = modulename
         self.require = '%s-manage' % modulename
         actions = modimport('%s.actions' % modulename)
         self.objectname = objectname
         self.endpoint_manage = '%s:%sManage' % (modulename, classname)
+        self.action_prefix = action_prefix or objectname
     
         # messages that will normally be ok, but could be overriden
         self.message_ok = '%(objectname)s deleted'

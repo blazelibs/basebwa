@@ -1,13 +1,15 @@
 import logging
 from sqlalchemy import *
 from sqlalchemy.orm import *
+from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.ext.declarative import declarative_base, \
     DeclarativeMeta, _declarative_constructor
 
 log = logging.getLogger(__name__)
 
 __all__ = [
-    'NestedSetExtension'
+    'NestedSetExtension',
+    'DeclarativeMixin'
 ]
 
 class NestedSetException(Exception):
@@ -397,7 +399,13 @@ class NestedSetExtension(MapperExtension):
                        redge = nodetbl.c.redge - width
                    )
            )
-
+class DeclarativeMixin(object):
+    def to_dict(self, exclude=[]):
+        col_prop_names = [p.key for p in self.__mapper__.iterate_properties \
+                                      if isinstance(p, ColumnProperty)]
+        data = dict([(name, getattr(self, name))
+                     for name in col_prop_names if name not in exclude])
+        return data
             
     # before_update() would be needed to support moving of nodes
     # after_delete() would be needed to support removal of nodes.
