@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />    
-    <base href="<{ index_url(True) }>" />
+    <base href="<{ current_url(root_only=True) }>" />
     <title>
         <% block title %><{ settings.name.short|title }> Control Panel<% endblock %>
     </title>
@@ -27,10 +27,10 @@
 <body>
     <div id="page_wrapper">
         <div id="page_header">
-            <h1><a href="<{ index_url() }>"><{ settings.name.full|title }> Control Panel</a></h1>
+            <h1><a href="<{ current_url(root_only=True) }>"><{ settings.name.full|title }> Control Panel</a></h1>
         </div>
         <ul id="top_nav">
-            <li><a href="<{ index_url() }>">Home</a> | </li>
+            <li><a href="<{ current_url(root_only=True) }>">Home</a> | </li>
             <% if sesuser.is_authenticated() %>
             <li><a href="<{ url_for('apputil:DynamicControlPanel')}>">Control Panel</a> | </li>
             <li><a href="<{ url_for('users:ChangePassword')}>">Change Password</a> | </li>

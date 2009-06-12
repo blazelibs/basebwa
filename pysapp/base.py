@@ -222,6 +222,7 @@ class ManageCommon(CommonBase):
     def prep(self, modulename, objectname, objectnamepl, classname, action_prefix=None):
         self.modulename = modulename
         self.require = '%s-manage' % modulename
+        self.delete_link_require = '%s-manage' % modulename
         actions = modimport('%s.actions' % modulename)
         self.template_name = 'common/Manage'
         self.objectname = objectname
@@ -236,12 +237,19 @@ class ManageCommon(CommonBase):
         self.pagetitle = 'Manage %(objectnamepl)s'
     
     def create_table(self):
-        self.table.actions = \
-            Links( 'Actions',
-                A(self.endpoint_delete, 'id', label='(delete)', class_='delete_link', title='delete %s' % self.objectname),
-                A(self.endpoint_update, 'id', label='(edit)', class_='edit_link', title='edit %s' % self.objectname),
-                width_th='8%'
-             )
+        if user.has_any_perm(self.delete_link_require):
+            self.table.actions = \
+                Links( 'Actions',
+                    A(self.endpoint_delete, 'id', label='(delete)', class_='delete_link', title='delete %s' % self.objectname),
+                    A(self.endpoint_update, 'id', label='(edit)', class_='edit_link', title='edit %s' % self.objectname),
+                    width_th='8%'
+                 )
+        else:
+            self.table.actions = \
+                Links( 'Actions',
+                    A(self.endpoint_update, 'id', label='(edit)', class_='edit_link', title='edit %s' % self.objectname),
+                    width_th='8%'
+                 )
                        
     def default(self):
         self.create_table()
