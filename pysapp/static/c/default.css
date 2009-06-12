@@ -402,3 +402,24 @@ table.manage td a.delete_link {
 	text-decoration: none;
 	cursor: pointer;
 }
+
+/************************* JS BOXES ***************************/
+
+p.js_message_box {
+    background: #CCC;
+    border: solid 1px #777;
+    display: none;
+    margin: 5px 0 0 0;
+    padding: 3px;
+    font-size: 12px;
+}
+
+p.js_message_box.ok {
+    background: #fafff3;
+    border: solid 1px #acd373;
+}
+
+p.js_message_box.failed {
+    background: #FFF2F2;
+    border: solid 1px #D47476;
+}
