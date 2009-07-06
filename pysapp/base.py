@@ -250,10 +250,13 @@ class ManageCommon(CommonBase):
                     A(self.endpoint_update, 'id', label='(edit)', class_='edit_link', title='edit %s' % self.objectname),
                     width_th='8%'
                  )
-                       
+    
+    def render_table(self):
+        self.assign('tablehtml', self.table.render(self.action_list()))
+    
     def default(self):
         self.create_table()
-        self.assign('tablehtml', self.table.render(self.action_list()))
+        self.render_table()
         self.assign('pagetitle', self.pagetitle % {'objectnamepl':self.objectnamepl} )
         self.assign('update_endpoint', self.endpoint_update)
         self.assign('objectname', self.objectname)
