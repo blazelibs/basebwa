@@ -16,3 +16,7 @@ class PagerControlsUpper(PublicSnippetView):
 class PagerControlsLower(PublicSnippetView):
     def default(self, datagrid=None):
         self.assign('datagrid', datagrid)
+
+class Everything(PublicSnippetView):
+    def default(self, datagrid=None):
+        self.assign('datagrid', datagrid)

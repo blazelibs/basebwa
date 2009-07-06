@@ -2,7 +2,7 @@
 <div class="datagrid-sort-controls-wrapper">
     <label>Sort:</label>
     <select class="datagrid-sort" name="sortdd">
-        <option value=""></option>
+        <option value="">&nbsp;</option>
         <% for ident, opts in datagrid._sortdd.items() -%>
             <option value="<{ ident }>" <{-datagrid.selected_sortdd_opt(ident) -}> ><{ opts['label'] }></option>
         <% endfor %>

@@ -113,7 +113,7 @@ class TableColumn(DataColumn):
 class DataGrid(object):
     
     def __init__(self, executable, def_sort=None, def_filter=None,
-                 rs_customizer=None, page=None, per_page=None, environ=None ):
+                 rs_customizer=None, page=None, per_page=None, environ=None, **kwargs ):
         self.executable = executable
         self.rs_customizer = rs_customizer
         self.def_filter = def_filter
@@ -137,6 +137,7 @@ class DataGrid(object):
         self._filterons_op_selected = None
         self._base_query = None
         self._current_sortdd_ident = None
+        self._html_table_attributes = kwargs
     
     def add_tablecol(self, tblcolobj, colel, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
@@ -401,6 +402,8 @@ class DataGrid(object):
     
     @property
     def pages(self):
+        if self.per_page is None:
+            return 0
         return max(0, self.count - 1) // self.per_page + 1
     
     @property
@@ -408,7 +411,7 @@ class DataGrid(object):
         self.force_request_process()
         
         if not self._html_table:
-            t = Table()
+            t = Table(**self._html_table_attributes)
             for ident, col in self._table_cols.items():
                 
                 # setup getting the correct column from the row data
@@ -512,6 +515,10 @@ class DataGrid(object):
     def link_pager_last(self):
         return self._current_url(page=self.pages)       
 
+    @property
+    def html_everything(self):
+        return getview('datagrid:Everything', datagrid=self)
+
     def _decorate_table_header(self, ident=None, col=None ):
         def inner_decorator(todecorate):
             if col.sort in ('header', 'both'):
@@ -536,7 +543,10 @@ class DataGrid(object):
         args = MultiDict(req.args)
         # multidicts extend, not replace, so we need to get rid of the keys first
         for key in kwargs.keys():
-            del args[key]
+            try:
+                del args[key]
+            except KeyError:
+                pass
         
         # convert to md first so that if we have lists in the kwargs, they
         # are converted appropriately
