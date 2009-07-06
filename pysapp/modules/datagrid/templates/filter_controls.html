@@ -1,0 +1,21 @@
+<% if datagrid.show_filter_controls -%>
+<div class="datagrid-filter-controls-wrapper">
+    <label>Filter:</label>
+    <select class="datagrid-filteron" name="filteron">
+        <option value=""></option>
+        <% for ident, col in datagrid._filter_ons.items() -%>
+            <option value="<{ ident }>" <{-datagrid.selected_filteron_opt(ident) -}> ><{ col.label }></option>
+        <% endfor %>
+    </select>
+    <select class="datagrid-filteronop" name="filteronop">
+        <option value=""></option>
+        <option value="eq" <{-datagrid.selected_filteronop_opt('eq') -}>>=</option>
+        <option value="ne" <{-datagrid.selected_filteronop_opt('ne') -}>>!=</option>
+        <option value="lt" <{-datagrid.selected_filteronop_opt('lt') -}>>&lt;</option>
+        <option value="lte" <{-datagrid.selected_filteronop_opt('lte') -}>>&lt;=</option>
+        <option value="gt" <{-datagrid.selected_filteronop_opt('gt') -}>>&gt;</option>
+        <option value="gte" <{-datagrid.selected_filteronop_opt('gte') -}>>&gt;=</option>
+    </select>
+    <input type="text" class="datagrid-filterfor" name="filterfor" value="<{ datagrid.value_filterfor }>"/>
+</div>
+<%- endif %>

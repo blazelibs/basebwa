@@ -84,7 +84,7 @@ from sqlalchemy.sql import select, not_
 from pysmvt.utils import OrderedProperties, simplify_string, OrderedDict
 from werkzeug import Request, cached_property, Href, MultiDict
 from werkzeug.exceptions import BadRequest
-from pysmvt import rg
+from pysmvt import rg, getview
 from pysmvt.htmltable import Table
 from pysmvt.routing import current_url
 from webhelpers.html import literal
@@ -133,6 +133,10 @@ class DataGrid(object):
         self._query = None
         self._fo_operators = ('eq', 'ne', 'lt', 'gt', 'lte', 'gte')
         self._html_table = None
+        self._filter_ons_selected = None
+        self._filterons_op_selected = None
+        self._base_query = None
+        self._current_sortdd_ident = None
     
     def add_tablecol(self, tblcolobj, colel, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
@@ -169,7 +173,7 @@ class DataGrid(object):
         
     def add_sort(self, label, *args):
         ident = simplify_string(label, replace_with='')
-        self._sortdd[ident] = args
+        self._sortdd[ident] = {'args':args, 'label':label}
     
     def _col_ident(self, label):
         ident = None
@@ -189,8 +193,8 @@ class DataGrid(object):
         query = select(self.sql_columns)
         return query
      
-    def _base_query(self):
-        if not self._query:
+    def base_query(self):
+        if not self._base_query:
             query = self.get_select_query()
             query = self._apply_filters(query)
             query = self._apply_sort(query)
@@ -198,14 +202,20 @@ class DataGrid(object):
             if self.rs_customizer:
                 query = self.rs_customizer(query)
             
+            self._base_query = query
+        return self._base_query
+    
+    def get_query(self):
+        if not self._query:
+            query = self.base_query()
+            query = self._apply_paging(query)
+            query = query.apply_labels()
             self._query = query
         return self._query
     
-    def get_query(self):
-        query = self._base_query()
-        query = self._apply_paging(query)
-        query = query.apply_labels()
-        return query
+    def force_request_process(self):
+        if not self._query:
+            self.get_query()
     
     def _req_obj(self):
         if self._request:
@@ -221,11 +231,14 @@ class DataGrid(object):
         self.environ = environ
         self._request = None
         self._query = None
+        self._base_query = None
     
     def _apply_filters(self, query):
         args = self._req_obj().args
         filter_in_request = False
         use_like = False
+        self._filter_ons_selected = None
+        self._filterons_op_selected = None
         
         fokey = self._args_prefix('filteron')
         foopkey = self._args_prefix('filteronop')
@@ -276,7 +289,9 @@ class DataGrid(object):
                     query = query.where(not_(fcolel.like(ffor)))
                 else:
                     query = query.where(fcolel != ffor)
-                
+            
+            self._filter_ons_selected = ident
+            self._filterons_op_selected = foop
             filter_in_request = True
         if self.def_filter and not filter_in_request:
             query = self.def_filter(query)
@@ -287,6 +302,7 @@ class DataGrid(object):
         args = self._req_obj().args
         sort_in_request = False
         self._current_sort_header = None
+        self._current_sortdd_ident = None
         
         # drop-down sorting (takes precedence over header sorting)
         sortkey = self._args_prefix('sortdd')
@@ -296,10 +312,11 @@ class DataGrid(object):
             if not self._sortdd.has_key(ident):
                 raise BadRequest('The sort ident "%s" is invalid' % ident)
                 
-            sortargs = self._sortdd[ident]
+            sortargs = self._sortdd[ident]['args']
             query = query.order_by(*sortargs)
             
             sort_in_request = True
+            self._current_sortdd_ident = ident
         else:
             # header sorting
             sortkey = self._args_prefix('sort')
@@ -368,7 +385,7 @@ class DataGrid(object):
     @property
     def count(self):
         if not self._count:
-            self._count = self.executable(self._base_query().count()).scalar()
+            self._count = self.executable(self.base_query().count()).scalar()
         return self._count
 
     @property
@@ -381,10 +398,15 @@ class DataGrid(object):
     has_next = property(lambda x: x.page < x.pages)
     previous = property(lambda x: x.page - 1)
     next = property(lambda x: x.page + 1)
-    pages = property(lambda x: max(0, x.count - 1) // x.per_page + 1)
+    
+    @property
+    def pages(self):
+        return max(0, self.count - 1) // self.per_page + 1
     
     @property
     def html_table(self):
+        self.force_request_process()
+        
         if not self._html_table:
             t = Table()
             for ident, col in self._table_cols.items():
@@ -404,6 +426,92 @@ class DataGrid(object):
             self._html_table= t.render(self.records)
         return self._html_table
     
+    @property
+    def show_filter_controls(self):
+        self.force_request_process()
+        return len(self._filter_ons) > 0
+    
+    @property
+    def html_filter_controls(self):
+        return getview('datagrid:FilterControls', datagrid=self)
+    
+    def selected_filteron_opt(self, ident):
+        self.force_request_process()
+        if self._filter_ons_selected == ident:
+            return ' selected="selected"'
+        return ''
+    
+    def selected_filteronop_opt(self, op):
+        self.force_request_process()
+        if self._filterons_op_selected == op:
+            return ' selected="selected"'
+        return ''
+    
+    @property
+    def value_filterfor(self):
+        req = self._req_obj()
+        fokey = self._args_prefix('filterfor')
+        return req.args.get(fokey, '')
+    
+    @property
+    def show_sort_controls(self):
+        self.force_request_process()
+        return len(self._sortdd) > 0
+    
+    @property
+    def html_sort_controls(self):
+        return getview('datagrid:SortControls', datagrid=self)
+    
+    def selected_sortdd_opt(self, ident):
+        self.force_request_process()
+        if self._current_sortdd_ident == ident:
+            return ' selected="selected"'
+        return ''
+    
+    @property
+    def show_pager_controls_upper(self):
+        self.force_request_process()
+        return self.page and self.pages
+    
+    def selected_page_opt(self, page):
+        self.force_request_process()
+        if self.page == page:
+            return ' selected="selected"'
+        return ''
+    
+    @property
+    def html_pager_controls_upper(self):
+        return getview('datagrid:PagerControlsUpper', datagrid=self)
+
+    @property
+    def value_perpage(self):
+        return self.per_page
+
+    @property
+    def html_pager_controls_lower(self):
+        return getview('datagrid:PagerControlsLower', datagrid=self)
+    
+    @property
+    def show_pager_controls_lower(self):
+        self.force_request_process()
+        return self.page and self.pages
+    
+    @property
+    def link_pager_first(self):
+        return self._current_url(page=1)
+    
+    @property
+    def link_pager_previous(self):
+        return self._current_url(page=self.page-1)
+    
+    @property
+    def link_pager_next(self):
+        return self._current_url(page=self.page+1)
+    
+    @property
+    def link_pager_last(self):
+        return self._current_url(page=self.pages)       
+
     def _decorate_table_header(self, ident=None, col=None ):
         def inner_decorator(todecorate):
             if col.sort in ('header', 'both'):

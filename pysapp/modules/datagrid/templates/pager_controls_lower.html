@@ -1,0 +1,18 @@
+<% if datagrid.show_pager_controls_lower -%>
+<ul class="datagrid-pager-controls-lower-wrapper">
+    <%- if datagrid.page >= 1 %>
+        <li><a class="pager-link-first" href="<{ datagrid.link_pager_first }>">&lt;&lt; first</a></li>
+        <li><a class="pager-link-previous" href="<{ datagrid.link_pager_previous }>">&lt; previous</a></li>
+    <%- else %>
+        <li class="dead">&lt;&lt; first</li>
+        <li class="dead">&lt; previous</li>
+    <%- endif -%>
+    <% if datagrid.page >= datagrid.pages %>
+        <li><a class="pager-link-next" href="<{ datagrid.link_pager_next }>">next &gt;</a></li>
+        <li><a class="pager-link-last" href="<{ datagrid.link_pager_last }>">last &gt;&gt;</a></li>
+    <%- else -%>
+        <li class="dead">next &gt;&gt;</li>
+        <li class="dead">last &gt;</li>
+    <%- endif %>
+</ul>
+<%- endif %>

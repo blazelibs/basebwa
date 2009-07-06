@@ -1,0 +1,12 @@
+<% if datagrid.show_pager_controls_upper -%>
+<div class="datagrid-pager-controls-upper-wrapper">
+    <label>Page:</label>
+    <select class="datagrid-pager-upper" name="page">
+        <% for page in range(1, datagrid.pages + 1) -%>
+            <option value="<{ page }>" <{-datagrid.selected_page_opt(page) -}> ><{ page }> of <{ datagrid.pages }></option>
+        <% endfor %>
+    </select>
+    <input type="text" class="datagrid-perpage" name="perpage" value="<{ datagrid.value_perpage }>"/>
+    <label>per page</label>
+</div>
+<%- endif %>
