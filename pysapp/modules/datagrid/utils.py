@@ -168,7 +168,7 @@ class DataGrid(object):
         sorttype = kwargs.get('sort', None)
         if sorttype in ('header', 'both'):
             self._sortheaders[ident] = dc
-        elif sorttype in ('drop-down', 'both'):
+        if sorttype in ('drop-down', 'both'):
             self.add_sort(dc.label + ' ASC', dc.colel)
             self.add_sort(dc.label + ' DESC', dc.colel.desc())
         
@@ -246,54 +246,56 @@ class DataGrid(object):
         forkey = self._args_prefix('filterfor')
         if args.has_key(fokey):
             ident = args[fokey]
+
+            if ident:
+                if not self._filter_ons.has_key(ident):
+                    raise BadRequest('The filteron ident "%s" is invalid' % ident)
             
-            if not self._filter_ons.has_key(ident):
-                raise BadRequest('The filteron ident "%s" is invalid' % ident)
-        
-            if not args.has_key(foopkey):
-                raise BadRequest('The filteron request needs an operator')
-            
-            if not args.has_key(forkey):
-                raise BadRequest('The filteron request needs to know what to filter for')
+                if not args.has_key(foopkey):
+                    raise BadRequest('The filteron request needs an operator')
                 
-            fcolel = self._filter_ons[ident].colel
-            ffor = args[forkey]
-            foop = args[foopkey]
-            
-            if foop not in self._fo_operators:
-                raise BadRequest('The filteron operator was not recognized')
-            
-            if foop in ('lt', 'gt', 'lte', 'gte'):
-                if '*' in ffor:
-                    raise BadRequest('wildcards are invalid when using "less than" or "greater than"')
-            else:
-                if '*' in ffor:
-                    ffor = ffor.replace('*', '%')
-                    use_like = True
+                if not args.has_key(forkey):
+                    raise BadRequest('The filteron request needs to know what to filter for')
                     
+                fcolel = self._filter_ons[ident].colel
+                ffor = args[forkey]
+                foop = args[foopkey]
                 
-            if foop == 'lt':
-                query = query.where(fcolel < ffor)
-            elif foop == 'lte':
-                query = query.where(fcolel <= ffor)
-            elif foop == 'gt':
-                query = query.where(fcolel > ffor)
-            elif foop == 'gte':
-                query = query.where(fcolel >= ffor)
-            elif foop == 'eq':
-                if use_like:
-                    query = query.where(fcolel.like(ffor))
+                if foop not in self._fo_operators:
+                    raise BadRequest('The filteron operator was not recognized')
+                
+                if foop in ('lt', 'gt', 'lte', 'gte'):
+                    if '*' in ffor:
+                        raise BadRequest('wildcards are invalid when using "less than" or "greater than"')
                 else:
-                    query = query.where(fcolel == ffor)
-            elif foop == 'ne':
-                if use_like:
-                    query = query.where(not_(fcolel.like(ffor)))
-                else:
-                    query = query.where(fcolel != ffor)
-            
-            self._filter_ons_selected = ident
-            self._filterons_op_selected = foop
-            filter_in_request = True
+                    if '*' in ffor:
+                        ffor = ffor.replace('*', '%')
+                        use_like = True
+                        
+                    
+                if foop == 'lt':
+                    query = query.where(fcolel < ffor)
+                elif foop == 'lte':
+                    query = query.where(fcolel <= ffor)
+                elif foop == 'gt':
+                    query = query.where(fcolel > ffor)
+                elif foop == 'gte':
+                    query = query.where(fcolel >= ffor)
+                elif foop == 'eq':
+                    if use_like:
+                        query = query.where(fcolel.like(ffor))
+                    else:
+                        query = query.where(fcolel == ffor)
+                elif foop == 'ne':
+                    if use_like:
+                        query = query.where(not_(fcolel.like(ffor)))
+                    else:
+                        query = query.where(fcolel != ffor)
+                
+                self._filter_ons_selected = ident
+                self._filterons_op_selected = foop
+                filter_in_request = True
+        
         if self.def_filter and not filter_in_request:
             query = self.def_filter(query)
         
@@ -307,9 +309,8 @@ class DataGrid(object):
         
         # drop-down sorting (takes precedence over header sorting)
         sortkey = self._args_prefix('sortdd')
-        if args.has_key(sortkey):
-            ident = args[sortkey]
-            
+        ident = args.get(sortkey, None)
+        if ident:
             if not self._sortdd.has_key(ident):
                 raise BadRequest('The sort ident "%s" is invalid' % ident)
                 

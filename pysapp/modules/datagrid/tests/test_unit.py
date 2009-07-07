@@ -38,7 +38,7 @@ class TestQueryBuilding(object):
         )
         assert p.data_cols.keys() == ['id', 'firstname', 'lastname', 'sortorder', 'sortorder2'], p.data_cols.keys()
     
-    def test_sort_headings(self):
+    def test_sortdd(self):
         environ = create_environ('/foo', 'http://localhost')
         tbl = Person.__table__
         p = DataGrid(
@@ -59,7 +59,8 @@ class TestQueryBuilding(object):
             )
         p.add_tablecol(
             Col('Last Name'),
-            Person.lastname
+            Person.lastname,
+            sort='both'
         )
         p.add_tablecol(
             YesNo('Inactive'),
@@ -73,4 +74,6 @@ class TestQueryBuilding(object):
         
         p.add_sort('inactive state DESC', Person.inactive, Person.state.desc())
         p.add_sort('inactive state ASC', Person.inactive, Person.state)
+        
+        assert len(p._sortdd) == 6, len(p._sortdd)
         

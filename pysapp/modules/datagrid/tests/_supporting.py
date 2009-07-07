@@ -51,3 +51,8 @@ def assertEqualSQL(sql, correct_sql):
     ))
     failure_message = "%r != %r\n" % (sql, correct_sql) + sql_diff
     assert sql == correct_sql, failure_message
+
+def dodiff(actual, expected):
+    return '\n'.join(list(
+        difflib.unified_diff(actual.split('\n'), expected.split('\n'))
+    ))

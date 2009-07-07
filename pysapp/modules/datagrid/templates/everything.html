@@ -1,7 +1,13 @@
-<form action="datagrid.form_action_url" method="get">
-<{ datagrid.html_filter_controls }>
-<{ datagrid.html_sort_controls }>
-<{ datagrid.html_pager_controls_upper }>
+<{- include_css() -}>
+<form action="<{ datagrid.form_action_url }>" method="get" class="datagrid-form expand-around-floats">
+    <h2>Table Controls</h2>
+    <{ datagrid.html_filter_controls }>
+    <{ datagrid.html_sort_controls }>
+    <{ datagrid.html_pager_controls_upper }>
+    <div class="datagrid-actions-wrapper">
+        <input type="submit" value="Apply" class="datagrid-apply-button"/>
+        <a href="/cancel">Cancel</a>
+    </div>
+</form>
 <{ datagrid.html_table }>
 <{ datagrid.html_pager_controls_lower }>
-</form>
