@@ -82,8 +82,8 @@ class TestFunctional(object):
         expect = """<table cellpadding="0" cellspacing="0" summary="">
     <thead>
         <tr>
-            <th><a href="/foo?page=1&perpage=5&sort=-firstname" class="sort-desc">First Name</a></th>
-            <th><a href="/foo?page=1&perpage=5&sort=lastname" class="sort-asc">Last Name</a></th>
+            <th><a href="/foo?page=1&amp;perpage=5&amp;sort=-firstname" class="sort-asc" title="currently sorting asc, click to reverse">First Name</a><img src="images/icons/sort_up.gif" width="9" height="5" alt="currently sorting asc" title="currently sorting asc" /></th>
+            <th><a href="/foo?page=1&amp;perpage=5&amp;sort=lastname" class="" title="">Last Name</a></th>
             <th>Inactive</th>
         </tr>
     </thead>
@@ -115,8 +115,14 @@ class TestFunctional(object):
         </tr>
     </tbody>
 </table>"""
-
-        assert p.html_table == expect
+        html = p.html_table
+        assert html == expect, dodiff(html, expect)
+    
+    @wrapinapp(app)
+    def test_html_table_outpu(self):
+        p = self.get_dg()
+        p._replace_environ(create_environ('/foo', 'http://localhost'))
+        assert p.html_table
 
     @wrapinapp(app)
     def test_html_table_desc_sort(self):
@@ -124,11 +130,12 @@ class TestFunctional(object):
         p._replace_environ(create_environ('/foo?perpage=5&page=1&sort=-firstname', 'http://localhost'))
 
         expect = """<tr>
-            <th><a href="/foo?page=1&perpage=5&sort=firstname" class="sort-asc">First Name</a></th>
-            <th><a href="/foo?page=1&perpage=5&sort=lastname" class="sort-asc">Last Name</a></th>
+            <th><a href="/foo?page=1&amp;perpage=5&amp;sort=firstname" class="sort-desc" title="currently sorting desc, click to reverse">First Name</a><img src="images/icons/sort_down.gif" width="9" height="5" alt="currently sorting desc" title="currently sorting desc" /></th>
+            <th><a href="/foo?page=1&amp;perpage=5&amp;sort=lastname" class="" title="">Last Name</a></th>
             <th>Inactive</th>
         </tr>"""
-        assert expect in p.html_table
+        html = p.html_table
+        assert expect in html, dodiff(html, expect)
 
     @wrapinapp(app)
     def test_html_filter_controls(self):
@@ -286,35 +293,33 @@ class TestFunctional(object):
         p._replace_environ(create_environ('/foo?perpage=20&page=3', 'http://localhost'))
 
         html = p.html_pager_controls_lower
-        assert '<a class="pager-link-first" href="/foo?page=1&perpage=20">&lt;&lt; first</a>' \
+        assert '<a class="pager-link-first" href="/foo?page=1&amp;perpage=20">first</a>' \
             in html
-        assert '<a class="pager-link-previous" href="/foo?page=2&perpage=20">&lt; previous</a>' \
+        assert '<a class="pager-link-previous" href="/foo?page=2&amp;perpage=20">previous</a>' \
             in html
-        assert '<a class="pager-link-next" href="/foo?page=4&perpage=20">next &gt;</a>' \
+        assert '<a class="pager-link-next" href="/foo?page=4&amp;perpage=20">next</a>' \
             in html
-        assert '<a class="pager-link-last" href="/foo?page=5&perpage=20">last &gt;&gt;</a>' \
+        assert '<a class="pager-link-last" href="/foo?page=5&amp;perpage=20">last</a>' \
             in html
         
         p._replace_environ(create_environ('/foo?perpage=20&page=1', 'http://localhost'))
-        expected = """<ul class="datagrid-pager-controls-lower-wrapper">
-        <li class="dead">&lt;&lt; first</li>
-        <li class="dead">&lt; previous</li>
-        <li><a class="pager-link-next" href="/foo?page=2&perpage=20">next &gt;</a></li>
-        <li><a class="pager-link-last" href="/foo?page=5&perpage=20">last &gt;&gt;</a></li>
-</ul>"""
-        assertEqualSQL(p.html_pager_controls_lower, expected)
+        html = p.html_pager_controls_lower
+        assert 'bd_firstpage.png' in html
+        assert 'bd_prevpage.png' in html
+        assert '<a class="pager-link-next" href="/foo?page=2&amp;perpage=20">' in html
+        assert '<a class="pager-link-last" href="/foo?page=5&amp;perpage=20">' in html
         
         p._replace_environ(create_environ('/foo?perpage=20&page=5', 'http://localhost'))
         
         html = p.html_pager_controls_lower
-        assert '<a class="pager-link-first" href="/foo?page=1&perpage=20">&lt;&lt; first</a>' \
+        assert '<a class="pager-link-first" href="/foo?page=1&amp;perpage=20">first</a>' \
             in html
-        assert '<a class="pager-link-previous" href="/foo?page=4&perpage=20">&lt; previous</a>' \
+        assert '<a class="pager-link-previous" href="/foo?page=4&amp;perpage=20">previous</a>' \
             in html
-        assert '<li class="dead">next &gt;</li>' \
-            in html
-        assert '<li class="dead">last &gt;&gt;</li>' \
-            in html
+        assert '<li class="dead">next' in html
+        assert 'bd_nextpage.png' in html
+        assert '<li class="dead">last' in html
+        assert 'bd_lastpage.png' in html
     
     @wrapinapp(app)
     def test_blank_sortdd(self):
@@ -335,3 +340,13 @@ class TestFunctional(object):
         assert 'fn100' in recstr
         assert 'fn091' in recstr
         assert 'fn090' not in recstr
+        
+    @wrapinapp(app)
+    def test_empty_sort(self):
+        p = self.get_dg()
+        p._replace_environ(create_environ('/foo?sortdd=&page=1&perpage=10&sort=', 'http://localhost'))
+        
+        recstr = ''.join([str(r) for r in p.records])
+        assert 'fn001' in recstr
+        assert 'fn010' in recstr
+        assert 'fn011' not in recstr

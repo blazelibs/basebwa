@@ -1,84 +1,5 @@
 """
-
-# Data Grid Notes #
-
-## Column Types ##
-
-A column is either a TableColumn or a DataColumn. A TableColumn is a column that
-can possibly, but not necessarily, be rendered in the HTML table. A
-DataColumn column is a column in the result set, but which can not be rendered
-in the table. A DataColumn can be used in filters, sorts, and groupings.
-
-The first argument passed to DataColumn is a string. The first argument passed
-to DataColumn should be a pysmvt.htmltable.Col instance.
-    
-    from pysmvt.htmltable import Col
-    TableColumn(Col('My Field'), ... )
-    DataColumn('My Field', ... )
-
-## Selecting Columns For Table ##
-
-Not every table column needs to be displayed in the table by default:
-
-    TableColumn(Col('Foo'), ... )
-    TableColumn(Col('Bar'), ... )
-    TableColumn(Col('Baz'), show=False, ... )
-    
-"Baz" column is not rendered in the table by default, but can be shown if
-selected by the user.
-
-## Paging ##
-
-Defaults are set on the DataGrid object:
-
-    DataGrid('page_size'=20, 'page_default'=1, 'page_size_editable'=True)
-    
-Pretty self explanatory.  If you don't want the user to be able to select the
-page size, set page_size_editable = False.
-
-## Sorting ##
-
-Sorting can be accomplished by making the table header a hyperlink or by giving
-a secondary drop-down for sorting:
-    
-    TableColumn(Col('Foo'), sort='header', ... ) # default for table columns
-    TableColumn(Col('Foo'), sort='drop-down', ... )
-    TableColumn(Col('Foo'), sort='both', ... )
-    DataColumn('Foo', sort=None, ... ) # default for RSO columns
-    
-The first option makes a hyperlink in the table header for sorting.  The second
-option creates two entries in the secondary sort box 'Foo ASC', 'Foo DESC'.
-
-Additional sort options can be added to the secondary sort box:
-
-    dt = DataGrid(...)
-    dt.add_sort('custom sort ASC', 'field1 ASC', 'field2 ASC')
-    dt.add_sort('custom sort DESC', 'field1 DESC', 'field2 DESC')
-    
-## Grouping ##
-
-Not to be confused with SQL GROUP BY, this simply breaks the results into
-multiple tables based on the selected column.
-    
-    TableColumn(Col('Foo'), group_opt=False, ... ) # default
-    TableColumn(Col('Bar'), group_opt=True, ... )
-    
-When using paging with grouping, keep in mind that paging takes precidence.
-
-## Filtering ##
-
-The following filter types are avilable:
-    
-    * Text Box w/ contains, doesn't contain, begins with, ends with, is, is not
-    * Date Range w/ start and end dates
-    * Boolean
-    * Single Select w/ is, is not
-    * Multi Select w/ in, not in
-    * Multi Checkboxes
-
-For single select, multi select, and multi checkboxes, a filter_options
-parameter is required.
-
+See tests for example usage
 """
 from sqlalchemy.sql import select, not_
 from pysmvt.utils import OrderedProperties, simplify_string, OrderedDict
@@ -87,7 +8,7 @@ from werkzeug.exceptions import BadRequest
 from pysmvt import rg, getview
 from pysmvt.htmltable import Table
 from pysmvt.routing import current_url
-from webhelpers.html import literal
+from webhelpers.html import literal, escape
 
 class DataColumn(object):
     def __init__(self, label, colel, inresult=False, sort=None ):
@@ -250,20 +171,23 @@ class DataGrid(object):
 
             if ident:
                 if not self._filter_ons.has_key(ident):
-                    raise BadRequest('The filteron ident "%s" is invalid' % ident)
+                    raise BadRequest('The Filter On value "%s" is invalid' % ident)
             
                 if not args.has_key(foopkey):
-                    raise BadRequest('The filteron request needs an operator')
+                    raise BadRequest('When using a filter, a "filteronop" value must also be sent')
                 
                 if not args.has_key(forkey):
-                    raise BadRequest('The filteron request needs to know what to filter for')
+                    raise BadRequest('When using a filter, a "filterfor" value must also be sent')
                     
                 fcolel = self._filter_ons[ident].colel
                 ffor = args[forkey]
                 foop = args[foopkey]
                 
                 if foop not in self._fo_operators:
-                    raise BadRequest('The filteron operator was not recognized')
+                    if foop:
+                        raise BadRequest('The filter comparison operator "%s" is invalid' % foop)
+                    else:
+                        raise BadRequest('Please select a comparison operator for your filter')
                 
                 if foop in ('lt', 'gt', 'lte', 'gte'):
                     if '*' in ffor:
@@ -305,6 +229,7 @@ class DataGrid(object):
     def _apply_sort(self, query):
         args = self._req_obj().args
         sort_in_request = False
+        self._current_sort_header = None
         self._current_sort_desc = False
         self._current_sort_direction = None
         self._current_sortdd_ident = None
@@ -324,8 +249,8 @@ class DataGrid(object):
         else:
             # header sorting
             sortkey = self._args_prefix('sort')
-            if args.has_key(sortkey):
-                sortcol = args[sortkey]
+            sortcol = args.get(sortkey, None)
+            if sortcol:
             
                 if sortcol.startswith('-'):
                     sortcol = sortcol[1:]
@@ -413,7 +338,7 @@ class DataGrid(object):
     @property
     def html_table(self):
         self.force_request_process()
-        
+
         if not self._html_table:
             t = Table(**self._html_table_attributes)
             for ident, col in self._table_cols.items():
@@ -430,7 +355,8 @@ class DataGrid(object):
                 
                 # create the column on the HTML table
                 setattr(t, ident, col.tblcol)
-            self._html_table= t.render(self.records)
+            self._html_table = t.render(self.records)
+
         return self._html_table
     
     @property
@@ -459,6 +385,12 @@ class DataGrid(object):
         req = self._req_obj()
         fokey = self._args_prefix('filterfor')
         return req.args.get(fokey, '')
+        
+    @property
+    def value_sort(self):
+        req = self._req_obj()
+        skey = self._args_prefix('sort')
+        return req.args.get(skey, '')
     
     @property
     def show_sort_controls(self):
@@ -531,22 +463,37 @@ class DataGrid(object):
             filterfor = None,
             page=None,
             perpage=None,
-            sortdd = None
+            sortdd = None,
+            sort=None
         )
+
+    @property
+    def url_form_action(self):
+        return self.url_reset
 
     def _decorate_table_header(self, ident=None, col=None ):
         def inner_decorator(todecorate):
             if col.sort in ('header', 'both'):
-                if self._current_sort_header == ident and not self._current_sort_desc:
-                    desc_prefix = '-'
-                    link_class = 'sort-desc'
+                if self._current_sort_header == ident:
+                    if self._current_sort_desc:
+                        desc_prefix = ''
+                        link_class = 'sort-desc'
+                        sortimg = '<img src="images/icons/sort_down.gif" width="9" height="5" alt="currently sorting desc" title="currently sorting desc" />'
+                        linktitle = 'currently sorting desc, click to reverse'
+                    else:
+                        desc_prefix = '-'
+                        link_class = 'sort-asc'
+                        sortimg = '<img src="images/icons/sort_up.gif" width="9" height="5" alt="currently sorting asc" title="currently sorting asc" />'
+                        linktitle = 'currently sorting asc, click to reverse'
                 else:
                     desc_prefix = ''
-                    link_class = 'sort-asc'
+                    link_class = ''
+                    sortimg = ''
+                    linktitle = ''
                     
                 sortvalue = '%s%s' % (desc_prefix,ident)
-                url = self._current_url(sort=sortvalue)
-                return literal('<a href="%s" class="%s">%s</a>' % (url, link_class, todecorate))
+                url = escape(self._current_url(sort=sortvalue))
+                return literal('<a href="%s" class="%s" title="%s">%s</a>%s' % (url, link_class, linktitle, todecorate, sortimg))
             else:
                 return todecorate
         return inner_decorator

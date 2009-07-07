@@ -15,7 +15,7 @@ form.datagrid-form h2 {
 
 div.datagrid-actions-wrapper {
 	margin-top: 10px;
-	clear: left;
+	clear: both;
 	float: right;
 }
 

@@ -353,6 +353,10 @@ table.dataTable th {
     border-top: solid 1px white;
 }
 
+table.dataTable th img{
+	margin-left: 10px;
+}
+
 table.dataTable td {
     border-bottom: solid 1px white;
     border-right: solid 1px white;
