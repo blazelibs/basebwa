@@ -21,4 +21,5 @@ div.datagrid-actions-wrapper {
 
 div.datagrid-actions-wrapper a {
 	font-size: .8em;
+	margin-left: 10px;
 }

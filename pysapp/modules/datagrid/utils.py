@@ -138,6 +138,7 @@ class DataGrid(object):
         self._base_query = None
         self._current_sortdd_ident = None
         self._html_table_attributes = kwargs
+        self._current_sort_desc = False
     
     def add_tablecol(self, tblcolobj, colel, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
@@ -304,7 +305,8 @@ class DataGrid(object):
     def _apply_sort(self, query):
         args = self._req_obj().args
         sort_in_request = False
-        self._current_sort_header = None
+        self._current_sort_desc = False
+        self._current_sort_direction = None
         self._current_sortdd_ident = None
         
         # drop-down sorting (takes precedence over header sorting)
@@ -328,6 +330,7 @@ class DataGrid(object):
                 if sortcol.startswith('-'):
                     sortcol = sortcol[1:]
                     desc = True
+                    self._current_sort_desc = True
                 else:
                     desc = False
                 
@@ -520,10 +523,21 @@ class DataGrid(object):
     def html_everything(self):
         return getview('datagrid:Everything', datagrid=self)
 
+    @property
+    def url_reset(self):
+        return self._current_url(
+            filteron = None,
+            filteronop = None,
+            filterfor = None,
+            page=None,
+            perpage=None,
+            sortdd = None
+        )
+
     def _decorate_table_header(self, ident=None, col=None ):
         def inner_decorator(todecorate):
             if col.sort in ('header', 'both'):
-                if self._current_sort_header == ident:
+                if self._current_sort_header == ident and not self._current_sort_desc:
                     desc_prefix = '-'
                     link_class = 'sort-desc'
                 else:

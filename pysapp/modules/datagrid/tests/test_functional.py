@@ -119,6 +119,18 @@ class TestFunctional(object):
         assert p.html_table == expect
 
     @wrapinapp(app)
+    def test_html_table_desc_sort(self):
+        p = self.get_dg()
+        p._replace_environ(create_environ('/foo?perpage=5&page=1&sort=-firstname', 'http://localhost'))
+
+        expect = """<tr>
+            <th><a href="/foo?page=1&perpage=5&sort=firstname" class="sort-asc">First Name</a></th>
+            <th><a href="/foo?page=1&perpage=5&sort=lastname" class="sort-asc">Last Name</a></th>
+            <th>Inactive</th>
+        </tr>"""
+        assert expect in p.html_table
+
+    @wrapinapp(app)
     def test_html_filter_controls(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?perpage=5&page=1&sort=firstname&filteron=firstname&filteronop=eq&filterfor=test', 'http://localhost'))
