@@ -30,9 +30,10 @@ class SQLAlchemyApp(object):
         self.container = SQLAlchemyContainer()
         db._push_object(self.container)
         self.loadmodels()
+        db.sess = self.container.Session
     
     def start_request(self):
-        db.sess = self.container.Session
+        pass
     
     def __call__(self, environ, start_response):
         if environ.has_key('pysapp.callable_dispatch'):
