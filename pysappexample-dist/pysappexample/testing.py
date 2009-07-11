@@ -11,6 +11,5 @@ def setup_db_structure():
         the freedom to create/destroy data at will.
     """
     actions = _gather_actions()
-    print actions
-    #manual_broadcast('initdb')
+    manual_broadcast('initdb')
     
