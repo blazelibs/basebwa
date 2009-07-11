@@ -2,13 +2,13 @@ from werkzeug import Client, BaseResponse, create_environ
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Unicode, SmallInteger, DateTime, \
     UniqueConstraint, ForeignKey, String
-from pysmvt import db, getview
+from pysmvt import db, getview, ag
 from pysmvt.utils import wrapinapp
 from pysapp.modules.datagrid.utils import DataGrid
 from pysmvt.htmltable import Col, YesNo
 from _supporting import Person, Base, assertEqualSQL, dodiff
 
-from pysappexample.testing import testapp
+testapp = ag._wsgi_test_app
 
 c = Client(testapp, BaseResponse)
 
