@@ -1,0 +1,3 @@
+recursive-include pysapp-example *
+recursive-include libs *
+prune pysapp-example/writeable/tmp

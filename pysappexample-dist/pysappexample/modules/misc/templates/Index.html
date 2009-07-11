@@ -1,0 +1,23 @@
+<% set announce_html = process_view('announcements:Home') -%>
+<% extends settings.template.default %>
+<% block title %>Default Index | <{super()}><% endblock %>
+<% block body %>
+<h2>Index Page</h2>
+<p><a href="content.html">Link to pyspages content page.</a></p>
+<div id="home_announcements_wrapper">
+    <h2>News &amp; Upcoming Events</h2>
+
+    <{ announce_html }>
+
+    <p><a href="subscribe">Subscribe to newsletter</a></p>
+</div>
+<div id="shorty_wrapper">
+    <h2>Shorty Module</h2>
+    <p><a href="<{url_for('shorty:CreateUrl')}>">Create a short URL</a></p>
+    <p><a href="<{url_for('shorty:List')}>">List of URLs</a></p>
+</div>
+<div id="hello_wrapper">
+    <h2>Hello Module</h2>
+    <p><a href="<{url_for('helloworld:Hello')}>">Hello Form</a></p>
+</div>
+<% endblock body%>
