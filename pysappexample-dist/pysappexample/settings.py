@@ -153,3 +153,18 @@ class Randy(Default):
 # this is just a convenience so we don't have to type the capital letter on the
 # command line when running `pysmvt serve`
 randy=Randy
+
+class Test(Default):
+    def __init__(self):
+        # call parent init to setup default settings
+        Default.__init__(self)
+        
+        # db connection
+        self.db.url = 'sqlite:///'
+        
+        # other settings
+        self.emails.override = 'randy@rcs-comp.com'
+        self.exceptions.hide = False
+        self.exceptions.email = False
+        self.template.default = 'test.html'
+test = Test
