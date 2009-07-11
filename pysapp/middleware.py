@@ -29,8 +29,8 @@ class SQLAlchemyApp(object):
         self.application = application
         self.container = SQLAlchemyContainer()
         db._push_object(self.container)
-        self.loadmodels()
         db.sess = self.container.Session
+        self.loadmodels()
     
     def start_request(self):
         pass
