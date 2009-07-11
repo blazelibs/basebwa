@@ -1,8 +1,5 @@
-from applications import make_wsgi
 from pysmvt.commands import manual_broadcast
 from pysmvt.script import _gather_actions
-
-testapp = make_wsgi('Test')
 
 def setup_db_structure():
     """

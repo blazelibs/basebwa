@@ -20,7 +20,5 @@ setup(name='pysappexample',
       ],
       entry_points="""
       # -*- Entry points: -*-
-      [nose.plugins]
-      testsfrompackage = pysmvt.test:TestsFromPackagePlugin
       """,
       )
