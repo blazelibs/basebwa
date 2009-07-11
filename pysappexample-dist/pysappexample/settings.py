@@ -167,7 +167,4 @@ class Test(Default):
         self.exceptions.hide = False
         self.exceptions.email = False
         self.template.default = 'test.html'
-        
-        # include pysapp tests
-        self.testing.include_pkgs = 'pysapp'
 test = Test
