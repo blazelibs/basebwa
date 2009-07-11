@@ -7,9 +7,6 @@ from _supporting import Person, assertEqualSQL
 from sqlalchemy.sql import select
 from pysmvt.htmltable import Col
 from pysapp.modules.datagrid.utils import DataGrid
-#from pysapptestapp.applications import make_test_app
-
-#app = make_test_app()
 
 class TestQueryBuilding(object):
     
