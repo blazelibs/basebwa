@@ -23,8 +23,10 @@ class ProtectedViewMixin(BaseViewMixin):
         # we want setup() at the front of the call methods
         BaseViewMixin.__init__(self)
         # setup the methods that will be called
+        self._call_methods_stack.append({'method_name':'pre_auth_setup', 'assign_args':True})
         self._call_methods_stack.append({'method_name':'auth', 'assign_args':True})
         self._call_methods_stack.append({'method_name':'check_if_authorized', 'assign_args':False})
+        self._call_methods_stack.append({'method_name':'post_auth_setup', 'assign_args':True})
         self._call_methods_stack.append({'method_name':'postauth', 'assign_args':True})
         
     def auth(self, **kwargs):
