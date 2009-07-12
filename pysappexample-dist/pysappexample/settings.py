@@ -167,4 +167,5 @@ class Test(Default):
         self.exceptions.hide = False
         self.exceptions.email = False
         self.template.default = 'test.html'
+        self.template.admin = 'test.html'
 test = Test
