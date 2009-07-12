@@ -149,7 +149,7 @@ class UpdateCommon(CommonBase):
         self.extend_from = settings.template.admin
         self.action_prefix = action_prefix or objectname
         
-    def setup(self, id):
+    def post_auth_setup(self, id):
         self.determine_add_edit(id)
         self.assign_form()
         self.do_if_edit(id)        
