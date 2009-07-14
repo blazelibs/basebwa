@@ -73,4 +73,7 @@ class DynamicControlPanel(ProtectedPageView):
             return cmp(first.heading.lower(), second.heading.lower())
         sections.sort(seccmp)
         self.assign('sections', sections)
-        
+
+class HomePage(PublicPageView):
+    def default(self):
+        pass
