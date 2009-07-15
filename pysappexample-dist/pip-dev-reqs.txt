@@ -2,4 +2,4 @@
 -e svn+https://svn.rcslocal.com:8443/svn/pysmvt/pysform/branches/0.1#egg=pysform
 -e svn+https://svn.rcslocal.com:8443/svn/pysmvt/pysmvt/branches/0.1#egg=pysmvt
 -e svn+https://svn.rcslocal.com:8443/svn/pysmvt/pysapp/branches/0.1#egg=pysapp
--e svn+https://svn.rcslocal.com:8443/svn/pysmvt/pysapp/apps/PysAppExample/trunk#egg=pysappexample
+-e svn+https://svn.rcslocal.com:8443/svn/pysmvt/pysapp/trunk/pysappexample-dist/#egg=pysappexample
