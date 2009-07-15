@@ -83,33 +83,39 @@ class Default(pysapp.settings.Default):
         #######################################################################
         self.debugger.enabled = False
 
-class Matt(Default):
+class Dev(Default):
     """ this custom "user" class is designed to be used for
     user specific development environments.  It can be used like:
-
-        `pysmvt serve matt`
+    
+        `pysmvt serve dev`
     """
     def __init__(self):
         Default.__init__(self)
-
+                
         # a single or list of emails that will be used to override every email sent
         # by the system.  Useful for debugging.  Original recipient information
         # will be added to the body of the email
-        self.emails.override = 'matt@rcs-comp.com'
-
+        #self.emails.override = 'devemail@example.com'
+        
         #######################################################################
         # USERS: DEFAULT ADMIN
+        # --------------------------------------------------------------------
+        #
+        # This section is used when `pysmvt users_initmod` or
+        # `pysmvt broadcast initmod` is used to create the default user.
+        # If left commented out, you will be promted for the information.
+        #
         #######################################################################
-        self.modules.users.admin.username = 'matt'
-        self.modules.users.admin.password = 'password'
-        self.modules.users.admin.email = 'matt@rcs-comp.com'
-
+        #self.modules.users.admin.username = 'devuser'
+        #self.modules.users.admin.password = 'MSsfej'
+        #self.modules.users.admin.email = 'devemail@example.com'
+        
         #######################################################################
         # EXCEPTION HANDLING
         #######################################################################
         self.exceptions.hide = False
         self.exceptions.email = False
-
+        
         #######################################################################
         # DEBUGGING
         #######################################################################
@@ -118,54 +124,20 @@ class Matt(Default):
         # for a specific user config
         self.debugger.interactive = True
 # this is just a convenience so we don't have to type the capital letter on the
-# command line when running `pysmvt serve`
-matt=Matt
+# command line when running `pysmvt serve dev`
+dev = Dev
 
-class Randy(Default):
-    def __init__(self):
-        Default.__init__(self)
-
-        # a single or list of emails that will be used to override every email sent
-        # by the system.  Useful for debugging.  Original recipient information
-        # will be added to the body of the email
-        self.emails.override = 'randy@rcs-comp.com'
-
-        #######################################################################
-        # USERS: DEFAULT ADMIN
-        #######################################################################
-        self.modules.users.admin.username = 'randy'
-        self.modules.users.admin.password = 'password'
-        self.modules.users.admin.email = 'randy@rcs-comp.com'
-
-        #######################################################################
-        # EXCEPTION HANDLING
-        #######################################################################
-        self.exceptions.hide = False
-        self.exceptions.email = False
-
-        #######################################################################
-        # DEBUGGING
-        #######################################################################
-        self.debugger.enabled = True
-        # this is a security risk on a live system, so we only turn it on
-        # for a specific user config
-        self.debugger.interactive = True
-# this is just a convenience so we don't have to type the capital letter on the
-# command line when running `pysmvt serve`
-randy=Randy
-
-class Test(Default):
+class Test(Dev):
+    """ default profile when running tests """
     def __init__(self):
         # call parent init to setup default settings
-        Default.__init__(self)
+        Dev.__init__(self)
         
-        # db connection
-        self.db.url = 'sqlite:///'
-        
-        # other settings
-        self.emails.override = 'randy@rcs-comp.com'
-        self.exceptions.hide = False
-        self.exceptions.email = False
+        # use test template instead of real templates to speed up the tests
         self.template.default = 'test.html'
         self.template.admin = 'test.html'
-test = Test
+
+        # uncomment line below if you want to use a database you can inspect
+        self.db.url = 'sqlite://'
+        #self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'test_application.db')
+test=Test
