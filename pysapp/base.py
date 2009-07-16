@@ -134,8 +134,6 @@ class CommonBase(ProtectedPageView):
             
 class UpdateCommon(CommonBase):
     def prep(self, modulename, objectname, classname, action_prefix=None):
-        actions = modimport('%s.actions' % modulename)
-        forms = modimport('%s.forms' % modulename)
         self.modulename = modulename
         self.require = '%s-manage' % modulename
         self.template_name = 'common/Update'
@@ -144,7 +142,7 @@ class UpdateCommon(CommonBase):
         self.message_edit = '%(objectname)s edited successfully'
         self.message_exists_not = 'the requested %(objectname)s does not exist'
         self.endpoint_manage = '%s:%sManage' % (modulename, classname)
-        self.formcls = getattr(forms, '%sForm' % classname)
+        self.formcls = modimport('%s.forms' % modulename, '%sForm' % classname)
         self.pagetitle = '%(actionname)s %(objectname)s'
         self.extend_from = settings.template.admin
         self.action_prefix = action_prefix or objectname
@@ -186,7 +184,7 @@ class UpdateCommon(CommonBase):
     
     def form_submission(self, id):
         if self.form.is_cancel():
-            redirect(url_for(self.endpoint_manage))
+            self.on_cancel()
         if self.form.is_valid():
             try:
                 self.do_update(id)
@@ -196,7 +194,7 @@ class UpdateCommon(CommonBase):
                 if not self.form.handle_exception(e):
                     raise
         elif not self.form.is_submitted():
-            # form was not valid, nothing left to do
+            # form was not submitted, nothing left to do
             return
         
         # form was either invalid or caught an exception, assign error
@@ -211,7 +209,10 @@ class UpdateCommon(CommonBase):
     def on_complete(self):
         url = url_for(self.endpoint_manage)
         redirect(url)
-
+    
+    def on_cancel(self):
+        redirect(url_for(self.endpoint_manage))
+    
     def default(self, id):
         
         self.assign('actionname', self.actionname)
