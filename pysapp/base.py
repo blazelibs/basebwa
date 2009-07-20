@@ -1,10 +1,11 @@
 from pysmvt.view import HtmlTemplateSnippet, HtmlTemplatePage, \
         RespondingViewBase, TextTemplateSnippet
 from pysmvt import user, ag, redirect, modimport, settings
-from pysmvt.utils import tolist
+from pysmvt.utils import tolist, traceback_depth, tb_depth_in
 from pysmvt.routing import url_for
 from pysmvt.htmltable import Table, Links, A
 from werkzeug.exceptions import Unauthorized, Forbidden
+from pysmvt.exceptions import ProgrammingError
 
 class BaseViewMixin(object):
     def __init__(self):
@@ -101,22 +102,31 @@ class CommonBase(ProtectedPageView):
         localvalue = getattr(self, '_cb_action_%s' % actname)
         if localvalue:
             return localvalue
-        actions = modimport( '%s.actions' % self.modulename)
         func = '%s_%s' % (self.safe_action_prefix, actname)
         try:
-            return getattr(actions, func)
-        except AttributeError, e:
-            if ("has no attribute '%s'" % func) not in str(e):
+            return modimport( '%s.actions' % self.modulename, func)
+        except ImportError, e:
+            if not tb_depth_in(3):
                 raise
             # we assume the calling object will override action_get
             return None
+    def test_action(self, actname):
+        callable = self.get_action(actname)
+        if callable is None:
+            func = '%s_%s' % (self.safe_action_prefix, actname)
+            raise ProgrammingError('The default "%s" function `%s` was not found.'
+                                   % (actname, func))
     def get_action_get(self):
+        self.test_action('get')
         return self.get_action('get')
     def get_action_update(self):
+        self.test_action('update')
         return self.get_action('update')
     def get_action_delete(self):
+        self.test_action('delete')
         return self.get_action('delete')
     def get_action_list(self):
+        self.test_action('list')
         return self.get_action('list')
     def set_action_get(self, value):
         self._cb_action_get = value
@@ -131,7 +141,7 @@ class CommonBase(ProtectedPageView):
     action_update = property(get_action_update, set_action_update)
     action_delete = property(get_action_delete, set_action_delete)
     action_list = property(get_action_list, set_action_list)
-            
+    
 class UpdateCommon(CommonBase):
     def prep(self, modulename, objectname, classname, action_prefix=None):
         self.modulename = modulename
@@ -226,7 +236,6 @@ class ManageCommon(CommonBase):
         self.modulename = modulename
         self.require = '%s-manage' % modulename
         self.delete_link_require = '%s-manage' % modulename
-        actions = modimport('%s.actions' % modulename)
         self.template_name = 'common/Manage'
         self.objectname = objectname
         self.objectnamepl = objectnamepl
@@ -255,7 +264,8 @@ class ManageCommon(CommonBase):
                  )
     
     def render_table(self):
-        self.assign('tablehtml', self.table.render(self.action_list()))
+        data = self.action_list()
+        self.assign('tablehtml', self.table.render(data))
     
     def default(self):
         self.create_table()
