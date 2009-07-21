@@ -183,7 +183,10 @@ class UpdateCommon(CommonBase):
                 user.add_message('error', self.message_exists_not % {'objectname':self.objectname})
                 self.on_edit_error()
                 
-            self.form.set_defaults(dbobj.to_dict())
+            self.form.set_defaults(self.get_form_defaults(dbobj))
+    
+    def get_form_defaults(self, dbobj):
+        return dbobj.to_dict()
     
     def on_edit_error(self):
         self.on_complete()
@@ -212,9 +215,12 @@ class UpdateCommon(CommonBase):
         self.form.assign_user_errors()
     
     def do_update(self, id):
-        self.action_update(id, **self.form.get_values())
+        self.action_update(id, **self.get_action_params())
         user.add_message('notice', self.message_update)
         self.on_complete()
+    
+    def get_action_params(self):
+        return self.form.get_values()
     
     def on_complete(self):
         url = url_for(self.endpoint_manage)
@@ -294,6 +300,8 @@ class DeleteCommon(CommonBase):
             user.add_message('notice', self.message_ok % {'objectname':self.objectname})
         else:
             user.add_message('error', self.message_error % {'objectname':self.objectname})
-            
+        self.on_complete()
+
+    def on_complete(self):
         url = url_for(self.endpoint_manage)
         redirect(url)
