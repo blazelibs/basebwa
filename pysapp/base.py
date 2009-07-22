@@ -286,7 +286,6 @@ class DeleteCommon(CommonBase):
     def prep(self, modulename, objectname, classname, action_prefix=None):
         self.modulename = modulename
         self.require = '%s-manage' % modulename
-        actions = modimport('%s.actions' % modulename)
         self.objectname = objectname
         self.endpoint_manage = '%s:%sManage' % (modulename, classname)
         self.action_prefix = action_prefix or objectname
