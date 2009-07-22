@@ -75,8 +75,12 @@ def run_module_sql(module, target, use_dialect=False):
     sqlfile = file(full_path)
     sql = sqlfile.read()
     sqlfile.close()
-    for statement in sql.split('--statement-break'):
-        statement.strip()
-        if statement:
-            db.sess.execute(statement)
-    db.sess.commit()
+    try:
+        for statement in sql.split('--statement-break'):
+            statement.strip()
+            if statement:
+                db.sess.execute(statement)
+        db.sess.commit()
+    except Exception:
+        db.sess.rollback()
+        raise
