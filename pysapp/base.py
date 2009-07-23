@@ -141,7 +141,18 @@ class CommonBase(ProtectedPageView):
     action_update = property(get_action_update, set_action_update)
     action_delete = property(get_action_delete, set_action_delete)
     action_list = property(get_action_list, set_action_list)
-    
+
+    def get_id_from_args(self, args, kwargs):
+        try:
+            id = kwargs.pop('objid', None)
+            if not id:
+                id = kwargs.pop('id', None)
+            if not id:
+                id = args[0]
+        except IndexError:
+            id = None
+        return id
+
 class UpdateCommon(CommonBase):
     def prep(self, modulename, objectname, classname, action_prefix=None):
         self.modulename = modulename
@@ -152,18 +163,23 @@ class UpdateCommon(CommonBase):
         self.message_edit = '%(objectname)s edited successfully'
         self.message_exists_not = 'the requested %(objectname)s does not exist'
         self.endpoint_manage = '%s:%sManage' % (modulename, classname)
-        self.formcls = modimport('%s.forms' % modulename, '%sForm' % classname)
         self.pagetitle = '%(actionname)s %(objectname)s'
         self.extend_from = settings.template.admin
         self.action_prefix = action_prefix or objectname
-        
-    def post_auth_setup(self, id):
-        self.determine_add_edit(id)
+        try:
+            self.formcls = modimport('%s.forms' % modulename, '%sForm' % classname)
+        except ImportError, e:
+            if '%sForm' % classname not in str(e):
+                raise
+            
+    def post_auth_setup(self, *args, **kwargs):
+        objid = self.get_id_from_args(args, kwargs)
+        self.determine_add_edit(objid)
         self.assign_form()
-        self.do_if_edit(id)        
+        self.do_if_edit(objid)
 
-    def determine_add_edit(self, id):
-        if id is None:
+    def determine_add_edit(self, objid):
+        if objid is None:
             self.isAdd = True
             self.actionname = 'Add'
             self.message_update = self.message_add % {'objectname':self.objectname}
@@ -175,9 +191,9 @@ class UpdateCommon(CommonBase):
     def assign_form(self):
         self.form = self.formcls()
         
-    def do_if_edit(self, id):
+    def do_if_edit(self, objid):
         if not self.isAdd:
-            dbobj = self.action_get(id)
+            dbobj = self.action_get(objid)
             
             if dbobj is None:
                 user.add_message('error', self.message_exists_not % {'objectname':self.objectname})
@@ -191,16 +207,17 @@ class UpdateCommon(CommonBase):
     def on_edit_error(self):
         self.on_complete()
     
-    def post(self, id):        
-        self.form_submission(id)
+    def post(self, *args, **kwargs):
+        objid = self.get_id_from_args(args, kwargs)
+        self.form_submission(objid)
         self.default(id)
     
-    def form_submission(self, id):
+    def form_submission(self, objid):
         if self.form.is_cancel():
             self.on_cancel()
         if self.form.is_valid():
             try:
-                self.do_update(id)
+                self.do_update(objid)
                 return
             except Exception, e:
                 # if the form can't handle the exception, re-raise it
@@ -214,8 +231,8 @@ class UpdateCommon(CommonBase):
         # messages
         self.form.assign_user_errors()
     
-    def do_update(self, id):
-        self.action_update(id, **self.get_action_params())
+    def do_update(self, objid):
+        self.action_update(objid, **self.get_action_params())
         user.add_message('notice', self.message_update)
         self.on_complete()
     
@@ -229,8 +246,7 @@ class UpdateCommon(CommonBase):
     def on_cancel(self):
         redirect(url_for(self.endpoint_manage))
     
-    def default(self, id):
-        
+    def default(self, *args, **kwargs):
         self.assign('actionname', self.actionname)
         self.assign('objectname', self.objectname)
         self.assign('pagetitle', self.pagetitle % {'actionname':self.actionname, 'objectname':self.objectname})
@@ -294,8 +310,9 @@ class DeleteCommon(CommonBase):
         self.message_ok = '%(objectname)s deleted'
         self.message_error = '%(objectname)s was not found'
         
-    def default(self, id):
-        if self.action_delete(id):
+    def default(self, *args, **kwargs):
+        objid = self.get_id_from_args(args, kwargs)
+        if self.action_delete(objid):
             user.add_message('notice', self.message_ok % {'objectname':self.objectname})
         else:
             user.add_message('error', self.message_error % {'objectname':self.objectname})
