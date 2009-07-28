@@ -338,6 +338,12 @@ class DataGrid(object):
     @property
     def html_table(self):
         self.force_request_process()
+        
+        def extractor_helper(row, label, extractor):
+            if extractor:
+                return extractor(row)
+            else:
+                return row[label]
 
         if not self._html_table:
             t = Table(**self._html_table_attributes)
@@ -348,7 +354,7 @@ class DataGrid(object):
                     label = col.colel.__clause_element__()._label
                 except AttributeError:
                     label = col.colel._label
-                col.tblcol.extractor = lambda row, label=label: row[label]
+                col.tblcol.extractor = lambda row, label=label, extractor=col.tblcol.extractor: extractor_helper(row, label, extractor)
                 
                 # setup adding sort links to our headers
                 col.tblcol.th_decorator = self._decorate_table_header(ident, col)

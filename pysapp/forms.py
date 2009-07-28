@@ -2,11 +2,17 @@
 from pysmvt import rg, user
 from pysform.form import Form as Pysform
 from pysmvt.routing import current_url
+from pysform.util import NotGiven
 
 class Form(Pysform):
     def __init__(self, name, **kwargs):
         action = kwargs.pop('action', current_url(strip_host=True))
-        Pysform.__init__(self, name, action=action, class_='generated', **kwargs)
+        class_ = kwargs.pop('class_', NotGiven)
+        if class_ is NotGiven:
+            kwargs['class_'] = 'generated'
+        elif class_:
+            kwargs['class_'] = class_
+        Pysform.__init__(self, name, action=action, **kwargs)
         self._request_submitted = False
         
     def is_submitted(self):
