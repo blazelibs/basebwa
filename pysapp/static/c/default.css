@@ -7,7 +7,7 @@
 /* DEFAULT FONT SIZE */
 
 body {
-    font-size: 76%;
+    font-size: 80%;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 	
@@ -174,13 +174,6 @@ div.static-form {
     padding: 0px;
 }
 
-form.generated input,
-form.generated textarea,
-div.static-form div.text,
-div.static-form div.textarea {
-    font-size: 1.1em;
-}
-
 form.generated div.row,
 div.static-form div.row {
     padding: 0.4em 0 0.4em 0;
@@ -238,9 +231,16 @@ div.static-form div.row.even {
 form.generated div.row.submit,
 form.generated div.row.reset,
 form.generated div.row.cancel,
-form.generated div.row.submit-only {
+form.generated div.row.submit-only,
+div.static-form div.row.submit-only {
     background: none;
     border: none;
+}
+
+
+form.generated div.row.submit-only,
+div.static-form div.row.submit-only {
+	padding-top: 15px;
 }
 
 form.generated label,
@@ -342,16 +342,25 @@ form.generated label.after {
 form.generated ul.errors,
 form.generated ul.notes,
 div.static-form ul.notes {
-    margin: 3px 0 0 5px;
+    margin: 0px 0 0 5px;
     padding: 3px;
 	list-style: none;
+}
+
+form.generated ul.errors li,
+form.generated ul.notes li,
+div.static-form ul.notes li {
+	margin: 4px 0 0 0;
+	padding: 0 0 0 12px;
+	text-indent: -12px;
 }
 
 form.generated p.error,
 form.generated p.note,
 div.static-form p.note {
     margin: 3px 0 0 5px;
-    padding: 3px;
+    padding: 3px 3px 3px 12px;
+	text-indent: -12px;
 }
 
 form.generated p.error,
