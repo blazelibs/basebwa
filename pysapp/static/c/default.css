@@ -168,12 +168,21 @@ textarea        { font-size: 1.1em; }
 }
 
 /*************************************** FORMS **************************************************/
-form.generated {
+form.generated,
+div.static-form {
     margin: 0px; 
     padding: 0px;
 }
 
-form.generated div.row {
+form.generated input,
+form.generated textarea,
+div.static-form div.text,
+div.static-form div.textarea {
+    font-size: 1.1em;
+}
+
+form.generated div.row,
+div.static-form div.row {
     padding: 0.4em 0 0.4em 0;
     margin: 0;
     border: solid 1px #CCCCCC;
@@ -182,7 +191,8 @@ form.generated div.row {
 
 /* START: Expand row around floated child elements */
 /* http://csscreator.com/?q=attributes/containedfloat.php */
-form.generated div.row:after{
+form.generated div.row:after,
+div.static-form div.row:after {
     content: "."; 
     display: block; 
     height: 0; 
@@ -191,23 +201,35 @@ form.generated div.row:after{
     visibility:hidden;
 }
 	
-form.generated div.row{display: inline-block;}
+form.generated div.row,
+div.static-form div.row {
+	display: inline-block;
+}
 
 /* Hides from IE Mac \*/
-* html form.generated div.row {height: 1%;}
-form.generated div.row{display:block;}
+* html form.generated div.row,
+* html div.static-form div.row {
+	height: 1%;
+}
+form.generated div.row,
+div.static-form div.row {
+	display:block;
+}
 /* End Hack */ 
 /* END: Expand row around floated child elements */
 
-form.generated div.row.first {
+form.generated div.row.first,
+div.static-form div.row.first {
     border-top: solid 1px #CCCCCC;
 }
 
-form.generated div.row.odd {
+form.generated div.row.odd,
+div.static-form div.row.odd {
     background-color: #F6F6F6;
 }
 
-form.generated div.row.even {
+form.generated div.row.even,
+div.static-form div.row.even {
     background-color: #FFF;
 }
 
@@ -221,15 +243,19 @@ form.generated div.row.submit-only {
     border: none;
 }
 
-form.generated label {
+form.generated label,
+div.static-form label {
     width: 100px;
     float: left;
     padding: 0 0 0 10px;
     margin: 0;
+	font-size: 1.1em;
 }
 
 form.generated div.field-wrapper,
-form.generated div.group-wrapper {
+form.generated div.group-wrapper,
+div.static-form div.field-wrapper,
+div.static-form div.group-wrapper {
 	width: 620px;
     position: relative;
     float: left;
@@ -241,14 +267,19 @@ form.generated div.group-wrapper {
 
 /* margin should be the label width plus the left padding on the field-wrapper */
 form.generated div.field-wrapper.no-label,
-form.generated div.group-wrapper.no-label{
+form.generated div.group-wrapper.no-label,
+div.static-form div.field-wrapper.no-label,
+div.static-form div.group-wrapper.no-label{
     margin-left: 110px;
 }
 
 /****** BEGIN group elements ********/
 form.generated div.group-wrapper div.first,
 form.generated div.group-wrapper div.odd,
-form.generated div.group-wrapper div.even {
+form.generated div.group-wrapper div.even,
+div.static-form div.group-wrapper div.first,
+div.static-form div.group-wrapper div.odd,
+div.static-form div.group-wrapper div.even{
 	/* IE 6 doesn't understand the multi-class selectors above, so we need to cancel
 	the styling
 	*/
@@ -256,19 +287,22 @@ form.generated div.group-wrapper div.even {
 	background: none;
 }
 
-form.generated div.group-wrapper label {
+form.generated div.group-wrapper label,
+div.static-form div.group-wrapper label {
 	float: none;
 	width: auto;
 	padding: 0;
 	margin: 0;
 }
 
-form.generated div.grpel{
+form.generated div.grpel,
+div.static-form dig.grpel {
 	float: left;
 	margin: 0 15px 0 0;
 }
 
-form.generated div.group-wrapper div.field-wrapper {
+form.generated div.group-wrapper div.field-wrapper,
+div.static-form div.group-wrapper div.field-wrapper {
 	position: static;
 	width: auto;
     float: none;
@@ -289,8 +323,6 @@ form.generated span.required-star {
 form.generated input.text,
 form.generated input.password,
 form.generated input.file {
-    margin: 0;
-    padding: 0;
 	/* the width doesn't actually seem to affect the file input */
     width: 175px;
 }
@@ -307,17 +339,23 @@ form.generated label.after {
     padding: 0 0 0 .5em;
 }
 
-form.generated ul.errors, form.generated ul.notes  {
-    margin: 3px 0 0 1.2em;
-    padding: 0;
+form.generated ul.errors,
+form.generated ul.notes,
+div.static-form ul.notes {
+    margin: 3px 0 0 5px;
+    padding: 3px;
+	list-style: none;
 }
 
-form.generated p.error, form.generated p.note {
-    margin: 3px 0 0 3px;
-    padding: 0;
+form.generated p.error,
+form.generated p.note,
+div.static-form p.note {
+    margin: 3px 0 0 5px;
+    padding: 3px;
 }
 
-form.generated p.error, form.generated ul.errors li {
+form.generated p.error,
+form.generated ul.errors li {
     color: red;
 }
 

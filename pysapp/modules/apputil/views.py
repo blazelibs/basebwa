@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from pysmvt import ag, rg, appimportauto, settings
+from pysmvt import ag, rg, appimportauto, settings, user
+import forms
 appimportauto('base', ['PublicSnippetView', 'PublicPageView', 'ProtectedPageView'])
 
 class UserMessagesSnippet(PublicSnippetView):
@@ -77,3 +78,35 @@ class DynamicControlPanel(ProtectedPageView):
 class HomePage(PublicPageView):
     def default(self):
         pass
+
+class TestForm(ProtectedPageView):
+    def prep(self):
+        self.require = 'webapp-controlpanel'
+        
+    def post_auth_setup(self, is_static=False):
+        self.form = forms.TestForm(is_static)
+    
+    def post(self, is_static=False):
+        if self.form.is_cancel():
+            user.add_message('notice', 'form submission cancelled, data not changed')
+            self.default(is_static)
+        if self.form.is_valid():
+            try:
+                user.add_message('notice', 'form posted succesfully')
+                self.assign('result', self.form.get_values())
+                return
+            except Exception, e:
+                # if the form can't handle the exception, re-raise it
+                if not self.form.handle_exception(e):
+                    raise
+        elif not self.form.is_submitted():
+            # form was not submitted, nothing left to do
+            return
+        
+        # form was either invalid or caught an exception, assign error
+        # messages
+        self.form.assign_user_errors()
+        self.default(is_static)
+        
+    def default(self, is_static=False):
+        self.assign('form', self.form)

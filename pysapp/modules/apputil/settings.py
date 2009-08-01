@@ -14,5 +14,7 @@ class Settings(QuickSettings):
             Rule('/blank-page', endpoint='apputil:BlankPage'),
             Rule('/authorization-error', endpoint='apputil:AuthError'),
             Rule('/bad-request', endpoint='apputil:BadRequestError'),
-            Rule('/forbidden', endpoint='apputil:Forbidden')
+            Rule('/forbidden', endpoint='apputil:Forbidden'),
+            Rule('/apputil/test-form', endpoint='apputil:TestForm'),
+            Rule('/apputil/test-form-static', defaults={'is_static':True}, endpoint='apputil:TestForm')
         ]

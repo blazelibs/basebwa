@@ -38,3 +38,9 @@ class Form(Pysform):
         for el in self._submittable_els.values():
             for msg in el.errors:
                 user.add_message('error', '%s: %s' % (el.label, msg))
+    
+    def render(self, **kwargs):
+        kwargs.setdefault('note_prefix', '- ')
+        kwargs.setdefault('error_prefix', '- ')
+        return Pysform.render(self, **kwargs)
+        
