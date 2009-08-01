@@ -1,7 +1,7 @@
 """
 See tests for example usage
 """
-from sqlalchemy.sql import select, not_
+from sqlalchemy.sql import select, not_, func
 from pysmvt.utils import OrderedProperties, simplify_string, OrderedDict
 from werkzeug import Request, cached_property, Href, MultiDict
 from werkzeug.exceptions import BadRequest
@@ -315,7 +315,8 @@ class DataGrid(object):
     @property
     def count(self):
         if not self._count:
-            self._count = self.executable(self.base_query().count()).scalar()
+            count_query = select([func.count()], from_obj=self.base_query().alias('main_query'))
+            self._count = self.executable(count_query).scalar()
         return self._count
 
     @property
