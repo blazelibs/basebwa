@@ -73,11 +73,17 @@ class Dev(Default):
     """
     def __init__(self):
         Default.__init__(self)
-                
+        
+        #######################################################################
+        # EMAIL SETTINGS
+        #######################################################################
         # a single or list of emails that will be used to override every email sent
         # by the system.  Useful for debugging.  Original recipient information
         # will be added to the body of the email
         #self.emails.override = 'devemail@example.com'
+        
+        # if using emails, this must be set
+        #self.emails.from_default = 'devemail@example.com'
         
         #######################################################################
         # USERS: DEFAULT ADMIN
@@ -105,22 +111,75 @@ class Dev(Default):
         # this is a security risk on a live system, so we only turn it on
         # for a specific user config
         self.debugger.interactive = True
+    
+    def apply_test_settings(self):
+        #######################################################################
+        # TEMPLATES
+        #######################################################################
+        # use test template instead of real templates to speed up the tests
+        self.template.default = 'test.html'
+        self.template.admin = 'test.html'
+
+        #######################################################################
+        # DATABASE
+        #######################################################################
+        # in memory sqlite DB is the fastest
+        self.db.url = 'sqlite://'
+        # uncomment this if you want to use a database you can inspect
+        #self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'test_application.db')
+        
+        #######################################################################
+        # DEBUGGING
+        #######################################################################
+        # turn off the debugger or all exceptions will get turned into
+        # 500 SERVER ERROR responses when testing, which makes things VERY
+        # difficult to troubleshoot
+        self.debugger.enabled = False
 # this is just a convenience so we don't have to type the capital letter on the
 # command line when running `pysmvt serve dev`
 dev = Dev
-
 
 class Test(Dev):
     """ default profile when running tests """
     def __init__(self):
         # call parent init to setup default settings
         Dev.__init__(self)
-        
-        # use test template instead of real templates to speed up the tests
-        self.template.default = 'test.html'
-        self.template.admin = 'test.html'
-
-        # uncomment line below if you want to use a database you can inspect
-        self.db.url = 'sqlite://'
-        #self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'test_application.db')
+        self.apply_test_settings()
 test=Test
+
+# often times, you will need developer or computer specific configurations
+# that you don't want to be part of the main settings file (because it clutters
+# up the file).  Therefore, we can conditionally include a site-specific
+# settings file with the profiles needed at only that site.  We do it at the
+# bottom of this file to allow the site-specific file to inherit items from this
+# file:
+
+try:
+    from site_settings import *
+except ImportError, e:
+    if 'No module named site_settings' not in str(e):
+        raise
+    
+## Example site_settings.py file:
+#from settings import Dev as SettingsDev
+#
+#class Dev(SettingsDev):
+#    """ this custom "user" class is designed to be used for
+#    user specific development environments.  It can be used like:
+#    
+#        `pysmvt serve dev`
+#    """
+#    def __init__(self):
+#        SettingsDev.__init__(self)
+#        self.emails.override = 'rsyring@inteli-com.com'
+#        self.emails.from_default = 'rsyring@inteli-com.com'
+#dev = Dev
+#
+# have to redefine this so its based on the correct class object
+#class Test(Dev):
+#    """ default profile when running tests """
+#    def __init__(self):
+#         call parent init to setup default settings
+#        Dev.__init__(self)
+#        self.apply_test_settings()
+#test=Test
