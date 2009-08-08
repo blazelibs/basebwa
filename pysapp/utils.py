@@ -62,14 +62,50 @@ def run_module_sql(module, target, use_dialect=False):
         with the text "--statement-break".
             
     '''
-    from pysmvt import db, appfilepath
+    from pysmvt import db
     from os.path import join
 
     if use_dialect:
         relative_sql_path = 'modules/%s/sql/%s.%s.sql' % (module, target, db.engine.dialect.name )
     else:
         relative_sql_path = 'modules/%s/sql/%s.sql' % (module, target )
+    _run_sql(relative_sql_path)
+
+def run_app_sql(target, use_dialect=False):
+    ''' used to run SQL from files in an apps "sql" directory:
     
+            run_app_sql('test_setup')
+        
+        will run the file "<myapp>/test_setup.sql"
+        
+            run_app_sql('test_setup', True)
+        
+        will run the files:
+            
+            # sqlite DB
+            <myapp>/test_setup.sqlite.sql
+            # postgres DB
+            <myapp>/test_setup.pgsql.sql
+            ...
+        
+        The dialect prefix used is the same as the sqlalchemy prefix.
+        
+        The SQL file can contain multiple statements.  They should be seperated
+        with the text "--statement-break".
+            
+    '''
+    from pysmvt import db
+    from os.path import join
+
+    if use_dialect:
+        relative_sql_path = 'sql/%s.%s.sql' % (target, db.engine.dialect.name )
+    else:
+        relative_sql_path = 'sql/%s.sql' % target
+
+    _run_sql(relative_sql_path)
+
+def _run_sql(relative_sql_path):
+    from pysmvt import db, appfilepath
     full_path = appfilepath(relative_sql_path)
     
     sqlfile = file(full_path)

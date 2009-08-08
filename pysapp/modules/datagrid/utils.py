@@ -34,7 +34,8 @@ class TableColumn(DataColumn):
 class DataGrid(object):
     
     def __init__(self, executable, def_sort=None, def_filter=None,
-                 rs_customizer=None, page=None, per_page=None, environ=None, **kwargs ):
+                 rs_customizer=None, page=None, per_page=None, environ=None,
+                 row_dec=None, **kwargs ):
         self.executable = executable
         self.rs_customizer = rs_customizer
         self.def_filter = def_filter
@@ -60,6 +61,7 @@ class DataGrid(object):
         self._current_sortdd_ident = None
         self._html_table_attributes = kwargs
         self._current_sort_desc = False
+        self._row_dec = row_dec
     
     def add_tablecol(self, tblcolobj, colel, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
@@ -347,7 +349,7 @@ class DataGrid(object):
                 return row[label]
 
         if not self._html_table:
-            t = Table(**self._html_table_attributes)
+            t = Table(row_dec = self._row_dec, **self._html_table_attributes)
             for ident, col in self._table_cols.items():
                 
                 # setup getting the correct column from the row data
