@@ -64,6 +64,11 @@ class Default(DefaultSettings):
         self.error_docs[403] = 'apputil:Forbidden'
         self.error_docs[404] = 'apputil:NotFoundError'
         self.error_docs[500] = 'apputil:SystemError'
+        
+        #######################################################################
+        # TESTING
+        #######################################################################
+        self.testing.init_callables = 'testing.setup_db_structure'
 
 class Dev(Default):
     """ this custom "user" class is designed to be used for
