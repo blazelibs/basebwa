@@ -312,6 +312,14 @@ div.static-form div.group-wrapper div.field-wrapper {
 }
 /****** END group elements ********/
 
+form.generated div.required_note {
+	float: right;
+	padding-top: 15px;
+}
+form.generated div.required_note span.star {
+	color: red;
+}
+
 form.generated span.required-star {
     position: absolute;
     left: 0;

@@ -42,5 +42,6 @@ class Form(Pysform):
     def render(self, **kwargs):
         kwargs.setdefault('note_prefix', '- ')
         kwargs.setdefault('error_prefix', '- ')
+        kwargs.setdefault('req_note_level', 'section')
         return Pysform.render(self, **kwargs)
         
