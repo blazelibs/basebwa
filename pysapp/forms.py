@@ -5,6 +5,11 @@ from pysmvt.routing import current_url
 from pysform.util import NotGiven
 
 class Form(Pysform):
+    note_prefix = '- '
+    error_prefix = '- '
+    req_note_level = 'section'
+    req_note = None
+    
     def __init__(self, name, **kwargs):
         action = kwargs.pop('action', current_url(strip_host=True))
         class_ = kwargs.pop('class_', NotGiven)
@@ -40,8 +45,13 @@ class Form(Pysform):
                 user.add_message('error', '%s: %s' % (el.label, msg))
     
     def render(self, **kwargs):
-        kwargs.setdefault('note_prefix', '- ')
-        kwargs.setdefault('error_prefix', '- ')
-        kwargs.setdefault('req_note_level', 'section')
+        if self.note_prefix:
+            kwargs.setdefault('note_prefix', self.note_prefix)
+        if self.error_prefix:
+            kwargs.setdefault('error_prefix', self.error_prefix)
+        if self.req_note_level:
+            kwargs.setdefault('req_note_level', self.req_note_level)
+        if self.req_note:
+            kwargs.setdefault('req_note', self.req_note)
         return Pysform.render(self, **kwargs)
         
