@@ -509,3 +509,15 @@ p.js_message_box.failed {
 .expand-around-floats{
 	display:block;
 }
+
+/********************** JAVASCRIPT RELATED STYLES *************************/
+
+.fake_link{
+	text-decoration: underline;
+	color: blue;
+	cursor: pointer;
+}
+
+.fake_link:hover {
+	text-decoration: none;
+}
