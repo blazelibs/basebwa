@@ -1,5 +1,8 @@
 import logging
+from os.path import join
+from pysmvt import db
 import sqlalchemy.types
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.orm import ColumnProperty
@@ -449,3 +452,121 @@ class SmallIntBool(sqlalchemy.types.TypeDecorator):
             return None
         return bool(value)
 
+def run_module_sql(module, target, use_dialect=False):
+    ''' used to run SQL from files in a modules "sql" directory:
+    
+            run_module_sql('mymod', 'create_views')
+        
+        will run the file "<myapp>/modules/mymod/sql/create_views.sql"
+        
+            run_module_sql('mymod', 'create_views', True)
+        
+        will run the files:
+            
+            # sqlite DB
+            <myapp>/modules/mymod/sql/create_views.sqlite.sql
+            # postgres DB
+            <myapp>/modules/mymod/sql/create_views.pgsql.sql
+            ...
+        
+        The dialect prefix used is the same as the sqlalchemy prefix.
+        
+        The SQL file can contain multiple statements.  They should be seperated
+        with the text "--statement-break".
+            
+    '''
+    if use_dialect:
+        relative_sql_path = 'modules/%s/sql/%s.%s.sql' % (module, target, db.engine.dialect.name )
+    else:
+        relative_sql_path = 'modules/%s/sql/%s.sql' % (module, target )
+    _run_sql(relative_sql_path)
+
+def run_app_sql(target, use_dialect=False):
+    ''' used to run SQL from files in an apps "sql" directory:
+    
+            run_app_sql('test_setup')
+        
+        will run the file "<myapp>/test_setup.sql"
+        
+            run_app_sql('test_setup', True)
+        
+        will run the files:
+            
+            # sqlite DB
+            <myapp>/test_setup.sqlite.sql
+            # postgres DB
+            <myapp>/test_setup.pgsql.sql
+            ...
+        
+        The dialect prefix used is the same as the sqlalchemy prefix.
+        
+        The SQL file can contain multiple statements.  They should be seperated
+        with the text "--statement-break".
+            
+    '''
+    if use_dialect:
+        relative_sql_path = 'sql/%s.%s.sql' % (target, db.engine.dialect.name )
+    else:
+        relative_sql_path = 'sql/%s.sql' % target
+
+    _run_sql(relative_sql_path)
+
+def _run_sql(relative_sql_path):
+    from pysmvt import appfilepath
+    full_path = appfilepath(relative_sql_path)
+    
+    sqlfile = file(full_path)
+    sql = sqlfile.read()
+    sqlfile.close()
+    try:
+        for statement in sql.split('--statement-break'):
+            statement.strip()
+            if statement:
+                db.sess.execute(statement)
+        db.sess.commit()
+    except Exception:
+        db.sess.rollback()
+        raise
+
+def is_unique_exc(field_name, constraint_name, exc):
+    if not isinstance(exc, IntegrityError):
+        return False
+    msg = str(exc)
+    if db.engine.dialect.name == 'postgres':
+        if 'unique' in msg and constraint_name in msg:
+            return True
+    elif db.engine.dialect.name == 'sqlite':
+        if 'column %s is not unique' % field_name in msg:
+            return True
+    return False
+
+def clear_db():
+    if db.engine.dialect.name == 'postgres':
+        sql = []
+        sql.append('DROP SCHEMA public cascade;')
+        sql.append('CREATE SCHEMA public AUTHORIZATION %s;' % db.engine.url.username)
+        sql.append('GRANT ALL ON SCHEMA public TO %s;' % db.engine.url.username)
+        sql.append('GRANT ALL ON SCHEMA public TO public;')
+        sql.append("COMMENT ON SCHEMA public IS 'standard public schema';")
+        for exstr in sql:
+            try:
+                db.engine.execute(exstr)
+            except Exception, e:
+                print 'WARNING: %s' % e
+        
+    elif db.engine.dialect.name == 'sqlite':
+        # drop the views
+        sql = "select name from sqlite_master where type='view'"
+        rows = db.engine.execute(sql)
+        for row in rows:
+            db.engine.execute('drop view %s' % row['name'])
+        
+        # drop the tables
+        sql = "select name from sqlite_master where type='table'"
+        rows = db.engine.execute(sql)
+        for row in rows:
+            db.engine.execute('drop table %s' % row['name'])
+    return False
+
+
+    

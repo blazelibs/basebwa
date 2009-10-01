@@ -1,16 +1,8 @@
+from pysutils import decorator
 from pysmvt import user, forward, ag
+from pysapp import exc
+from pysapp.lib import db as libdb
 
-def fatal_error(user_desc = None, dev_desc = None, orig_exception = None):
-    # log stuff
-    ag.logger.debug('Fatal error: "%s" -- %s', dev_desc, str(orig_exception))
-    
-    # set user message
-    if user_desc != None:
-        user.add_message('error', user_desc)
-        
-    # forward to fatal error view
-    forward('apputil:SystemError')
-    
 class ControlPanelSection(object):
     
     def __init__(self, heading , has_perm, *args):
@@ -39,84 +31,124 @@ class ControlPanelLink(object):
         self.text = text
         self.endpoint = endpoint
 
+def warn(msg):
+    if isinstance(msg, basestring):
+        warnings.warn(msg, exc.PysappWarning, stacklevel=3)
+    else:
+        warnings.warn(msg, stacklevel=3)
+
+def warn_deprecated(msg):
+    warnings.warn(msg, exc.PysappDeprecationWarning, stacklevel=3)
+
+def warn_pending_deprecation(msg):
+    warnings.warn(msg, exc.PysappPendingDeprecationWarning, stacklevel=3)
+
+def deprecated(message=None, add_deprecation_to_docstring=True):
+    """Decorates a function and issues a deprecation warning on use.
+
+    message
+      If provided, issue message in the warning.  A sensible default
+      is used if not provided.
+
+    add_deprecation_to_docstring
+      Default True.  If False, the wrapped function's __doc__ is left
+      as-is.  If True, the 'message' is prepended to the docs if
+      provided, or sensible default if message is omitted.
+    """
+
+    if add_deprecation_to_docstring:
+        header = message is not None and message or 'Deprecated.'
+    else:
+        header = None
+
+    if message is None:
+        message = "Call to deprecated function %(func)s"
+
+    def decorate(fn):
+        return _decorate_with_warning(
+            fn, exc.PysappDeprecationWarning,
+            message % dict(func=fn.__name__), header)
+    return decorate
+
+def pending_deprecation(version, message=None,
+                        add_deprecation_to_docstring=True):
+    """Decorates a function and issues a pending deprecation warning on use.
+
+    version
+      An approximate future version at which point the pending deprecation
+      will become deprecated.  Not used in messaging.
+
+    message
+      If provided, issue message in the warning.  A sensible default
+      is used if not provided.
+
+    add_deprecation_to_docstring
+      Default True.  If False, the wrapped function's __doc__ is left
+      as-is.  If True, the 'message' is prepended to the docs if
+      provided, or sensible default if message is omitted.
+    """
+
+    if add_deprecation_to_docstring:
+        header = message is not None and message or 'Deprecated.'
+    else:
+        header = None
+
+    if message is None:
+        message = "Call to deprecated function %(func)s"
+
+    def decorate(fn):
+        return _decorate_with_warning(
+            fn, exc.PysappPendingDeprecationWarning,
+            message % dict(func=fn.__name__), header)
+    return decorate
+
+def _decorate_with_warning(func, wtype, message, docstring_header=None):
+    """Wrap a function with a warnings.warn and augmented docstring."""
+
+    @decorator
+    def warned(fn, *args, **kwargs):
+        warnings.warn(wtype(message), stacklevel=3)
+        return fn(*args, **kwargs)
+
+    doc = func.__doc__ is not None and func.__doc__ or ''
+    if docstring_header is not None:
+        docstring_header %= dict(func=func.__name__)
+        docs = doc and doc.expandtabs().split('\n') or []
+        indent = ''
+        for line in docs[1:]:
+            text = line.lstrip()
+            if text:
+                indent = line[0:len(line) - len(text)]
+                break
+        point = min(len(docs), 1)
+        docs.insert(point, '\n' + indent + docstring_header.rstrip())
+        doc = '\n'.join(docs)
+
+    decorated = warned(func)
+    decorated.__doc__ = doc
+    return decorated
+
+############### DEPRECATED FUNCTIONS #########################
+@deprecated()
 def run_module_sql(module, target, use_dialect=False):
-    ''' used to run SQL from files in a modules "sql" directory:
-    
-            run_module_sql('mymod', 'create_views')
-        
-        will run the file "<myapp>/modules/mymod/sql/create_views.sql"
-        
-            run_module_sql('mymod', 'create_views', True)
-        
-        will run the files:
-            
-            # sqlite DB
-            <myapp>/modules/mymod/sql/create_views.sqlite.sql
-            # postgres DB
-            <myapp>/modules/mymod/sql/create_views.pgsql.sql
-            ...
-        
-        The dialect prefix used is the same as the sqlalchemy prefix.
-        
-        The SQL file can contain multiple statements.  They should be seperated
-        with the text "--statement-break".
-            
-    '''
-    from pysmvt import db
-    from os.path import join
+    libdb.run_module_sql(target, use_dialect)
 
-    if use_dialect:
-        relative_sql_path = 'modules/%s/sql/%s.%s.sql' % (module, target, db.engine.dialect.name )
-    else:
-        relative_sql_path = 'modules/%s/sql/%s.sql' % (module, target )
-    _run_sql(relative_sql_path)
-
+@deprecated()
 def run_app_sql(target, use_dialect=False):
-    ''' used to run SQL from files in an apps "sql" directory:
-    
-            run_app_sql('test_setup')
-        
-        will run the file "<myapp>/test_setup.sql"
-        
-            run_app_sql('test_setup', True)
-        
-        will run the files:
-            
-            # sqlite DB
-            <myapp>/test_setup.sqlite.sql
-            # postgres DB
-            <myapp>/test_setup.pgsql.sql
-            ...
-        
-        The dialect prefix used is the same as the sqlalchemy prefix.
-        
-        The SQL file can contain multiple statements.  They should be seperated
-        with the text "--statement-break".
-            
-    '''
-    from pysmvt import db
-    from os.path import join
+    libdb.run_app_sql(target, use_dialect)
 
-    if use_dialect:
-        relative_sql_path = 'sql/%s.%s.sql' % (target, db.engine.dialect.name )
-    else:
-        relative_sql_path = 'sql/%s.sql' % target
-
-    _run_sql(relative_sql_path)
-
+@deprecated()
 def _run_sql(relative_sql_path):
-    from pysmvt import db, appfilepath
-    full_path = appfilepath(relative_sql_path)
+    libdb._run_sql(relative_sql_path)
     
-    sqlfile = file(full_path)
-    sql = sqlfile.read()
-    sqlfile.close()
-    try:
-        for statement in sql.split('--statement-break'):
-            statement.strip()
-            if statement:
-                db.sess.execute(statement)
-        db.sess.commit()
-    except Exception:
-        db.sess.rollback()
-        raise
+@deprecated()
+def fatal_error(user_desc = None, dev_desc = None, orig_exception = None):
+    # log stuff
+    ag.logger.debug('Fatal error: "%s" -- %s', dev_desc, str(orig_exception))
+    
+    # set user message
+    if user_desc != None:
+        user.add_message('error', user_desc)
+        
+    # forward to fatal error view
+    forward('apputil:SystemError')

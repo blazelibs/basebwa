@@ -3,13 +3,14 @@
 http://www.intelligententerprise.com/001020/celko.jhtml
 
 """
-
+from pysmvt import modimport, db
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.orm import attributes
 from sqlalchemy.ext.declarative import declarative_base
 from pysapp.lib.db import NestedSetExtension, MultipleRootsError, \
-    MultipleAnchorsError, MultipleDeletesError, NestedSetException
+    MultipleAnchorsError, MultipleDeletesError, NestedSetException, \
+    is_unique_exc
 
 engine = create_engine('sqlite://', echo=False)
 Base = declarative_base()
@@ -1330,5 +1331,17 @@ class TestNavigationLayout(object):
         assert el.redge == 9
         assert el.parentid == 1
         assert el.depth == 2
-        
-        
+
+def test_is_unique_exc():
+    Group = modimport('users.model.orm', 'Group')
+    try:
+        u1 = Group(name=u'test')
+        u2 = Group(name=u'test')
+        db.sess.commit()
+        assert False, 'expected exception'
+    except Exception, e:
+        if not is_unique_exc('name', 'ix_users_group_name', e):
+            raise
+    
+    assert not is_unique_exc('name', 'ix_users_group_name', Exception('ix_users_group_name unique'))
+    assert not is_unique_exc('name', 'ix_users_group_name', Exception('column name is not unique'))
