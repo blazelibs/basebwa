@@ -1,5 +1,6 @@
 import logging
 from os.path import join
+from pysutils import curry
 from pysmvt import db
 import sqlalchemy.types
 from sqlalchemy.exc import IntegrityError
@@ -527,7 +528,7 @@ def _run_sql(relative_sql_path):
     except Exception:
         db.sess.rollback()
         raise
-
+@curry
 def is_unique_exc(field_name, constraint_name, exc):
     if not isinstance(exc, IntegrityError):
         return False
@@ -553,7 +554,7 @@ def clear_db():
                 db.engine.execute(exstr)
             except Exception, e:
                 print 'WARNING: %s' % e
-        
+
     elif db.engine.dialect.name == 'sqlite':
         # drop the views
         sql = "select name from sqlite_master where type='view'"

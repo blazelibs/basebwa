@@ -3,6 +3,8 @@ from pysmvt import rg, user
 from pysform.form import Form as Pysform
 from pysmvt.routing import current_url
 from pysform.util import NotGiven
+from formencode.validators import FancyValidator
+from formencode import Invalid
 
 class Form(Pysform):
     note_prefix = '- '
@@ -54,4 +56,21 @@ class Form(Pysform):
         if self.req_note:
             kwargs.setdefault('req_note', self.req_note)
         return Pysform.render(self, **kwargs)
-        
+
+class UniqueValidator(FancyValidator):
+    """
+    Calls the given callable with the value of the field.  If the return value
+    does not evaluate to false, Invalid is raised
+    """
+    
+    __unpackargs__ = ('fn')
+    messages = {
+        'notunique': "the value for this field must be unique",
+        }
+
+    def validate_python(self, value, state):
+        if value == state.defaultval:
+            return
+        if self.fn(value):
+            raise Invalid(self.message('notunique', state), value, state)
+        return

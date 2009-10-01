@@ -1340,7 +1340,20 @@ def test_is_unique_exc():
         db.sess.commit()
         assert False, 'expected exception'
     except Exception, e:
+        db.sess.rollback()
         if not is_unique_exc('name', 'ix_users_group_name', e):
+            raise
+    
+    # test curry
+    try:
+        u1 = Group(name=u'test')
+        u2 = Group(name=u'test')
+        db.sess.commit()
+        assert False, 'expected exception'
+    except Exception, e:
+        db.sess.rollback()
+        f1 = is_unique_exc('name', 'ix_users_group_name')
+        if not f1(e):
             raise
     
     assert not is_unique_exc('name', 'ix_users_group_name', Exception('ix_users_group_name unique'))
