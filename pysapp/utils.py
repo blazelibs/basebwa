@@ -1,3 +1,4 @@
+import warnings
 from pysutils import decorator
 from pysmvt import user, forward, ag
 from pysapp import exc
@@ -129,19 +130,15 @@ def _decorate_with_warning(func, wtype, message, docstring_header=None):
     return decorated
 
 ############### DEPRECATED FUNCTIONS #########################
-@deprecated()
+@deprecated('use pysapp.lib.db.run_module_sql instead')
 def run_module_sql(module, target, use_dialect=False):
-    libdb.run_module_sql(target, use_dialect)
+    libdb.run_module_sql(module, target, use_dialect)
 
-@deprecated()
+@deprecated('use pysapp.lib.db.run_app_sql instead')
 def run_app_sql(target, use_dialect=False):
     libdb.run_app_sql(target, use_dialect)
-
-@deprecated()
-def _run_sql(relative_sql_path):
-    libdb._run_sql(relative_sql_path)
     
-@deprecated()
+@deprecated('raise the appropriate HTTP exception instead')
 def fatal_error(user_desc = None, dev_desc = None, orig_exception = None):
     # log stuff
     ag.logger.debug('Fatal error: "%s" -- %s', dev_desc, str(orig_exception))

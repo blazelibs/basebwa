@@ -563,10 +563,13 @@ def clear_db():
             db.engine.execute('drop view %s' % row['name'])
         
         # drop the tables
-        sql = "select name from sqlite_master where type='table'"
-        rows = db.engine.execute(sql)
-        for row in rows:
-            db.engine.execute('drop table %s' % row['name'])
+        db.meta.reflect(bind=db.engine)
+        for table in reversed(db.meta.sorted_tables):
+            try:
+                db.engine.execute(table.delete())
+            except Exception, e:
+                if not 'no such table' in str(e):
+                    raise
     return False
 
 
