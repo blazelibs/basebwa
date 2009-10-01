@@ -1,6 +1,7 @@
 from pysmvt.commands import manual_broadcast
 from pysmvt.script import _gather_actions
-from pysapp.lib.db import clear_db
+from pysmvt import appimportauto
+appimportauto('lib.db', 'clear_db')
 
 def setup_db_structure():
     """
