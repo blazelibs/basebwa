@@ -144,14 +144,14 @@ class CommonBase(ProtectedPageView):
 
     def get_id_from_args(self, args, kwargs):
         try:
-            id = kwargs.pop('objid', None)
-            if not id:
-                id = kwargs.pop('id', None)
-            if not id:
-                id = args[0]
+            objid = kwargs.pop('objid', None)
+            if not objid:
+                objid = kwargs.pop('id', None)
+            if not objid:
+                objid = args[0]
         except IndexError:
-            id = None
-        return id
+            objid = None
+        return objid
 
 class UpdateCommon(CommonBase):
     def prep(self, modulename, objectname, classname, action_prefix=None):
@@ -210,7 +210,7 @@ class UpdateCommon(CommonBase):
     def post(self, *args, **kwargs):
         objid = self.get_id_from_args(args, kwargs)
         self.form_submission(objid)
-        self.default(id)
+        self.default(objid)
     
     def form_submission(self, objid):
         if self.form.is_cancel():
@@ -321,3 +321,45 @@ class DeleteCommon(CommonBase):
     def on_complete(self):
         url = url_for(self.endpoint_manage)
         redirect(url)
+
+class FormViewMixin(object):
+            
+    def post_auth_setup(self, *args, **kwargs):
+        self.assign_form()
+            
+    def assign_form(self):
+        self.form = self.formcls()
+    
+    def post(self, *args, **kwargs):
+        self.form_submission()
+        self.default(*args, **kwargs)
+    
+    def form_submission(self):
+        if self.form.is_cancel():
+            self.on_cancel()
+        if self.form.is_valid():
+            try:
+                self.on_form_valid()
+                return
+            except Exception, e:
+                # if the form can't handle the exception, re-raise it
+                if not self.form.handle_exception(e):
+                    raise
+        elif not self.form.is_submitted():
+            # form was not submitted, nothing left to do
+            return
+        
+        # form was either invalid or caught an exception, assign error
+        # messages
+        self.form.assign_user_errors()
+    
+    def on_cancel(self):
+        redirect(self.get_cancel_url())
+        
+    def get_cancel_url(self):
+        if self.cancel_url:
+            return self.cancel_url
+        return url_for(self.cancel_endpoint)
+    
+    def default(self, *args, **kwargs):
+        self.assign('formobj', self.form)
