@@ -91,6 +91,7 @@ setup(
         "pysmvt>=0.1",
         "pysform>=0.1",
         "SQLiteFKTG4SA>=0.1.1",
+        "python-dateutil>=1.4.1"
     ],
     entry_points="""
     [pysmvt.pysmvt_project_template]

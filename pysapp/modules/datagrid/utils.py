@@ -1,7 +1,12 @@
 """
 See tests for example usage
 """
+from decimal import Decimal, InvalidOperation
+from dateutil.parser import parse
+from sqlalchemy import types
 from sqlalchemy.sql import select, not_, func
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy import schema
 from pysmvt.utils import OrderedProperties, simplify_string, OrderedDict
 from werkzeug import Request, cached_property, Href, MultiDict
 from werkzeug.exceptions import BadRequest
@@ -10,9 +15,31 @@ from pysmvt.htmltable import Table
 from pysmvt.routing import current_url
 from webhelpers.html import literal, escape
 
+class SADeclarativeAttributeHelper(object):
+    def __init__(self, sacol):
+        self.saattr = sacol
+    
+    @property
+    def type(self):
+        return self.saattr.property.columns[0].type
+
+class SATableColumnHelper(object):
+    def __init__(self, sacol):
+        self.sacol = sacol
+        
+    @property
+    def type(self):
+        return self.sacol.type
+
 class DataColumn(object):
-    def __init__(self, label, colel, inresult=False, sort=None ):
-        self.colel = colel
+    def __init__(self, label, sacol, inresult=False, sort=None ):
+        self.sacol = sacol
+        if isinstance(sacol, InstrumentedAttribute):
+            self.sacol_helper = SADeclarativeAttributeHelper(sacol)
+        elif isinstance(sacol, schema.Column):
+            self.sacol_helper = SATableColumnHelper(sacol)
+        else:
+            raise BadRequest('Expected SQLAlchemy declarative attribute or table column')
         self.label = label
         # gets set to true if this column needs to be in the returned result
         # set. Useful for things like an "ID" column that wouldn't be in the
@@ -23,12 +50,12 @@ class DataColumn(object):
         
     def __repr__(self):
         return "<DataColumn: %s" % self.label
-
+        
 class TableColumn(DataColumn):
-    def __init__(self, tblcol, colel, **kwargs):
+    def __init__(self, tblcol, sacol, **kwargs):
         inresult = kwargs.pop('inresult', True)
         show = kwargs.pop('show', True)
-        DataColumn.__init__(self, tblcol.header, colel, inresult=inresult, **kwargs)
+        DataColumn.__init__(self, tblcol.header, sacol, inresult=inresult, **kwargs)
         self.tblcol = tblcol
 
 class DataGrid(object):
@@ -63,21 +90,21 @@ class DataGrid(object):
         self._current_sort_desc = False
         self._row_dec = row_dec
     
-    def add_tablecol(self, tblcolobj, colel, **kwargs):
+    def add_tablecol(self, tblcolobj, sacol, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
         kwargs.setdefault('sort', 'header')
         tc = TableColumn(
                 tblcolobj,
-                colel,
+                sacol,
                 **kwargs
             )
         self._add_col(tc, filter_on, kwargs)
         
-    def add_col(self, label, colel, **kwargs):
+    def add_col(self, label, sacol, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
         dc = DataColumn(
                 label,
-                colel,
+                sacol,
                 **kwargs
             )
         self._add_col(dc, filter_on, kwargs)
@@ -93,8 +120,8 @@ class DataGrid(object):
         if sorttype in ('header', 'both'):
             self._sortheaders[ident] = dc
         if sorttype in ('drop-down', 'both'):
-            self.add_sort(dc.label + ' ASC', dc.colel)
-            self.add_sort(dc.label + ' DESC', dc.colel.desc())
+            self.add_sort(dc.label + ' ASC', dc.sacol)
+            self.add_sort(dc.label + ' DESC', dc.sacol.desc())
         
     def add_sort(self, label, *args):
         ident = simplify_string(label, replace_with='')
@@ -113,7 +140,7 @@ class DataGrid(object):
     def get_select_query(self):
         for col in self.data_cols.values():
             if col.inresult:
-                self.sql_columns.append(col.colel)
+                self.sql_columns.append(col.sacol)
         
         query = select(self.sql_columns)
         return query
@@ -158,6 +185,36 @@ class DataGrid(object):
         self._query = None
         self._base_query = None
     
+    def _sanitize_filter_input(self, ident, input):
+        sahlpr = self._filter_ons[ident].sacol_helper
+        if input.strip() == '':
+            return None
+        # if column is datetime, date, or time type, turn string
+        # into a datetime object
+        if isinstance(sahlpr.type, (types.DateTime, types.Date, types.Time)):
+            try:
+                return parse(input)
+            except ValueError, e:
+                if 'unknown string format' not in str(e):
+                    raise
+                raise BadRequest('Unknown date/time string "%s"' % input)
+        elif isinstance(sahlpr.type, types.Integer):
+            try:
+                return int(input)
+            except ValueError:
+                raise BadRequest('"%s" was not an integer value' % input)
+        elif isinstance(sahlpr.type, types.Float):
+            try:
+                return float(input)
+            except ValueError:
+                raise BadRequest('"%s" was not a float value' % input)
+        elif isinstance(sahlpr.type, types.Numeric):
+            try:
+                return Decimal(input)
+            except InvalidOperation:
+                raise BadRequest('"%s" was not a decimal value' % input)
+        return input
+    
     def _apply_filters(self, query):
         args = self._req_obj().args
         filter_in_request = False
@@ -181,9 +238,12 @@ class DataGrid(object):
                 if not args.has_key(forkey):
                     raise BadRequest('When using a filter, a "filterfor" value must also be sent')
                     
-                fcolel = self._filter_ons[ident].colel
-                ffor = args[forkey]
+                fsacol = self._filter_ons[ident].sacol
+                ffor = self._sanitize_filter_input(ident, args[forkey])
                 foop = args[foopkey]
+                
+                if ffor is None and foop in ('lt', 'gt', 'lte', 'gte'):
+                    raise BadRequest('A blank value can only be used with "equal" or "not equal" operators')
                 
                 if foop not in self._fo_operators:
                     if foop:
@@ -191,33 +251,30 @@ class DataGrid(object):
                     else:
                         raise BadRequest('Please select a comparison operator for your filter')
                 
-                if foop in ('lt', 'gt', 'lte', 'gte'):
-                    if '*' in ffor:
+                if isinstance(ffor, basestring) and '*' in ffor:
+                    if foop in ('lt', 'gt', 'lte', 'gte'):
                         raise BadRequest('wildcards are invalid when using "less than" or "greater than"')
-                else:
-                    if '*' in ffor:
-                        ffor = ffor.replace('*', '%')
-                        use_like = True
-                        
+                    ffor = ffor.replace('*', '%')
+                    use_like = True
                     
                 if foop == 'lt':
-                    query = query.where(fcolel < ffor)
+                    query = query.where(fsacol < ffor)
                 elif foop == 'lte':
-                    query = query.where(fcolel <= ffor)
+                    query = query.where(fsacol <= ffor)
                 elif foop == 'gt':
-                    query = query.where(fcolel > ffor)
+                    query = query.where(fsacol > ffor)
                 elif foop == 'gte':
-                    query = query.where(fcolel >= ffor)
+                    query = query.where(fsacol >= ffor)
                 elif foop == 'eq':
                     if use_like:
-                        query = query.where(fcolel.like(ffor))
+                        query = query.where(fsacol.like(ffor))
                     else:
-                        query = query.where(fcolel == ffor)
+                        query = query.where(fsacol == ffor)
                 elif foop == 'ne':
                     if use_like:
-                        query = query.where(not_(fcolel.like(ffor)))
+                        query = query.where(not_(fsacol.like(ffor)))
                     else:
-                        query = query.where(fcolel != ffor)
+                        query = query.where(fsacol != ffor)
                 
                 self._filter_ons_selected = ident
                 self._filterons_op_selected = foop
@@ -264,7 +321,7 @@ class DataGrid(object):
                 if not self._sortheaders.has_key(sortcol):
                     raise BadRequest('The sort column "%s" is invalid' % sortcol)
                 
-                sortcolobj = self._sortheaders[sortcol].colel
+                sortcolobj = self._sortheaders[sortcol].sacol
                 if desc:
                     query = query.order_by(sortcolobj.desc())
                 else:
@@ -354,9 +411,9 @@ class DataGrid(object):
                 
                 # setup getting the correct column from the row data
                 try:
-                    label = col.colel.__clause_element__()._label
+                    label = col.sacol.__clause_element__()._label
                 except AttributeError:
-                    label = col.colel._label
+                    label = col.sacol._label
                 col.tblcol.extractor = lambda row, label=label, extractor=col.tblcol.extractor: extractor_helper(row, label, extractor)
                 
                 # setup adding sort links to our headers

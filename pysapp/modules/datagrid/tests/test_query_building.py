@@ -240,6 +240,26 @@ FROM persons
             'Sort Order',
             Person.sortorder,
         )
+        p.add_col(
+            'createdts',
+            Person.createdts,
+            filter_on=True
+        )
+        p.add_col(
+            'floatcol',
+            Person.floatcol,
+            filter_on=True
+        )
+        p.add_col(
+            'numericcol',
+            Person.numericcol,
+            filter_on=True
+        )
+        p.add_col(
+            'boolcol',
+            Person.boolcol,
+            filter_on=True
+        )
         
         # permanent filter and default filter
         sql = """SELECT persons.id AS persons_id, persons.firstname AS persons_firstname, persons.last_name AS persons_last_name 
@@ -289,6 +309,38 @@ WHERE persons.createdts >= :createdts_1 AND persons.inactive = :inactive_1"""
         
         ### wildcards in < test
         p._replace_environ(create_environ('/foo?filteron=firstname&filteronop=lt&filterfor=*test', 'http://localhost'))
+        try:
+            p.get_query()
+            assert False, 'should have got a BadRequest exception'
+        except BadRequest:
+            pass
+        
+        ### null in < test
+        p._replace_environ(create_environ('/foo?filteron=firstname&filteronop=lt&filterfor=', 'http://localhost'))
+        try:
+            p.get_query()
+            assert False, 'should have got a BadRequest exception'
+        except BadRequest:
+            pass
+        
+        ### non-int value for integer
+        p._replace_environ(create_environ('/foo?filteron=sortorder&filteronop=lt&filterfor=foo', 'http://localhost'))
+        try:
+            p.get_query()
+            assert False, 'should have got a BadRequest exception'
+        except BadRequest:
+            pass
+        
+        ### non-float value for float
+        p._replace_environ(create_environ('/foo?filteron=floatcol&filteronop=lt&filterfor=foo', 'http://localhost'))
+        try:
+            p.get_query()
+            assert False, 'should have got a BadRequest exception'
+        except BadRequest:
+            pass
+        
+        ### non-decimal value for decimal
+        p._replace_environ(create_environ('/foo?filteron=numericcol&filteronop=lt&filterfor=foo', 'http://localhost'))
         try:
             p.get_query()
             assert False, 'should have got a BadRequest exception'
@@ -349,4 +401,18 @@ WHERE persons.firstname LIKE :firstname_1 AND persons.inactive = :inactive_1"""
         sql = """SELECT persons.id AS persons_id, persons.firstname AS persons_firstname, persons.last_name AS persons_last_name 
 FROM persons 
 WHERE persons.firstname NOT LIKE :firstname_1 AND persons.inactive = :inactive_1"""
+        assertEqualSQL( str(p.get_query()), sql)
+        
+        # timestamp filter
+        p._replace_environ(create_environ('/foo?filteron=createdts&filteronop=eq&filterfor=10%2F26%2F2009', 'http://localhost'))
+        sql = """SELECT persons.id AS persons_id, persons.firstname AS persons_firstname, persons.last_name AS persons_last_name 
+FROM persons 
+WHERE persons.createdts = :createdts_1 AND persons.inactive = :inactive_1"""
+        assertEqualSQL( str(p.get_query()), sql)
+        
+        # empty timestamp filter
+        p._replace_environ(create_environ('/foo?filteron=createdts&filteronop=eq&filterfor=', 'http://localhost'))
+        sql = """SELECT persons.id AS persons_id, persons.firstname AS persons_firstname, persons.last_name AS persons_last_name 
+FROM persons 
+WHERE persons.createdts IS NULL AND persons.inactive = :inactive_1"""
         assertEqualSQL( str(p.get_query()), sql)

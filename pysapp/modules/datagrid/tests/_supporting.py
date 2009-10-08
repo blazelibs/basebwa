@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, Unicode, SmallInteger, DateTime, \
-    UniqueConstraint, ForeignKey, String
+    UniqueConstraint, ForeignKey, String, Float, Numeric, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import text
 from pysmvt import db
@@ -20,6 +20,13 @@ class Person(Base):
     address = Column(Integer)
     createdts = Column(DateTime)
     sortorder = Column(Integer)
+    floatcol = Column(Float)
+    numericcol = Column(Numeric)
+    boolcol = Column(Boolean)
+    
+    def __repr__(self):
+        return '<Person: "%s, created: %s">' % (self.id, self.createdts)
+
 
 class Email(Base):
     __tablename__ = 'emails'

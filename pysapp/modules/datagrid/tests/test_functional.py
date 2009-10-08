@@ -1,3 +1,4 @@
+from datetime import datetime
 from werkzeug import Client, BaseResponse, create_environ
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Unicode, SmallInteger, DateTime, \
@@ -12,7 +13,6 @@ testapp = ag._wsgi_test_app
 
 c = Client(testapp, BaseResponse)
 
-@wrapinapp(testapp)
 def setup_module():
     Base.metadata.create_all(db.engine)
     db.engine.execute(Person.__table__.delete())
@@ -20,6 +20,8 @@ def setup_module():
         p = Person()
         p.firstname = 'fn%03d' % x
         p.lastname = 'ln%03d' % x
+        if x < 90:
+            p.createdts = datetime.now()
         db.sess.add(p)
     db.sess.commit()
 
@@ -53,6 +55,11 @@ class TestFunctional(object):
         p.add_col(
             'Sort Order',
             tbl.c.sortorder,
+        )
+        p.add_col(
+            'createdts',
+            Person.createdts,
+            filter_on=True
         )
         return p
     
@@ -146,6 +153,7 @@ class TestFunctional(object):
         <option value=""></option>
         <option value="firstname" selected="selected">First Name</option>
         <option value="lastname">Last Name</option>
+        <option value="createdts">createdts</option>
         
     </select>
     <select class="datagrid-filteronop" name="filteronop">
@@ -171,6 +179,7 @@ class TestFunctional(object):
             <option value="">&nbsp;</option>
             <option value="firstname" selected="selected">First Name</option>
             <option value="lastname">Last Name</option>
+            <option value="createdts">createdts</option>
             
         </select>""" in html, html
         
@@ -320,7 +329,6 @@ class TestFunctional(object):
         assert '<li class="dead">last' in html
         assert 'bd_lastpage.png' in html
     
-    @wrapinapp(testapp)
     def test_blank_sortdd(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?sortdd=&page=1&perpage=10', 'http://localhost'))
@@ -330,7 +338,6 @@ class TestFunctional(object):
         assert 'fn010' in recstr
         assert 'fn011' not in recstr
     
-    @wrapinapp(testapp)
     def test_blank_sortdd_header_sort(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?sortdd=&page=1&perpage=10&sort=-firstname', 'http://localhost'))
@@ -339,8 +346,7 @@ class TestFunctional(object):
         assert 'fn100' in recstr
         assert 'fn091' in recstr
         assert 'fn090' not in recstr
-        
-    @wrapinapp(testapp)
+
     def test_empty_sort(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?sortdd=&page=1&perpage=10&sort=', 'http://localhost'))
@@ -349,3 +355,17 @@ class TestFunctional(object):
         assert 'fn001' in recstr
         assert 'fn010' in recstr
         assert 'fn011' not in recstr
+    
+    def test_timestamp_filter(self):
+        p = self.get_dg()
+        p._replace_environ(create_environ('/foo?filteron=createdts&filteronop=lt&filterfor=10%2F26%2F2000', 'http://localhost'))
+        assert not p.records
+        
+    #def test_empty_timestamp_filter(self):
+    #    p = self.get_dg()
+    #    p._replace_environ(create_environ('/foo?filteron=createdts&filteronop=lt&filterfor=', 'http://localhost'))
+    #    try:
+    #        assert p.count == 11
+    #    except:
+    #        db.sess.rollback()
+    #        raise
