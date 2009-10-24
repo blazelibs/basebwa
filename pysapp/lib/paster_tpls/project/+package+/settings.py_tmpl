@@ -68,51 +68,14 @@ class Default(pysapp.settings.Default):
         #######################################################################
         self.debugger.enabled = False
 
-class {{username}}(Default):
-    """ this custom "user" class is designed to be used for
-    user specific development environments.  It can be used like:
-    
-        `pysmvt serve {{username.lower()}}`
-    """
-    def __init__(self):
-        Default.__init__(self)
-                
-        # a single or list of emails that will be used to override every email sent
-        # by the system.  Useful for debugging.  Original recipient information
-        # will be added to the body of the email
-        self.emails.override = '{{programmer_email}}'
-        
-        #######################################################################
-        # USERS: DEFAULT ADMIN
-        #######################################################################
-        self.modules.users.admin.username = '{{username.lower()}}'
-        self.modules.users.admin.password = '{{password}}'
-        self.modules.users.admin.email = '{{programmer_email}}'
-        
-        #######################################################################
-        # EXCEPTION HANDLING
-        #######################################################################
-        self.exceptions.hide = False
-        self.exceptions.email = False
-        
-        #######################################################################
-        # DEBUGGING
-        #######################################################################
-        self.debugger.enabled = True
-        # this is a security risk on a live system, so we only turn it on
-        # for a specific user config
-        self.debugger.interactive = True
-# this is just a convenience so we don't have to type the capital letter on the
-# command line when running `pysmvt serve`
-{{username.lower()}}={{username}}
-
-class Test(Default):
-    def __init__(self):
-        # call parent init to setup default settings
-        Default.__init__(self)
-
-        self.emails.override = '{{programmer_email}}'
-        self.exceptions.hide = False
-        self.exceptions.email = False
-        self.template.default = 'test.html'
-
+# often times, you will need developer or computer specific configurations
+# that you don't want to be part of the main settings file (because it clutters
+# up the file).  Therefore, we can conditionally include a site-specific
+# settings file with the profiles needed at only that site.  We do it at the
+# bottom of this file to allow the site-specific file to inherit items from this
+# file:
+try:
+    from site_settings import *
+except ImportError, e:
+    if 'No module named site_settings' not in str(e):
+        raise
