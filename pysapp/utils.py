@@ -1,6 +1,7 @@
+from decorator import decorator
 import warnings
 from pysutils import decorator
-from pysmvt import user, forward, ag
+from pysmvt import user, forward, ag, db
 from pysapp import exc
 from pysapp.lib import db as libdb
 
@@ -128,6 +129,23 @@ def _decorate_with_warning(func, wtype, message, docstring_header=None):
     decorated = warned(func)
     decorated.__doc__ = doc
     return decorated
+
+def excignore(f, *args, **kwargs):
+    """
+        If _excignore has a value and if the function throws an exception with the
+        str(_excignore) in the error message, the exception will be ignored.
+        Useful when initializing data with add or update methods.
+    """
+    def innerfunc(*args, **kwargs):
+        _excignore = kwargs.pop('_excignore', None)
+        try:
+            return f(*args, **kwargs)
+        except Exception, e:
+            if not _excignore or _excignore not in str(e).lower():
+                raise
+            db.sess.rollback()
+    return innerfunc
+    
 
 ############### DEPRECATED FUNCTIONS #########################
 @deprecated('use pysapp.lib.db.run_module_sql instead')

@@ -329,11 +329,15 @@ class FormViewMixin(object):
             
     def assign_form(self):
         self.form = self.formcls()
+        self.assign_form_defaults()
     
     def post(self, *args, **kwargs):
         self.form_submission()
         self.default(*args, **kwargs)
     
+    def assign_form_defaults(self):
+        pass
+
     def form_submission(self):
         if self.form.is_cancel():
             self.on_cancel()
