@@ -349,12 +349,17 @@ class FormViewMixin(object):
                 # if the form can't handle the exception, re-raise it
                 if not self.form.handle_exception(e):
                     raise
+                self.form_handled_exception()
         elif not self.form.is_submitted():
             # form was not submitted, nothing left to do
             return
         
-        # form was either invalid or caught an exception, assign error
-        # messages
+        self.form_invalid()
+    
+    def form_invalid(self):
+        self.form.assign_user_errors()
+        
+    def form_handled_exception(self):
         self.form.assign_user_errors()
     
     def on_cancel(self):

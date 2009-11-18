@@ -25,7 +25,7 @@ class Form(Pysform):
     def is_submitted(self):
         # don't want to repeat the assignment and is_submitted might be used
         # more than once
-        if not self._request_submitted:
+        if not self._request_submitted and not self._static:
             tosubmit = {}
             for key, value in rg.request.form.to_dict(flat=False).iteritems():
                 if len(value) == 1:
