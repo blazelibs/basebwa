@@ -45,10 +45,15 @@ class ProtectedViewMixin(BaseViewMixin):
 
     def check_if_authorized(self):
         if not self.is_authenticated:
-            raise Unauthorized()
+            self.do_if_unauthenticated()
         if not self.is_authorized:
-            raise Forbidden()
+            self.do_if_unauthorized()
+    
+    def do_if_unauthenticated(self):
+        raise Unauthorized()
         
+    def do_if_unauthorized(self):
+        raise Forbidden()
 
 class PublicSnippetView(HtmlTemplateSnippet, BaseViewMixin):
     """ HTML snippet with template support that allows public access """
