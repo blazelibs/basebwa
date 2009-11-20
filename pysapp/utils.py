@@ -29,9 +29,10 @@ class ControlPanelGroup(object):
 
 class ControlPanelLink(object):
     
-    def __init__(self, text, endpoint):
+    def __init__(self, text, endpoint, **kwargs):
         self.text = text
         self.endpoint = endpoint
+        self.linkargs = kwargs
 
 def warn(msg):
     if isinstance(msg, basestring):

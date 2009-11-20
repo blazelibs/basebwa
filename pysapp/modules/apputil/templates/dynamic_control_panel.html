@@ -4,7 +4,7 @@
 <% macro print_link_group(lg) -%>
     <ul class="link_group">
     <% for link in lg.links %>
-        <li><a href="<{ url_for(link.endpoint)}>"><{link.text}></a></li>
+        <li><a href="<{ url_for(link.endpoint, **link.linkargs)}>"><{link.text}></a></li>
     <% endfor %>
     </ul>
 <%- endmacro %>
