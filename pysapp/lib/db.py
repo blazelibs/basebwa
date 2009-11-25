@@ -554,7 +554,6 @@ def clear_db():
                 db.engine.execute(exstr)
             except Exception, e:
                 print 'WARNING: %s' % e
-
     elif db.engine.dialect.name == 'sqlite':
         # drop the views
         sql = "select name from sqlite_master where type='view'"
@@ -570,7 +569,28 @@ def clear_db():
             except Exception, e:
                 if not 'no such table' in str(e):
                     raise
-    return False
+    elif db.engine.dialect.name == 'mssql':
+        mapping = {
+            'P': 'drop procedure [%(name)s]',
+            'C': 'alter table [%(parent_name)s] drop constraint [%(name)s]',
+            ('FN', 'IF', 'TF'): 'drop function [%(name)s]',
+            'V': 'drop view [%(name)s]',
+            'F': 'alter table [%(parent_name)s] drop constraint [%(name)s]',
+            'U': 'drop table [%(name)s]',
+        }
+        delete_sql = []
+        to_repeat_sql = []
+        for type, drop_sql in mapping.iteritems():
+            sql = 'select name, object_name( parent_object_id ) as parent_name '\
+                'from sys.objects where type in (\'%s\')' % '", "'.join(type)
+            rows = db.engine.execute(sql)
+            for row in rows:
+                delete_sql.append(drop_sql % dict(row))
+        for sql in delete_sql:
+            db.engine.execute(sql)
+    else:
+        return False
+    return True
 
 
     
