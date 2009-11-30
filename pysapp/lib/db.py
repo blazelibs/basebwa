@@ -1,5 +1,6 @@
 import logging
 from os.path import join
+from decorator import decorator
 from pysutils import curry
 from pysmvt import db
 import sqlalchemy.types
@@ -593,4 +594,18 @@ def clear_db():
     return True
 
 
+@decorator
+def dbtrans(f, *args, **kwargs):
+    """
+        decorates a function so that a DB transaction is always committed after
+        the wrapped function returns and also rolls back the transaction if
+        an unhandled exception occurs
+    """
+    try:
+        retval = f(*args, **kwargs)
+        db.sess.commit()
+        return retval
+    except Exception:
+        db.sess.rollback()
+        raise
     
