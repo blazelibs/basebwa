@@ -19,4 +19,5 @@ def setup_db_structure():
     actions = _gather_actions()
     clear_db()
     manual_broadcast('initdb')
+    manual_broadcast('testdata')
     
