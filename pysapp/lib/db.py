@@ -488,16 +488,16 @@ def run_app_sql(target, use_dialect=False):
     
             run_app_sql('test_setup')
         
-        will run the file "<myapp>/test_setup.sql"
+        will run the file "<myapp>/sql/test_setup.sql"
         
             run_app_sql('test_setup', True)
         
         will run the files:
             
             # sqlite DB
-            <myapp>/test_setup.sqlite.sql
+            <myapp>/sql/test_setup.sqlite.sql
             # postgres DB
-            <myapp>/test_setup.pgsql.sql
+            <myapp>/sql/test_setup.pgsql.sql
             ...
         
         The dialect prefix used is the same as the sqlalchemy prefix.
