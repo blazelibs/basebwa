@@ -19,11 +19,12 @@ class ControlPanelSection(object):
 
 class ControlPanelGroup(object):
     
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         self.links = []
         for link in args:
             self.add_link(link)
-
+        self.has_perm = kwargs.get('has_perm', None)
+        
     def add_link(self, link):
         self.links.append(link)
 
@@ -32,6 +33,9 @@ class ControlPanelLink(object):
     def __init__(self, text, endpoint, **kwargs):
         self.text = text
         self.endpoint = endpoint
+        self.has_perm = kwargs.get('has_perm', None)
+        if kwargs.has_key('has_perm'):
+            del kwargs['has_perm']
         self.linkargs = kwargs
 
 def warn(msg):

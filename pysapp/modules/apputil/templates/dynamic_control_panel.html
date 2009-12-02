@@ -4,17 +4,21 @@
 <% macro print_link_group(lg) -%>
     <ul class="link_group">
     <% for link in lg.links %>
+    <% if link.show_in_panel %>
         <li><a href="<{ url_for(link.endpoint, **link.linkargs)}>"><{link.text}></a></li>
+    <% endif %>
     <% endfor %>
     </ul>
 <%- endmacro %>
 <% block body %>
     <% for sec in sections %>
-    <% if sesuser.has_perm(sec.has_perm) %>
+    <% if sec.show_in_panel %>
     <div class="module_wrapper">
         <h2><{sec.heading}></h2>
         <% for lg in sec.groups %>
+        <% if lg.show_in_panel %>
             <{ print_link_group(lg) }>
+        <% endif %>
         <% endfor %>
     </div>
     <% endif %>
