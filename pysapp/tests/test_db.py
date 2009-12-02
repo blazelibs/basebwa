@@ -1358,3 +1358,32 @@ def test_is_unique_exc():
     
     assert not is_unique_exc('name', 'ix_users_group_name', Exception('ix_users_group_name unique'))
     assert not is_unique_exc('name', 'ix_users_group_name', Exception('column name is not unique'))
+
+def sa_one_to_none():
+    create_user_with_permissions = modimport('users.testing', 'create_user_with_permissions')
+    User = modimport('users.model.orm', 'User')
+    from pysapp.lib.db import sa_one_to_none
+    u1 = create_user_with_permissions()
+    u2 = create_user_with_permissions()
+
+    @sa_one_to_none
+    def hasone():
+        return User.query.filter_by(email_address=u1.email_address).one()
+    
+    @sa_one_to_none
+    def hasnone():
+        return User.query.filter_by(email_address=u'foobar').one()
+    
+    @sa_one_to_none
+    def hasmany():
+        return User.query.filter_by(inactive_flag=0).one()
+    
+    h1 = hasone()
+    assert h1 is u1
+    assert hasnone() is None
+    try:
+        hasmany()
+        assert False, 'expected exception'
+    except Exception, e:
+        if 'Multiple rows were found for one()' != str(e):
+            raise

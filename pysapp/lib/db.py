@@ -5,6 +5,7 @@ from pysutils import curry
 from pysmvt import db
 import sqlalchemy.types
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.orm import ColumnProperty
@@ -608,4 +609,17 @@ def dbtrans(f, *args, **kwargs):
     except Exception:
         db.sess.rollback()
         raise
-    
+
+@decorator
+def sa_one_to_none(f, *args, **kwargs):
+    """
+        wraps a function that uses SQLAlahcemy's ORM .one() method and returns
+        None instead of raising an exception if there was no record returned.
+        If multiple records exist, that exception is still raised.
+    """
+    try:
+        return f(*args, **kwargs)
+    except NoResultFound, e:
+        if 'No row was found for one()' != str(e):
+            raise
+        return None
