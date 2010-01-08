@@ -24,9 +24,9 @@ def audit_record_get(oid=None):
     return db.sess.query(AuditRecord).get(oid)
 
 def get_audit_record_list(identifier):
-    return db.sess.query(AuditRecord).filter(AuditRecord.identifier==identifier).order_by(AuditRecord.createdts.desc()).all()
+    return db.sess.query(AuditRecord).filter(AuditRecord.identifier==identifier).order_by(AuditRecord.createdts.desc(), AuditRecord.id.desc()).all()
 
 def get_previous_audit_record(rev_id):
     a = audit_record_get(rev_id)
-    return db.sess.query(AuditRecord).filter(AuditRecord.createdts<a.createdts).order_by(AuditRecord.createdts.desc()).first()
+    return db.sess.query(AuditRecord).filter(AuditRecord.identifier==a.identifier).filter(AuditRecord.createdts<=a.createdts).filter(AuditRecord.id<a.id).order_by(AuditRecord.createdts.desc(), AuditRecord.id.desc()).first()
     
