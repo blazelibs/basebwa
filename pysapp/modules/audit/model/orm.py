@@ -18,7 +18,7 @@ class AuditRecord(Base):
     audit_text = Column(UnicodeText, nullable=False)
     comments = Column(Unicode(256))
     
-    createdts = Column(DateTime, nullable=False, default=datetime.now(), server_default=text('CURRENT_TIMESTAMP'))
-    lastupdatets = Column(DateTime, onupdate=datetime.now())
+    createdts = Column(DateTime, nullable=False, default=datetime.now, server_default=text('CURRENT_TIMESTAMP'))
+    lastupdatets = Column(DateTime, onupdate=datetime.now)
 
     user = relation(User, lazy=False)
