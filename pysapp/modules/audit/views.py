@@ -13,7 +13,7 @@ class AuditDiffBase(ProtectedPageView):
     def default(self, rev1, rev2=None):
         ar = actions.audit_record_get(rev1)
         prev_ar = actions.audit_record_get(rev2) if rev2 else actions.get_previous_audit_record(rev1)
-        print ar.id, prev_ar.id
+        
         diff_text = []
         a = prev_ar.audit_text.splitlines(True) if prev_ar else []
         b = ar.audit_text.splitlines(True)
