@@ -294,7 +294,7 @@ class ManageCommon(CommonBase):
         data = self.action_list()
         self.assign('tablehtml', self.table.render(data))
     
-    def default(self):
+    def default(self, **kwargs):
         self.create_table()
         self.render_table()
         self.assign('pagetitle', self.pagetitle % {'objectnamepl':self.objectnamepl} )
