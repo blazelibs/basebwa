@@ -6,10 +6,10 @@ def create_audit_record(identifier, user_id, audit_text, comments, commit_trans=
 
     ar = AuditRecord()
     dbsess.add(ar)
-    ar.identifier = identifier
+    ar.identifier = unicode(identifier)
     ar.user_id = user_id
-    ar.audit_text = audit_text
-    ar.comments = comments
+    ar.audit_text = unicode(audit_text)
+    ar.comments = unicode(comments)
 
     try:
         if commit_trans:
@@ -20,11 +20,13 @@ def create_audit_record(identifier, user_id, audit_text, comments, commit_trans=
         db.sess.rollback()
         raise
 
+    return ar
+    
 def audit_record_get(oid=None):
     return db.sess.query(AuditRecord).get(oid)
 
 def get_audit_record_list(identifier):
-    return db.sess.query(AuditRecord).filter(AuditRecord.identifier==identifier).order_by(AuditRecord.createdts.desc(), AuditRecord.id.desc()).all()
+    return db.sess.query(AuditRecord).filter(AuditRecord.identifier==unicode(identifier)).order_by(AuditRecord.createdts.desc(), AuditRecord.id.desc()).all()
 
 def get_previous_audit_record(rev_id):
     a = audit_record_get(rev_id)

@@ -1,0 +1,14 @@
+p#diff_text {
+    white-space: pre;
+    font-family: Courier New, monospace;
+}
+
+span.old_revision, del.audit {
+    text-decoration: none;
+    background-color: #FF7070;
+}
+
+span.new_revision, ins.audit {
+    text-decoration: none;
+    background-color: #70FF70;
+}
