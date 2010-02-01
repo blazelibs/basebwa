@@ -119,6 +119,12 @@ class Dev(Default):
     
     def apply_test_settings(self):
         #######################################################################
+        # EMAIL SETTINGS
+        #######################################################################
+        # if using emails, this must be set
+        self.emails.from_default = 'devemail@example.com'
+        
+        #######################################################################
         # TEMPLATES
         #######################################################################
         # use test template instead of real templates to speed up the tests

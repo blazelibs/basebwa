@@ -3,6 +3,7 @@
 from pysmvt import ag, rg, appimportauto, settings, user
 import forms
 appimportauto('base', ['PublicSnippetView', 'PublicPageView', 'ProtectedPageView'])
+appimportauto('utils', 'control_panel_permission_filter')
 
 class UserMessagesSnippet(PublicSnippetView):
     
@@ -70,24 +71,10 @@ class DynamicControlPanel(ProtectedPageView):
             except AttributeError:
                 pass
 
-        for sec in sections:
-            sec.show_in_panel = False
-            if sec.has_perm and not user.has_perm(sec.has_perm):
-                continue
-            for lg in sec.groups:
-                lg.show_in_panel = False
-                if lg.has_perm and not user.has_perm(lg.has_perm):
-                    continue
-                for link in lg.links:
-                    link.show_in_panel = False
-                    if user.has_perm(link.has_perm) or not link.has_perm:
-                        link.show_in_panel = True
-                        lg.show_in_panel = True
-                        sec.show_in_panel = True
-                        
         def seccmp(first, second):
             return cmp(first.heading.lower(), second.heading.lower())
         sections.sort(seccmp)
+        sections = control_panel_permission_filter(user, *sections)
         self.assign('sections', sections)
 
 class HomePage(PublicPageView):

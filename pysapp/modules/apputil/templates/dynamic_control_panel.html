@@ -1,26 +1,20 @@
 <{ include_css() }>
 <% extends settings.template.admin %>
 <% block title %>Control Panel | <{super()}><% endblock %>
-<% macro print_link_group(lg) -%>
+<% macro print_links(group_links) -%>
     <ul class="link_group">
-    <% for link in lg.links %>
-    <% if link.show_in_panel %>
+    <% for link in group_links %>
         <li><a href="<{ url_for(link.endpoint, **link.linkargs)}>"><{link.text}></a></li>
-    <% endif %>
     <% endfor %>
     </ul>
 <%- endmacro %>
 <% block body %>
-    <% for sec in sections %>
-    <% if sec.show_in_panel %>
+    <% for sec_dict in sections %>
     <div class="module_wrapper">
-        <h2><{sec.heading}></h2>
-        <% for lg in sec.groups %>
-        <% if lg.show_in_panel %>
-            <{ print_link_group(lg) }>
-        <% endif %>
+        <h2><{sec_dict.sec.heading}></h2>
+        <% for group_dict in sec_dict.sec_groups %>
+            <{ print_links(group_dict.group_links) }>
         <% endfor %>
     </div>
-    <% endif %>
     <% endfor %>
 <% endblock body%>
