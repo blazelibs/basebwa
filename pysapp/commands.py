@@ -9,24 +9,4 @@ def action_module(modname='', template=('t', 'pysapp'),
     """ creates a new module file structure (pysapp default)"""
     cmds.action_module(modname, template, interactive, verbose, overwrite)
 
-@console_broadcast
-def action_pysapp_initdb(sqlite_triggers=True):
-    """ initialize the database """
-    # create foreign keys for SQLite
-    if sqlite_triggers and not getattr(db.meta, 'triggers', False):
-        auto_assign(db.meta, db.engine)
-        db.meta.triggers = True
-
-    # create the database objects
-    #print db
-    #for t in db.meta.tables:
-    #    print t
-    db.meta.create_all(bind=db.engine)
     
-    # add a session to the db
-    #db.sess = db.Session()
-
-@console_broadcast
-def action_pysapp_cleardb():
-    clear_db = appimport('lib.db', 'clear_db')
-    clear_db()

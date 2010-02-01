@@ -1,7 +1,4 @@
-from pysmvt.commands import manual_broadcast
-from pysmvt.script import _gather_actions
-from pysmvt import appimportauto
-appimportauto('lib.db', 'clear_db')
+from pysmvt.tasks import run_tasks
 
 def setup_db_structure():
     """
@@ -16,8 +13,5 @@ def setup_db_structure():
         This function will be called once by nose after the application
         object is initilzed but before any tests are ran.
     """
-    actions = _gather_actions()
-    clear_db()
-    manual_broadcast('initdb')
-    manual_broadcast('testdata')
+    run_tasks(('clear-db', 'init-db:~test'))
     
