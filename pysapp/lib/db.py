@@ -538,6 +538,9 @@ def is_unique_exc(field_name, constraint_name, exc):
     if db.engine.dialect.name == 'postgres':
         if 'unique' in msg and constraint_name in msg:
             return True
+    elif db.engine.dialect.name == 'mssql':
+        if 'unique index \'%s\'' % constraint_name in msg:
+            return True
     elif db.engine.dialect.name == 'sqlite':
         if 'column %s is not unique' % field_name in msg:
             return True
