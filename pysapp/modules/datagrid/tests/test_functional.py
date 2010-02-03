@@ -164,6 +164,7 @@ class TestFunctional(object):
         <option value="lte">&lt;=</option>
         <option value="gt">&gt;</option>
         <option value="gte">&gt;=</option>
+        <option value="contains">contains</option>
     </select>
     <input type="text" class="datagrid-filterfor" name="filterfor" value="test"/>
 </div>"""
@@ -191,6 +192,7 @@ class TestFunctional(object):
         <option value="lte">&lt;=</option>
         <option value="gt">&gt;</option>
         <option value="gte">&gt;=</option>
+        <option value="contains">contains</option>
     </select>"""
         assert expected in html, dodiff(html, expected)
     

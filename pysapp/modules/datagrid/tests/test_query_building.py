@@ -416,3 +416,10 @@ WHERE persons.createdts = :createdts_1 AND persons.inactive = :inactive_1"""
 FROM persons 
 WHERE persons.createdts IS NULL AND persons.inactive = :inactive_1"""
         assertEqualSQL( str(p.get_query()), sql)
+
+        # contains filter
+        p._replace_environ(create_environ('/foo?filteron=firstname&filteronop=contains&filterfor=test', 'http://localhost'))
+        sql = """SELECT persons.id AS persons_id, persons.firstname AS persons_firstname, persons.last_name AS persons_last_name 
+FROM persons 
+WHERE persons.firstname LIKE :firstname_1 AND persons.inactive = :inactive_1"""
+        assertEqualSQL( str(p.get_query()), sql)

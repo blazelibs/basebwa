@@ -80,7 +80,7 @@ class DataGrid(object):
         self._count = None
         self._records = None
         self._query = None
-        self._fo_operators = ('eq', 'ne', 'lt', 'gt', 'lte', 'gte')
+        self._fo_operators = ('eq', 'ne', 'lt', 'gt', 'lte', 'gte', 'contains')
         self._html_table = None
         self._filter_ons_selected = None
         self._filterons_op_selected = None
@@ -250,7 +250,11 @@ class DataGrid(object):
                         raise BadRequest('The filter comparison operator "%s" is invalid' % foop)
                     else:
                         raise BadRequest('Please select a comparison operator for your filter')
-                
+
+                if foop == 'contains':
+                    ffor = '%%%s%%'%ffor
+                    use_like = True
+
                 if isinstance(ffor, basestring) and '*' in ffor:
                     if foop in ('lt', 'gt', 'lte', 'gte'):
                         raise BadRequest('wildcards are invalid when using "less than" or "greater than"')
@@ -265,7 +269,7 @@ class DataGrid(object):
                     query = query.where(fsacol > ffor)
                 elif foop == 'gte':
                     query = query.where(fsacol >= ffor)
-                elif foop == 'eq':
+                elif foop == 'eq' or foop == 'contains':
                     if use_like:
                         query = query.where(fsacol.like(ffor))
                     else:
