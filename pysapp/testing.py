@@ -2,11 +2,9 @@ from pysmvt.tasks import run_tasks
 
 def setup_db_structure():
     """
-        This method sets up a proper database structure for tests. It does not
-        put any data in the structures.  This is because each test should have
-        the freedom to create/destroy data at will.
-        
-        If a settings is configured like:
+        This function sets up a database for running unit and functional tests.
+        It is called by the pysmvt nose plugin if there is a setting in the
+        application like:
             
             self.testing.init_callables = 'testing.setup_db_structure'
             
