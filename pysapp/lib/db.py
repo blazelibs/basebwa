@@ -542,7 +542,8 @@ def is_unique_exc(field_name, constraint_name, exc):
         if 'unique index \'%s\'' % constraint_name in msg:
             return True
     elif db.engine.dialect.name == 'sqlite':
-        if 'column %s is not unique' % field_name in msg:
+        if ('column %s is not unique' % field_name in msg) or \
+           ('columns %s are not unique' % ', '.join(field_name) in msg):
             return True
     return False
 
