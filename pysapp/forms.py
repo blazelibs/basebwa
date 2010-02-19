@@ -27,13 +27,17 @@ class Form(Pysform):
         # more than once
         if not self._request_submitted and not self._static:
             tosubmit = {}
-            for key, value in rg.request.form.to_dict(flat=False).iteritems():
-                if len(value) == 1:
-                    tosubmit[key] = value[0]
-                else:
-                    tosubmit[key] = value
-            tosubmit.update(rg.request.files.to_dict())
-            self.set_submitted(tosubmit)
+            try:
+                for key, value in rg.request.form.to_dict(flat=False).iteritems():
+                    if len(value) == 1:
+                        tosubmit[key] = value[0]
+                    else:
+                        tosubmit[key] = value
+                tosubmit.update(rg.request.files.to_dict())
+                self.set_submitted(tosubmit)
+            except TypeError, e:
+                if 'has been registered for this thread' not in str(e):
+                    raise
             self._request_submitted = True
         return Pysform.is_submitted(self)
     
