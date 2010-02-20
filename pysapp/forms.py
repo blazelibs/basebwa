@@ -5,6 +5,7 @@ from pysmvt.routing import current_url
 from pysform.util import NotGiven
 from formencode.validators import FancyValidator
 from formencode import Invalid
+from pysmvt.utils import registry_has_object, werkzeug_multi_dict_conv
 
 class Form(Pysform):
     note_prefix = '- '
@@ -13,7 +14,11 @@ class Form(Pysform):
     req_note = None
     
     def __init__(self, name, **kwargs):
-        action = kwargs.pop('action', current_url(strip_host=True))
+        if registry_has_object(rg):
+            curl = current_url(strip_host=True)
+        else:
+            curl = ''
+        action = kwargs.pop('action', curl)
         class_ = kwargs.pop('class_', NotGiven)
         if class_ is NotGiven:
             kwargs['class_'] = 'generated'
@@ -26,18 +31,10 @@ class Form(Pysform):
         # don't want to repeat the assignment and is_submitted might be used
         # more than once
         if not self._request_submitted and not self._static:
-            tosubmit = {}
-            try:
-                for key, value in rg.request.form.to_dict(flat=False).iteritems():
-                    if len(value) == 1:
-                        tosubmit[key] = value[0]
-                    else:
-                        tosubmit[key] = value
-                tosubmit.update(rg.request.files.to_dict())
-                self.set_submitted(tosubmit)
-            except TypeError, e:
-                if 'has been registered for this thread' not in str(e):
-                    raise
+            if registry_has_object(rg):
+                to_submit = werkzeug_multi_dict_conv(rg.request.form)
+                to_submit.update(rg.request.files.to_dict())
+                self.set_submitted(to_submit)
             self._request_submitted = True
         return Pysform.is_submitted(self)
     

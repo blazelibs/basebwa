@@ -1,7 +1,15 @@
+from StringIO import StringIO
+from pysmvt import ag
 from pysmvt.users import User
+from pysmvt.utils import wrapinapp
+from pysmvt.test import create_request
 from pysapp.utils import ControlPanelGroup, ControlPanelSection, \
     ControlPanelLink, control_panel_permission_filter
 from pysutils import pprint
+import pysapp.forms
+from nose.tools import eq_
+
+testapp = ag._wsgi_test_app
 
 class TestControlPanelFilter(object):
     
@@ -61,4 +69,35 @@ class TestControlPanelFilter(object):
         assert len(filtered[0]['sec_groups']) == 1
         assert filtered[0]['sec_groups'][0]['group_links'][0] is foo_cpsec.groups[1].links[0]
         assert len(filtered[0]['sec_groups'][0]['group_links']) == 1
+
+class TestForm(object):
+    
+    @classmethod
+    def setup_class(cls):
+        class Form(pysapp.forms.Form):
+            def __init__(self):
+                pysapp.forms.Form.__init__(self, 'test-form')
+                self.add_text('name_first', 'First name', maxlength=30)
+                self.add_file('txtfile', 'Text File')
+        cls.Form = Form
         
+    def test_with_no_request_object(self):
+        f = self.Form()
+        assert not f.is_submitted()
+
+    @wrapinapp(testapp)
+    def test_auto_form_submit(self):
+        # setup the request, which will bind to the app's rg.request
+        # which should result in the form values getting submitted
+        create_request({
+            'name_first': 'bob',
+            'txtfile': (StringIO('my file contents'), 'test.txt'),
+            'test-form-submit-flag': 'submitted',
+        })
+        # test the form
+        f = self.Form()
+        assert f.is_submitted()
+        assert f.is_valid()
+        assert f.name_first.value == 'bob'
+        assert f.txtfile.value.file_name == 'test.txt'
+        assert f.txtfile.value.content_type == 'text/plain'
