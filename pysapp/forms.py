@@ -26,15 +26,18 @@ class Form(Pysform):
             kwargs['class_'] = class_
         Pysform.__init__(self, name, action=action, **kwargs)
         self._request_submitted = False
-        
+
+    def assign_from_request(self, req):
+        to_submit = werkzeug_multi_dict_conv(req.form)
+        to_submit.update(req.files.to_dict())
+        self.set_submitted(to_submit)
+
     def is_submitted(self):
         # don't want to repeat the assignment and is_submitted might be used
         # more than once
         if not self._request_submitted and not self._static:
             if registry_has_object(rg):
-                to_submit = werkzeug_multi_dict_conv(rg.request.form)
-                to_submit.update(rg.request.files.to_dict())
-                self.set_submitted(to_submit)
+                self.assign_from_request(rg.request)
             self._request_submitted = True
         return Pysform.is_submitted(self)
     

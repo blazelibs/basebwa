@@ -2,12 +2,10 @@ from StringIO import StringIO
 from pysmvt import ag
 from pysmvt.users import User
 from pysmvt.utils import wrapinapp
-from pysmvt.test import create_request
+from pysmvt.wrappers import Request
 from pysapp.utils import ControlPanelGroup, ControlPanelSection, \
     ControlPanelLink, control_panel_permission_filter
-from pysutils import pprint
 import pysapp.forms
-from nose.tools import eq_
 
 testapp = ag._wsgi_test_app
 
@@ -89,11 +87,13 @@ class TestForm(object):
     def test_auto_form_submit(self):
         # setup the request, which will bind to the app's rg.request
         # which should result in the form values getting submitted
-        create_request({
+        Request.from_values(
+            {
             'name_first': 'bob',
             'txtfile': (StringIO('my file contents'), 'test.txt'),
-            'test-form-submit-flag': 'submitted',
-        })
+            'test-form-submit-flag': 'submitted'},
+            bind_to_context=True
+            )
         # test the form
         f = self.Form()
         assert f.is_submitted()
