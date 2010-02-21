@@ -237,7 +237,7 @@ class UpdateCommon(CommonBase):
         self.form.assign_user_errors()
     
     def do_update(self, objid):
-        self.action_update(objid, **self.get_action_params())
+        self.update_retval = self.action_update(objid, **self.get_action_params())
         user.add_message('notice', self.message_update)
         self.on_complete()
     
