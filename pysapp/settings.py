@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from os import path
+import logging
+from logging.handlers import RotatingFileHandler
 from werkzeug.routing import Rule
 from pysmvt.config import DefaultSettings
 
@@ -69,6 +71,20 @@ class Default(DefaultSettings):
         # TESTING
         #######################################################################
         self.testing.init_callables = 'testing.setup_db_structure'
+
+    def turn_on_sql_logging(self):
+        sl = logging.getLogger('sqlalchemy.engine')
+        sl.setLevel(logging.INFO)
+        format_str = "%(asctime)s - %(message)s"
+        formatter = logging.Formatter(format_str)
+        app_handler = RotatingFileHandler(
+            path.join(self.dirs.logs, 'sql.log'),
+              maxBytes=self.logs.max_bytes,
+              backupCount=self.logs.backup_count,
+        )
+        app_handler.setLevel(logging.INFO)
+        app_handler.setFormatter(formatter)
+        sl.addHandler(app_handler)
 
 class Dev(Default):
     """ this custom "user" class is designed to be used for

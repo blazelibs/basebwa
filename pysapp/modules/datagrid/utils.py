@@ -146,7 +146,7 @@ class DataGrid(object):
         return query
      
     def base_query(self):
-        if not self._base_query:
+        if self._base_query is None:
             query = self.get_select_query()
             query = self._apply_filters(query)
             query = self._apply_sort(query)
@@ -158,7 +158,7 @@ class DataGrid(object):
         return self._base_query
     
     def get_query(self):
-        if not self._query:
+        if self._query is None:
             query = self.base_query()
             query = self._apply_paging(query)
             query = query.apply_labels()
@@ -166,7 +166,7 @@ class DataGrid(object):
         return self._query
     
     def force_request_process(self):
-        if not self._query:
+        if self._query is None:
             self.get_query()
     
     def _req_obj(self):
