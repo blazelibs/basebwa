@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
 from os import path
 import logging
 from logging.handlers import RotatingFileHandler
@@ -85,6 +86,16 @@ class Default(DefaultSettings):
         app_handler.setLevel(logging.INFO)
         app_handler.setFormatter(formatter)
         sl.addHandler(app_handler)
+    
+    def setup_beaker_db_sessions(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
+        #http://beaker.groovie.org/configuration.html
+        self.beaker.type = 'ext:database'
+        self.beaker.cookie_expires = cookie_expires
+        self.beaker.timeout = timeout
+        self.assign_beaker_url()
+    
+    def assign_beaker_url(self):
+        self.beaker.url = self.db.url
 
 class Dev(Default):
     """ this custom "user" class is designed to be used for
