@@ -98,6 +98,7 @@ class CommonBase(ProtectedPageView):
         self._cb_action_update = None
         self._cb_action_delete = None
         self._cb_action_list = None
+        self.id_param = None
         
     def get_safe_action_prefix(self):
         return self.action_prefix.replace(' ', '_')
@@ -149,6 +150,8 @@ class CommonBase(ProtectedPageView):
 
     def get_id_from_args(self, args, kwargs):
         try:
+            if self.id_param:
+                return kwargs.pop(self.id_param, None)
             objid = kwargs.pop('objid', None)
             if not objid:
                 objid = kwargs.pop('id', None)
