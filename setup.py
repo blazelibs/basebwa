@@ -56,10 +56,10 @@ Please visit: http://groups.google.com/group/pyslibs
 Current Status
 ---------------
 
-The code for 0.1 is pretty stable.  API, however, will be changing in 0.2.
+The code stays pretty stable, but the API is likely to change in the future.
 
-The unstable `development version
-<https://svn.rcslocal.com:8443/svn/pysmvt/pysapp/trunk/#egg=pysapp-dev>`_.
+The `pysapp tip <http://bitbucket.org/rsyring/pysapp/get/tip.zip#egg=pysapp-dev>`_
+is installable via `easy_install` with ``easy_install pysapp==dev``
 """
 import sys
 try:
@@ -69,13 +69,15 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+version = '0.2'
+
 setup(
     name = "pysapp",
-    version = "0.1.2",
+    version = version,
     description = "A pysmvt supporting application",
     long_description = __doc__,
     author = "Randy Syring",
-    author_email = "randy@rcs-comp.com",
+    author_email = "rsyring@gmail.com",
     url='http://pypi.python.org/pypi/pysapp/',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -87,8 +89,8 @@ setup(
     include_package_data=True,
     install_requires = [
         "Elixir>=0.6.1",
-        "pysmvt>=0.1",
-        "pysform>=0.1",
+        "pysmvt>=0.2",
+        "pysform>=0.2",
         "SQLiteFKTG4SA>=0.1.1",
         "python-dateutil>=1.4.1"
     ],
