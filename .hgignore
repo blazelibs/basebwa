@@ -6,3 +6,5 @@
 ^docs/_build
 [^/]+-stats\.txt$
 
+glob:writeable/logs/*.log
+glob:writeable/tmp/*
