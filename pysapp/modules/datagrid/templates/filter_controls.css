@@ -1,0 +1,23 @@
+
+div.datagrid-filter-controls-wrapper{
+    float: left;
+    width: 45%;
+}
+
+div.datagrid-filter-controls-wrapper label {
+    font-weight: bold;
+    font-size: .8em;
+    padding-left: 3px;
+}
+
+div.filteron-wrapper {
+    float: left;
+}
+
+select.datagrid-filteronop {
+    float: left;
+}
+
+div.filterfor-wrapper {
+    float: left;
+}

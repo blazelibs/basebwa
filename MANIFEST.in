@@ -1,0 +1,2 @@
+recursive-include pysapp *
+global-exclude *.pyc

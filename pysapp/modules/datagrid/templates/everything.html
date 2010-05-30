@@ -1,0 +1,14 @@
+<{- include_css() -}>
+<form action="<{ datagrid.url_form_action|e }>" method="get" class="datagrid-form expand-around-floats">
+    <h2>Table Controls</h2>
+    <{ datagrid.html_filter_controls }>
+    <{ datagrid.html_sort_controls }>
+    <{ datagrid.html_pager_controls_upper }>
+    <input type="hidden" name="sort" value="<{datagrid.value_sort}>" />
+    <div class="datagrid-actions-wrapper">
+        <input type="submit" value="Apply" class="datagrid-apply-button"/>
+        <a href="<{ datagrid.url_reset }>">Reset</a>
+    </div>
+</form>
+<{ datagrid.html_table }>
+<{ datagrid.html_pager_controls_lower }>

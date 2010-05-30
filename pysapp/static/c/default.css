@@ -1,0 +1,523 @@
+/****************************** TYPOGRAPHY **************************/
+/*  NOTE: This file should stay as non-site-specific as possible.
+**  It should be able to be dropped in from one app to another 
+**  with ZERO modification and very little extranious classes, etc.
+*/
+
+/* DEFAULT FONT SIZE */
+
+body {
+    font-size: 80%;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+	
+/*typography*/
+a {
+    text-decoration: underline;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+h1 {
+	font-size: 2.0em;
+	font-weight: normal;
+	margin-top: 0em;
+	margin-bottom: 0em;/*both set to zero and padding in header div is used intead to deal with compound ie pc problems that are beyound summary in a simple comment.*/
+	}
+h2 {
+	font-size: 1.7em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: normal;
+	}
+h3 {
+	font-size: 1.4em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: normal;
+	}
+h4 {
+	font-size: 1.2em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: bold;
+	}
+h5 {
+	font-size: 1.0em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: bold;
+	}
+h6 {
+	font-size: 0.8em;
+	margin: 1.2em 0em 1.2em 0em;
+	font-weight: bold;
+	}
+img {
+	border: 0;
+	}
+li {
+	font-size: 1.0em;
+	line-height: 1.4em;
+	}
+table {
+    font-size: 1em;
+}
+dt {
+    margin: 1em 0 0 1em;
+    font-weight: bold;
+}
+dd {
+    margin: .5em 0 .5em 2em;
+}
+p {
+	font-size: 1.0em;
+	line-height: 1.5em;
+	margin: 1.2em 0em 1.2em 0em;
+	}
+p.short {
+    font-size: 1.0em;
+	line-height: 1.1em;
+	margin: 0;
+}
+li > p {
+	margin-top: 0.2em;
+	}
+pre {/*moz 1.0/1.1/1.2.1, net 7.0/7.01 make this way too small, but i'm not going to go larger because monospace tends to run you into overflow pretty quick. prior moz and net are okay.*/
+	font-family: Courier New, Courier, Lucidatypewriter, Fixed, monospace;
+	font-size: 1.0em;
+	}
+strong, b {
+	font-weight: bold;
+	}
+
+input           { font-size: .9em; }
+
+select          { font-size: .9em; }
+
+textarea        { font-size: 1.1em; }
+
+/*the following classes are to demonstrate better line heights for narrow columns*/	
+.narrow1{
+	line-height: 1.3em;
+	}
+	
+.slim {
+    line-height: 1.2em;
+	margin: 0;
+}
+
+.small {
+    line-height: 1.1em;
+    font-size: .9em;
+}
+
+.fineprint {
+    line-height: 1em;
+    font-size: .8em;
+}
+
+.biggerText {
+    font-size: 1.2em;
+}
+
+/******************* USER MESSAGES *********************/
+
+#user_messages {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border: none;    
+    background: #E6F2FF;
+    border: solid 1px #0052A0;
+    padding: 10px 10px 10px 10px;
+    color: black;
+}
+
+#user_messages h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: black;
+}
+
+#user_messages ul{
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+#user_messages li {
+    margin-left: 15px;
+    font-weight: normal;
+}
+
+#user_messages li strong {
+    font-weight: bold;
+}
+
+#user_messages li strong.sev_error{
+    color: red;
+    text-transform: capitalize;
+}
+
+#user_messages li strong.sev_warning{
+    color: #998300;
+    text-transform: capitalize;
+}
+
+#user_messages li strong.sev_notice{
+    color: black;
+    text-transform: capitalize;
+}
+
+/*************************************** FORMS **************************************************/
+form.generated,
+div.static-form {
+    margin: 0px; 
+    padding: 0px;
+}
+
+form.generated div.row,
+div.static-form div.row {
+    padding: 0.4em 0 0.4em 0;
+    margin: 0;
+    border: solid 1px #CCCCCC;
+    border-top: none;
+}
+
+/* START: Expand row around floated child elements */
+/* http://csscreator.com/?q=attributes/containedfloat.php */
+form.generated div.row:after,
+div.static-form div.row:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    font-size:0;	
+    clear: both; 
+    visibility:hidden;
+}
+	
+form.generated div.row,
+div.static-form div.row {
+	display: inline-block;
+}
+
+/* Hides from IE Mac \*/
+* html form.generated div.row,
+* html div.static-form div.row {
+	height: 1%;
+}
+form.generated div.row,
+div.static-form div.row {
+	display:block;
+}
+/* End Hack */ 
+/* END: Expand row around floated child elements */
+
+form.generated div.row.first,
+div.static-form div.row.first {
+    border-top: solid 1px #CCCCCC;
+}
+
+form.generated div.row.odd,
+div.static-form div.row.odd {
+    background-color: #F6F6F6;
+}
+
+form.generated div.row.even,
+div.static-form div.row.even {
+    background-color: #FFF;
+}
+
+/* remove background colors and borders from a submit button so it appears
+  below the form */
+form.generated div.row.submit,
+form.generated div.row.reset,
+form.generated div.row.cancel,
+form.generated div.row.submit-only,
+div.static-form div.row.submit-only {
+    background: none;
+    border: none;
+}
+
+
+form.generated div.row.submit-only,
+div.static-form div.row.submit-only {
+	padding-top: 15px;
+}
+
+form.generated label,
+div.static-form label {
+    width: 100px;
+    float: left;
+    padding: 0 0 0 10px;
+    margin: 0;
+	font-size: 1.1em;
+}
+
+form.generated div.field-wrapper,
+form.generated div.group-wrapper,
+div.static-form div.field-wrapper,
+div.static-form div.group-wrapper {
+	width: 620px;
+    position: relative;
+    float: left;
+    padding: 0 0 0 10px;
+    margin: 0;
+    /* IE double-margin bug */
+    display: inline;
+}
+
+/* margin should be the label width plus the left padding on the field-wrapper */
+form.generated div.field-wrapper.no-label,
+form.generated div.group-wrapper.no-label,
+div.static-form div.field-wrapper.no-label,
+div.static-form div.group-wrapper.no-label{
+    margin-left: 110px;
+}
+
+/****** BEGIN group elements ********/
+form.generated div.group-wrapper div.first,
+form.generated div.group-wrapper div.odd,
+form.generated div.group-wrapper div.even,
+div.static-form div.group-wrapper div.first,
+div.static-form div.group-wrapper div.odd,
+div.static-form div.group-wrapper div.even{
+	/* IE 6 doesn't understand the multi-class selectors above, so we need to cancel
+	the styling
+	*/
+	border: none;
+	background: none;
+}
+
+form.generated div.group-wrapper label,
+div.static-form div.group-wrapper label {
+	float: none;
+	width: auto;
+	padding: 0;
+	margin: 0;
+}
+
+form.generated div.grpel,
+div.static-form div.grpel {
+	float: left;
+	margin: 0 15px 0 0;
+}
+
+form.generated div.group-wrapper div.field-wrapper,
+div.static-form div.group-wrapper div.field-wrapper {
+	position: static;
+	width: auto;
+    float: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+}
+/****** END group elements ********/
+
+form.generated div.required_note_above_header{
+	float: right;
+	padding-top: 15px;
+}
+
+form.generated .required_note{
+	text-align: right;
+	padding-bottom: 3px;
+}
+
+form.generated .required_note span.star,
+form.generated .required_note_above_header span.star{
+	color: red;
+}
+
+form.generated span.required-star {
+    position: absolute;
+    left: 0;
+    color: red;
+    padding: 0;
+    margin: 0;
+}
+
+form.generated input.text,
+form.generated input.password,
+form.generated input.file {
+	/* the width doesn't actually seem to affect the file input */
+    width: 175px;
+}
+
+/* have to set the width on the checkbox or otherwise the left margin
+  doesn't line up with the other input elements in IE */
+form.generated input.checkbox {
+    width: 13px;
+    height: 13px;
+}
+
+form.generated label.after {
+    width: auto;
+    padding: 0 0 0 .5em;
+}
+
+form.generated ul.errors,
+form.generated ul.notes,
+div.static-form ul.notes {
+    margin: 0px 0 0 5px;
+    padding: 3px;
+	list-style: none;
+}
+
+form.generated ul.errors li,
+form.generated ul.notes li,
+div.static-form ul.notes li {
+	margin: 4px 0 0 0;
+	padding: 0 0 0 12px;
+	text-indent: -12px;
+}
+
+form.generated p.error,
+form.generated p.note,
+div.static-form p.note {
+    margin: 3px 0 0 5px;
+    padding: 3px 3px 3px 12px;
+	text-indent: -12px;
+}
+
+form.generated p.error,
+form.generated ul.errors li {
+    color: red;
+}
+
+form.generated p.frozen {
+    margin: 0;
+    padding: 0;
+}
+
+/******************* TABLE GENERATOR *********************/
+
+table.dataTable {
+    width: 100%;
+    margin: 1em 0px .5em 0px;
+    color: black;
+}
+
+table.dataTable th, table.dataTable td{
+    padding: 2px 4px 2px 4px;
+    margin: 0px;
+}
+
+table.dataTable td {
+    vertical-align: top;
+}
+
+table.dataTable th {
+    font-weight: bold;
+    color: black;
+    background-color: rgb(211, 220, 227);
+    text-align: center;
+    border-bottom: solid 1px white;
+    border-right: solid 1px white;
+    border-top: solid 1px white;
+}
+
+table.dataTable th img{
+	margin-left: 10px;
+}
+
+table.dataTable td {
+    border-bottom: solid 1px white;
+    border-right: solid 1px white;
+}
+
+table.dataTable tr.even td{
+    background-color: #d5d5d5;
+}
+
+table.dataTable td, table.dataTable tr.odd td{
+    background-color: #e5e5e5;
+}
+
+table.dataTable .first_col {
+    border-left: solid 1px white;
+}
+
+table.manage td a.edit_link {
+    float: left;
+    background: url(../images/icons/b_edit.png);
+    height: 16px;
+    width: 16px;
+    text-indent: -1200px;
+    margin-left: 1em;
+}
+
+table.manage td a.delete_link {
+    float: left;
+    background: url(../images/icons/b_drop.png);
+    height: 16px;
+    width: 16px;
+    text-indent: -1200px;
+}
+
+.draft-wrapper {
+	background: url(default_imgs/draft.png) repeat;
+}
+
+/* can be put on a dynamically genereated span to make a JS action look
+  like a link.  */
+.js-action-link {
+	font-size: 95%;
+	color: blue;
+	text-decoration: underline;
+}
+.js-action-link:hover {
+	text-decoration: none;
+	cursor: pointer;
+}
+
+/************************* JS BOXES ***************************/
+
+p.js_message_box {
+    background: #CCC;
+    border: solid 1px #777;
+    display: none;
+    margin: 5px 0 0 0;
+    padding: 3px;
+    font-size: 12px;
+}
+
+p.js_message_box.ok {
+    background: #fafff3;
+    border: solid 1px #acd373;
+}
+
+p.js_message_box.failed {
+    background: #FFF2F2;
+    border: solid 1px #D47476;
+}
+
+/***************************** EXPAND AROUND FLOATS ******************************/
+
+.expand-around-floats:after{
+    content: "."; 
+    display: block; 
+    height: 0; 
+    font-size:0;	
+    clear: both; 
+    visibility:hidden;
+}	
+.expand-around-floats{
+	display: inline-block;
+}
+* html .expand-around-floats {
+	height: 1%;
+}
+.expand-around-floats{
+	display:block;
+}
+
+/********************** JAVASCRIPT RELATED STYLES *************************/
+
+.fake_link{
+	text-decoration: underline;
+	color: blue;
+	cursor: pointer;
+}
+
+.fake_link:hover {
+	text-decoration: none;
+}
