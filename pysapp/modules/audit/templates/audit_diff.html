@@ -1,0 +1,9 @@
+<{ include_css() -}>
+<% extends extend_from %>
+<% block title %><{pagetitle|title}> | <{super()}><% endblock %>
+<% block body %>
+<h1 class="title"><{pagetitle}></h1>
+<p><span class="old_revision"><{ old_rev_ts | strftime }></span>
+   <%- if new_rev_ts %><br/><span class="new_revision"><{ new_rev_ts | strftime }></span><% endif -%></p>
+<p id="diff_text"><{ diff_text }></p>
+<% endblock %>

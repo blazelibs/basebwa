@@ -1,0 +1,69 @@
+from os import path
+from settings import Default
+
+class Dev(Default):
+    """ this custom "user" class is designed to be used for
+    user specific development environments.  It can be used like:
+    
+        `pysmvt serve dev`
+    """
+    def __init__(self):
+        Default.__init__(self)
+                
+        # a single or list of emails that will be used to override every email sent
+        # by the system.  Useful for debugging.  Original recipient information
+        # will be added to the body of the email
+        self.emails.override = '{{programmer_email}}'
+        
+        #######################################################################
+        # USERS: DEFAULT ADMIN
+        #######################################################################
+        self.modules.users.admin.username = '{{username.lower()}}'
+        self.modules.users.admin.password = '{{password}}'
+        self.modules.users.admin.email = '{{programmer_email}}'
+        
+        #######################################################################
+        # EXCEPTION HANDLING
+        #######################################################################
+        self.exceptions.hide = False
+        self.exceptions.email = False
+        
+        #######################################################################
+        # DEBUGGING
+        #######################################################################
+        self.debugger.enabled = True
+        # this is a security risk on a live system, so we only turn it on
+        # for a specific user config
+        self.debugger.interactive = True
+# this is just a convenience so we don't have to type the capital letter on the
+# command line when running `pysmvt serve`
+dev=Dev
+
+class Test(Dev):
+    def __init__(self):
+        # call parent init to setup default settings
+        Dev.__init__(self)
+
+        #######################################################################
+        # TEMPLATES
+        #######################################################################
+        # use test template instead of real templates to speed up the tests
+        self.template.default = 'test.html'
+        self.template.admin = 'test.html'
+
+        #######################################################################
+        # DATABASE
+        #######################################################################
+        # in memory sqlite DB is the fastest
+        self.db.url = 'sqlite://'
+        # uncomment this if you want to use a database you can inspect
+        #self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'test_application.db')
+        
+        #######################################################################
+        # DEBUGGING
+        #######################################################################
+        # turn off the debugger or all exceptions will get turned into
+        # 500 SERVER ERROR responses when testing, which makes things VERY
+        # difficult to troubleshoot
+        self.debugger.enabled = False
+

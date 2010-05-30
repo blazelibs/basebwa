@@ -1,0 +1,9 @@
+div.datagrid-sort-controls-wrapper {
+	float: left;
+}
+
+div.datagrid-sort-controls-wrapper label {
+    font-weight: bold;
+    font-size: .8em;
+    padding-left: 3px;
+}

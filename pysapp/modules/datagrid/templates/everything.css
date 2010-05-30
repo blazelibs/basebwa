@@ -1,0 +1,25 @@
+
+form.datagrid-form {
+	border: solid 1px #ccc;
+	padding: 10px;
+	background: #efefef;
+}
+
+form.datagrid-form h2 {
+	font-size: 1em;
+	font-weight: bold;
+	margin: 0 0 10px 0;
+	padding: 0;
+	line-height: 1em;
+}
+
+div.datagrid-actions-wrapper {
+	margin-top: 10px;
+	clear: both;
+	float: right;
+}
+
+div.datagrid-actions-wrapper a {
+	font-size: .8em;
+	margin-left: 10px;
+}

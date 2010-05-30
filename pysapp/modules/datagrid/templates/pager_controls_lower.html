@@ -1,0 +1,31 @@
+<% if datagrid.show_pager_controls_lower -%>
+<{ include_css() -}>
+<ul class="datagrid-pager-controls-lower-wrapper">
+    <%- if datagrid.page > 1 %>
+        <li>
+            <a class="pager-link-first" href="<{ datagrid.link_pager_first|e }>"><img src="images/icons/b_firstpage.png" width="16" height="13" alt="&lt;&lt;" /></a>
+            <a class="pager-link-first" href="<{ datagrid.link_pager_first|e }>">first</a>
+        </li>
+        <li>
+            <a class="pager-link-previous" href="<{ datagrid.link_pager_previous|e }>"><img src="images/icons/b_prevpage.png" width="8" height="13" alt="&lt;" /></a>
+            <a class="pager-link-previous" href="<{ datagrid.link_pager_previous|e }>">previous</a>
+        </li>
+    <%- else %>
+        <li class="dead"><img src="images/icons/bd_firstpage.png" width="16" height="13" alt="&lt;&lt;" /> first</li>
+        <li class="dead"><img src="images/icons/bd_prevpage.png" width="8" height="13" alt="&lt;" /> previous</li>
+    <%- endif -%>
+    <% if datagrid.page < datagrid.pages %>
+        <li>
+            <a class="pager-link-next" href="<{ datagrid.link_pager_next|e }>">next</a>
+            <a class="pager-link-next" href="<{ datagrid.link_pager_next|e }>"><img src="images/icons/b_nextpage.png" width="8" height="13" alt="&gt;" /></a>
+        </li>
+        <li>
+            <a class="pager-link-last" href="<{ datagrid.link_pager_last|e }>">last</a>
+            <a class="pager-link-last" href="<{ datagrid.link_pager_last|e }>"><img src="images/icons/b_lastpage.png" width="16" height="13" alt="&gt;&gt;" /></a>
+        </li>
+    <%- else -%>
+        <li class="dead">next <img src="images/icons/bd_nextpage.png" width="8" height="13" alt="&gt;" /></li>
+        <li class="dead">last <img src="images/icons/bd_lastpage.png" width="16" height="13" alt="&gt;&gt;" /></li>
+    <%- endif %>
+</ul>
+<%- endif %>

@@ -1,0 +1,12 @@
+<% extends settings.template.default %>
+<% block title %>Test Form | <{super()}><% endblock %>
+<% block body %>
+    <h1>Test Form</h1>
+    <p>A form with examples of all the possible form elements of pysform.</p>
+    <% if form %>
+        <{ form.render() }>
+    <% else %>
+        <h2>Results</h2>
+        <pre><{ result|pprint}></pre>
+    <% endif %>
+<% endblock body%>
