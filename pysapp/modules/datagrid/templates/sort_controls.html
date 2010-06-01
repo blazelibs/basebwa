@@ -1,0 +1,14 @@
+<% if datagrid.show_sort_controls -%>
+<{- include_css() -}>
+<div class="datagrid-sort-controls-wrapper expand-around-floats">
+    <div class="sortdd-wrapper">
+        <select class="datagrid-sort" name="sortdd">
+            <option value="">&nbsp;</option>
+            <% for ident, opts in datagrid._sortdd.items() -%>
+                <option value="<{ ident }>" <{-datagrid.selected_sortdd_opt(ident) -}> ><{ opts['label'] }></option>
+            <% endfor %>
+        </select><br />
+        <label>Sort:</label>
+    </div>
+</div>
+<%- endif %>

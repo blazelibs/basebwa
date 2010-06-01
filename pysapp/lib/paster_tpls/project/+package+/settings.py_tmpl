@@ -1,0 +1,81 @@
+from os import path
+from werkzeug.routing import Rule
+from pysmvt.config import DefaultSettings
+import pysapp.settings
+
+basedir = path.dirname(path.abspath(__file__))
+appname = path.basename(basedir)
+
+class Default(pysapp.settings.Default):
+    """ Default settings should be good for production.  User-specific
+    development environments can be created below.  """
+    
+    def __init__(self):
+        # call parent init to setup default settings
+        pysapp.settings.Default.__init__(self, appname, basedir)
+        
+        # can be used for display purposes through the app
+        self.name.full = '{{project}}'
+        self.name.short = '{{project}}'
+        
+        # supporting applications
+        self.supporting_apps = ['pysapp']
+        
+        # application modules from our application or supporting applications
+        self.modules.default.enabled = True
+        
+        #######################################################################
+        # ROUTING
+        #######################################################################
+        self.routing.routes.extend([
+            Rule('/', defaults={}, endpoint='default:Index'),
+            Rule('/control-panel', endpoint='apputil:DynamicControlPanel'),
+        ])
+        
+        #######################################################################
+        # DATABASE
+        #######################################################################
+        self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'application.db')
+        
+        #######################################################################
+        # EMAIL ADDRESSES
+        #######################################################################
+        # the default 'from' address used if no from address is specified
+        self.emails.from_default = '{{programmer_email}}'
+        
+        # programmers who would get system level notifications (code
+        # broke, exception notifications, etc.)
+        self.emails.programmers = ['{{programmer_email}}']
+        
+        # people who would get application level notifications (payment recieved,
+        # action needed, etc.)
+        self.emails.admins = ['{{programmer_email}}']
+        
+        #######################################################################
+        # EMAIL SETTINGS
+        #######################################################################
+        # used by mail_admins() and mail_programmers()
+        self.email.subject_prefix = '[%s] ' % appname
+        
+        #######################################################################
+        # EXCEPTION HANDLING
+        #######################################################################
+        self.exceptions.hide = True
+        self.exceptions.email = True
+        
+        #######################################################################
+        # DEBUGGING
+        #######################################################################
+        self.debugger.enabled = False
+
+# often times, you will need developer or computer specific configurations
+# that you don't want to be part of the main settings file (because it clutters
+# up the file).  Therefore, we can conditionally include a site-specific
+# settings file with the profiles needed at only that site.  We do it at the
+# bottom of this file to allow the site-specific file to inherit items from this
+# file:
+try:
+    from site_settings import *
+except ImportError, e:
+    if 'No module named site_settings' not in str(e):
+        raise
