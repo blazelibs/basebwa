@@ -1,13 +1,11 @@
 from StringIO import StringIO
 from pysmvt import ag
 from pysmvt.users import User
-from pysmvt.utils import wrapinapp
+from pysmvt.test import inrequest
 from pysmvt.wrappers import Request
 from pysapp.utils import ControlPanelGroup, ControlPanelSection, \
     ControlPanelLink, control_panel_permission_filter
 import pysapp.forms
-
-testapp = ag._wsgi_test_app
 
 class TestControlPanelFilter(object):
     
@@ -83,7 +81,7 @@ class TestForm(object):
         f = self.Form()
         assert not f.is_submitted()
 
-    @wrapinapp(testapp)
+    @inrequest
     def test_auto_form_submit(self):
         # setup the request, which will bind to the app's rg.request
         # which should result in the form values getting submitted

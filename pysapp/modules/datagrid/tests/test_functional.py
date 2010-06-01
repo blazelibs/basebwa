@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Unicode, SmallInteger, DateTime, \
     UniqueConstraint, ForeignKey, String
 from pysmvt import db, getview, ag
-from pysmvt.utils import wrapinapp
+from pysmvt.test import inrequest
 from pysapp.modules.datagrid.utils import DataGrid
 from pysmvt.htmltable import Col, YesNo
 from _supporting import Person, Base, assertEqualSQL, dodiff
@@ -63,7 +63,7 @@ class TestFunctional(object):
         )
         return p
     
-    @wrapinapp(testapp)
+    @inrequest
     def test_records(self):
         tbl = Person.__table__
         qobj = db.sess.query(tbl)
@@ -80,7 +80,7 @@ class TestFunctional(object):
         records = p.records
         assert len(records) == p.count
 
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_table(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?perpage=5&page=1&sort=firstname', 'http://localhost'))
@@ -124,13 +124,13 @@ class TestFunctional(object):
         html = p.html_table
         assert html == expect, dodiff(html, expect)
     
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_table_outpu(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo', 'http://localhost'))
         assert p.html_table
 
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_table_desc_sort(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?perpage=5&page=1&sort=-firstname', 'http://localhost'))
@@ -143,7 +143,7 @@ class TestFunctional(object):
         html = p.html_table
         assert expect in html, dodiff(html, expect)
 
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_filter_controls(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?perpage=5&page=1&sort=firstname&filteron=firstname&filteronop=eq&filterfor=test', 'http://localhost'))
@@ -170,7 +170,7 @@ class TestFunctional(object):
 </div>"""
         assertEqualSQL(p.html_filter_controls, expected)
 
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_filter_controls(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?perpage=5&page=1&sort=firstname&filteron=firstname&filteronop=eq&filterfor=test', 'http://localhost'))
@@ -198,7 +198,7 @@ class TestFunctional(object):
     
         assert '<input type="text" class="datagrid-filterfor" name="filterfor" value="test"/>' in html
         
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_sort_controls(self):
         p = self.get_dg()
         p.add_sort('inactive state DESC', Person.inactive, Person.state.desc())
@@ -220,7 +220,7 @@ class TestFunctional(object):
 </div>"""
         assertEqualSQL(p.html_sort_controls, expected)
     
-    @wrapinapp(testapp)
+    @inrequest
     def test_no_sort_controls(self):
         tbl = Person.__table__
         p = DataGrid(
@@ -251,7 +251,7 @@ class TestFunctional(object):
         )
         assert not p.html_sort_controls
     
-    @wrapinapp(testapp)
+    @inrequest
     def test_no_filter_controls(self):
         tbl = Person.__table__
         p = DataGrid(
@@ -280,7 +280,7 @@ class TestFunctional(object):
         )
         assert not p.html_filter_controls
         
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_pager_controls_upper(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?perpage=20&page=3', 'http://localhost'))
@@ -297,7 +297,7 @@ class TestFunctional(object):
         
         assert '<input type="text" class="datagrid-perpage" name="perpage" value="20"/>' in html
 
-    @wrapinapp(testapp)
+    @inrequest
     def test_html_pager_controls_lower(self):
         p = self.get_dg()
         p._replace_environ(create_environ('/foo?perpage=20&page=3', 'http://localhost'))

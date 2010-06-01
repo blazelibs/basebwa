@@ -1,7 +1,6 @@
 from werkzeug import create_environ
 from pysmvt import db
 from pysmvt.routing import current_url
-from pysmvt.utils import wrapinapp
 from _supporting import Person, assertEqualSQL
 from sqlalchemy.sql import select
 from pysmvt.htmltable import Col, YesNo
