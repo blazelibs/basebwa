@@ -1,64 +1,42 @@
 from pysmvt import ag, rg, settings, user
+from pysmvt.views import View, SecureView
 
 from appstack.utils import control_panel_permission_filter
 import forms
 
-class UserMessagesSnippet(PublicSnippetView):
-
-    def default(self, heading = 'System Message(s)'):
-        self.assign('heading', heading)
-
-class SystemError(PublicPageView):
-
+class SystemError(View):
     def default(self):
-        if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
-            # internal server error
-            self.response.status_code = 500
+        self.status_code = 500
+        self.render_template()
 
-class AuthError(PublicPageView):
-
+class AuthError(View):
     def default(self):
-        if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
-            # unauthorized
-            self.response.status_code = 401
+        self.status_code = 401
+        self.render_template()
 
-class Forbidden(PublicPageView):
-
+class Forbidden(View):
     def default(self):
-        if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
-            # forbidden
-            self.response.status_code = 403
+        self.status_code = 403
+        self.render_template()
 
-class BadRequestError(PublicPageView):
-
+class BadRequestError(View):
     def default(self):
-        if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
-            # Bad Request
-            self.response.status_code = 400
+        self.status_code = 400
+        self.render_template()
 
-class NotFoundError(PublicPageView):
-
+class NotFoundError(View):
     def default(self):
-        if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
-            # Bad Request
-            self.response.status_code = 404
+        self.status_code = 404
+        self.render_template('not_found.html')
 
-
-class BlankPage(PublicPageView):
-
+class BlankPage(View):
+    """ not truly blank, wrapped in the default layout """
     def default(self):
-        pass
+        self.render_template()
 
-class ControlPanel(ProtectedPageView):
-    def prep(self):
-        self.require = 'webapp-controlpanel'
-
-    def default(self):
-        pass
-
-class DynamicControlPanel(ProtectedPageView):
-    def prep(self):
-        self.require = 'webapp-controlpanel'
+class DynamicControlPanel(SecureView):
+    def init(self):
+        self.require_all = 'webapp-controlpanel'
 
     def default(self):
         sections = []
@@ -74,22 +52,23 @@ class DynamicControlPanel(ProtectedPageView):
         sections.sort(seccmp)
         sections = control_panel_permission_filter(user, *sections)
         self.assign('sections', sections)
+        self.render_template()
 
-class HomePage(PublicPageView):
+class HomePage(View):
     def default(self):
-        pass
+        self.render_template()
 
-class TestForm(ProtectedPageView):
+class TestForm(SecureView):
     def prep(self):
-        self.require = 'webapp-controlpanel'
+        self.require_all = 'webapp-controlpanel'
 
-    def post_auth_setup(self, is_static=False):
+    def auth_post(self, is_static=False):
         self.form = forms.TestForm(is_static)
 
-    def post(self, is_static=False):
+    def post(self):
         if self.form.is_cancel():
             user.add_message('notice', 'form submission cancelled, data not changed')
-            self.default(is_static)
+            self.default()
         if self.form.is_valid():
             try:
                 user.add_message('notice', 'form posted succesfully')
@@ -106,7 +85,8 @@ class TestForm(ProtectedPageView):
         # form was either invalid or caught an exception, assign error
         # messages
         self.form.assign_user_errors()
-        self.default(is_static)
+        self.default()
 
-    def default(self, is_static=False):
+    def default(self):
         self.assign('form', self.form)
+        self.render_template()

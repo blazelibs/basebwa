@@ -1,14 +1,14 @@
-<% for msg in sesuser.get_messages() %>
-    <% if loop.first %>
+{% for msg in sesuser.get_messages() %}
+    {% if loop.first %}
         <div id="user_messages">
-        <h2 id="user_messages_header"><{ heading|e }></h2>
+        <h2 id="user_messages_header">{{ heading|e }}</h2>
         <ul>
-    <% endif %>
+    {% endif %}
             <li>
-                <strong class="sev_<{ msg.severity }>"><{msg.severity}></strong>: <{msg.text|e}>
+                <strong class="sev_{{ msg.severity }}">{{msg.severity}}</strong>: {{msg.text|e}}
             </li>
-    <% if loop.last %>
+    {% if loop.last %}
         </ul>
         </div>
-    <% endif %>
-<% endfor %>
+    {% endif %}
+{% endfor %}

@@ -1,9 +1,11 @@
-from decorator import decorator
 import warnings
+
+from decorator import decorator
 from pysutils import decorator
-from pysmvt import user, forward, ag, db
+from pysmvt import user, forward, ag
+
 from pysapp import exc
-from pysapp.lib import db as libdb
+from plugstack.sqlalchemy import db
 
 class ControlPanelSection(object):
 
@@ -183,25 +185,3 @@ def excignore(f, *args, **kwargs):
                 raise
             db.sess.rollback()
     return innerfunc
-
-
-############### DEPRECATED FUNCTIONS #########################
-@deprecated('use pysapp.lib.db.run_module_sql instead')
-def run_module_sql(module, target, use_dialect=False):
-    libdb.run_module_sql(module, target, use_dialect)
-
-@deprecated('use pysapp.lib.db.run_app_sql instead')
-def run_app_sql(target, use_dialect=False):
-    libdb.run_app_sql(target, use_dialect)
-
-@deprecated('raise the appropriate HTTP exception instead')
-def fatal_error(user_desc = None, dev_desc = None, orig_exception = None):
-    # log stuff
-    ag.logger.debug('Fatal error: "%s" -- %s', dev_desc, str(orig_exception))
-
-    # set user message
-    if user_desc != None:
-        user.add_message('error', user_desc)
-
-    # forward to fatal error view
-    forward('apputil:SystemError')

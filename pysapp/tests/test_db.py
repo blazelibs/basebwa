@@ -1333,7 +1333,7 @@ class TestNavigationLayout(object):
         assert el.depth == 2
 
 def test_is_unique_exc():
-    from plugstack.users.model.orm import Group
+    from plugstack.auth.model.orm import Group
     try:
         u1 = Group(name=u'test')
         u2 = Group(name=u'test')
@@ -1360,7 +1360,7 @@ def test_is_unique_exc():
     assert not is_unique_exc('name', 'ix_users_group_name', Exception('column name is not unique'))
 
 def sa_one_to_none():
-    from plugstack.users.testing import create_user_with_permissions
+    from plugstack.auth.testing import create_user_with_permissions
     from users.model.orm import User
     from pysapp.lib.db import sa_one_to_none
     u1 = create_user_with_permissions()

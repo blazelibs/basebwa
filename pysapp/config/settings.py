@@ -26,9 +26,8 @@ class Default(DefaultSettings):
         self.name.full = 'pysapp application'
         self.name.short = 'pysapp app'
 
-        # application modules from our application or supporting applications
-        self.add_plugin(self.app_package, 'users')
-        self.add_plugin(self.app_package, 'apputil')
+        if is_primary:
+            self.init_plugins()
 
         #######################################################################
         # ROUTING
@@ -43,6 +42,7 @@ class Default(DefaultSettings):
                 Rule('/', defaults={}, endpoint='apputil:HomePage'),
                 Rule('/control-panel', endpoint='apputil:DynamicControlPanel'),
             ])
+
         #######################################################################
         # TEMPLATES
         #######################################################################
@@ -67,6 +67,12 @@ class Default(DefaultSettings):
         # TESTING
         #######################################################################
         self.testing.init_callables = 'testing.setup_db_structure'
+
+    def init_plugins(self):
+        # application modules from our application or supporting applications
+        self.add_plugin(self.app_package, 'sqlalchemy', 'sqlalchemybwp')
+        self.add_plugin(self.app_package, 'auth', 'authbwp')
+        self.add_plugin(self.app_package, 'apputil')
 
     def turn_on_sql_logging(self):
         sl = logging.getLogger('sqlalchemy.engine')

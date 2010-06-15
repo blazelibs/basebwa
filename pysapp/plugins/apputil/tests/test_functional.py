@@ -3,8 +3,8 @@ from werkzeug import BaseResponse
 from pysmvt import settings, ag
 from pysmvt.testing import Client
 
-from plugstack.users.lib.testing import login_client_with_permissions
-from plugstack.users.actions import permission_add
+from plugstack.auth.lib.testing import login_client_with_permissions
+from plugstack.auth.actions import permission_add
 
 testapp = ag.wsgi_test_app
 

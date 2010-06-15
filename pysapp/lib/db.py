@@ -1,8 +1,8 @@
 import logging
 from os.path import join
+
 from decorator import decorator
 from pysutils import curry
-from pysmvt import db
 import sqlalchemy.types
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
@@ -11,6 +11,8 @@ from sqlalchemy.orm import *
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.ext.declarative import declarative_base, \
     DeclarativeMeta, _declarative_constructor
+
+from plugstack.sqlalchemy import db
 
 log = logging.getLogger(__name__)
 
@@ -21,23 +23,23 @@ __all__ = [
 
 class NestedSetException(Exception):
     """ Base class for nested set related exceptions """
-    
+
 class MultipleRootsError(NestedSetException):
     """ Used when a root node is requested but a root node already exists
         in the table.
     """
-    
+
 class MultipleAnchorsError(NestedSetException):
     """
         Used when a node has more than one anchor point.
     """
-        
+
 class MultipleDeletesError(NestedSetException):
     """
         Can only delete one node at a time.  Issue a commit() between
         deletes.
     """
-    
+
 class MultipleUpdatesError(NestedSetException):
     """
         Can only update one node at a time.  Issue a commit() between
@@ -45,16 +47,16 @@ class MultipleUpdatesError(NestedSetException):
     """
 
 class NestedSetExtension(MapperExtension):
-    
+
     _node_delete_count = 0
     _node_update_count = 0
-    
+
     def __init__(self, pkname='id'):
         self.pkname = pkname
-        
-    def before_insert(self, mapper, connection, instance):        
+
+    def before_insert(self, mapper, connection, instance):
         nodetbl = mapper.mapped_table
-        
+
         # only one anchor can be given
         anchor_count = 0
         if instance.parent:
@@ -65,11 +67,11 @@ class NestedSetExtension(MapperExtension):
             anchor_count += 1
         if anchor_count > 1:
             raise MultipleAnchorsError('Nested set nodes can only have one anchor (parent, upper sibling, or lower sibling)')
-        
+
         # set values for the instance node
         if anchor_count == 0:
             """ This is a root node """
-            
+
             # test to make sure no other root nodes exist.  Since we don't have
             # treeids currently, we can't do multiple trees.
             rootnode = connection.execute(
@@ -77,7 +79,7 @@ class NestedSetExtension(MapperExtension):
                 ).fetchone()
             if rootnode:
                 raise MultipleRootsError('Multiple root nodes are not supported.')
-                
+
             # set node values
             nleft = 1
             nright = 2
@@ -86,11 +88,11 @@ class NestedSetExtension(MapperExtension):
             nparentid = None
         else:
             if instance.parent:
-                    
+
                 ancnode = connection.execute(
                     select([nodetbl]).where(getattr(nodetbl.c, self.pkname) == getattr(instance.parent, self.pkname))
                 ).fetchone()
-                
+
                 # The parent, and all nodes to the "right" will need to be adjusted
                 shift_inclusion_boundary = ancnode.redge
                 # All nodes to the "right" but NOT the parent will need their
@@ -132,12 +134,12 @@ class NestedSetExtension(MapperExtension):
                 ndepth = ancnode.depth
                 # parent
                 nparentid = ancnode.parentid
-            
+
             # new nodes have no children
             nright = nleft + 1
             # treeid is always the same
             #ntreeid = ancnode.treeid
-            
+
             connection.execute(
                 nodetbl.update() \
                     .where(
@@ -185,7 +187,7 @@ class NestedSetExtension(MapperExtension):
                     is staying the same.
                 """
                 return
-                
+
             # get fresh data from the DB in case this instance has been updated
             tu_node_data = connection.execute(
                             select([nodetbl]).where(getattr(nodetbl.c, self.pkname) == getattr(instance, self.pkname))
@@ -195,7 +197,7 @@ class NestedSetExtension(MapperExtension):
             tudepth = tu_node_data['depth']
             tuparentid = tu_node_data['parentid']
             tuwidth = turedge - tuledge + 1
-            
+
             # get fresh anchor from the DB in case the instance was updated
             anc_node_data = connection.execute(
                             select([nodetbl]).where(getattr(nodetbl.c, self.pkname) == getattr(anchor, self.pkname))
@@ -204,13 +206,13 @@ class NestedSetExtension(MapperExtension):
             ancredge = anc_node_data['redge']
             ancdepth = anc_node_data['depth']
             ancparentid = anc_node_data['parentid']
-            
+
             if getattr(anchor, self.pkname) == getattr(instance, self.pkname):
                 raise NestedSetException('A nodes anchor can not be iteself.')
-                
+
             if ancledge > tuledge and ancledge < turedge:
                 raise NestedSetException('A nodes anchor can not be one of its children.')
-            
+
             if instance.parent:
                 log.debug('before_update: anchor is parent')
                 # if the nodes parent is already the requested parent, do nothing
@@ -218,7 +220,7 @@ class NestedSetExtension(MapperExtension):
                     log.debug('before_update: parent requested is already the'
                               ' current parent, returning')
                     return
-                
+
                 if tuledge > ancledge:
                     """ parent from grandchild and parent from right """
                     log.debug('before_update: parent from grandchild and parent'
@@ -242,9 +244,9 @@ class NestedSetExtension(MapperExtension):
                     right_boundary_for_ledge  = ancledge+1
                     left_boundary_for_redge = tuledge
                 children_depth = ancdepth-tudepth+1
-                
+
                 instance.parentid = getattr(anchor, self.pkname)
-                instance.ledge = ancledgeaftershift + 1 
+                instance.ledge = ancledgeaftershift + 1
                 instance.redge = instance.ledge + tuwidth - 1
                 instance.depth = ancdepth + 1
             else:
@@ -252,7 +254,7 @@ class NestedSetExtension(MapperExtension):
                     raise NestedSetException('It is not valid to request a'
                         ' sibling update on the root node since only one root'
                         ' node is supported.')
-                    
+
                 if instance.upper_sibling:
                     log.debug('before_update: anchor is upper sibling')
                     if (ancredge + 1) == tuledge:
@@ -260,7 +262,7 @@ class NestedSetExtension(MapperExtension):
                                   ' sibling, returning')
                         return
                     if tuledge > ancledge and turedge < ancredge:
-                        """ upper sibling from child """    
+                        """ upper sibling from child """
                         log.debug('before_update: upper sibling from child')
                         left_bound_of_displaced  = turedge + 1
                         instance_children_shift = ancredge - turedge
@@ -268,7 +270,7 @@ class NestedSetExtension(MapperExtension):
                         displaced_shift = tuwidth * -1
                         right_boundary_for_ledge  = ancredge
                         left_boundary_for_redge = tuledge
-                        
+
                         ancredgeaftershift = ancredge - tuwidth
                         instance.ledge = ancredgeaftershift + 1
                         instance.redge = instance.ledge + tuwidth - 1
@@ -281,7 +283,7 @@ class NestedSetExtension(MapperExtension):
                         displaced_shift = turedge-tuledge+1
                         right_boundary_for_ledge  = turedge
                         left_boundary_for_redge = left_bound_of_displaced
-                        
+
                         instance.ledge = ancredge + 1
                         instance.redge = ancredge + 1 + (turedge - tuledge)
                     else:
@@ -293,10 +295,10 @@ class NestedSetExtension(MapperExtension):
                         displaced_shift = tuwidth * -1
                         right_boundary_for_ledge  = ancledge+1
                         left_boundary_for_redge = tuledge
-                        
+
                         instance.ledge = ancredge - (turedge - tuledge)
                         instance.redge = ancredge
-                    
+
                 else:
                     log.debug('before_update: anchor is lower sibling')
                     if (turedge+1) == ancledge:
@@ -313,7 +315,7 @@ class NestedSetExtension(MapperExtension):
                         displaced_shift = turedge-tuledge+1
                         right_boundary_for_ledge  = turedge
                         left_boundary_for_redge = left_bound_of_displaced
-                        
+
                         instance.ledge = ancledge
                         instance.redge = ancledge + (turedge - tuledge)
                     else:
@@ -325,10 +327,10 @@ class NestedSetExtension(MapperExtension):
                         displaced_shift = tuledge-turedge-1
                         right_boundary_for_ledge  = ancledge-1
                         left_boundary_for_redge = tuledge
-                        
+
                         instance.ledge = ancledge - 1 - + (turedge - tuledge)
-                        instance.redge = ancledge - 1 
-                
+                        instance.redge = ancledge - 1
+
                 children_depth = ancdepth-tudepth
                 instance.parentid = ancparentid
                 instance.depth = ancdepth
@@ -374,15 +376,15 @@ class NestedSetExtension(MapperExtension):
 
     def before_delete(self, mapper, connection, instance):
         self._node_delete_count += 1
-        
+
     def after_delete(self, mapper, connection, instance):
         if self._node_delete_count > 1:
             raise MultipleDeletesError
         self._node_delete_count = 0
-        
+
         nodetbl = mapper.mapped_table
         width = instance.redge - instance.ledge + 1
-        
+
         # delete the node's children
         connection.execute(
             nodetbl.delete(
@@ -392,7 +394,7 @@ class NestedSetExtension(MapperExtension):
                      )
             )
         )
-        
+
         # close the gap
         connection.execute(
                nodetbl.update() \
@@ -413,11 +415,11 @@ class DeclarativeMixin(object):
         data = dict([(name, getattr(self, name))
                      for name in col_prop_names if name not in exclude])
         return data
-            
+
     # before_update() would be needed to support moving of nodes
     # after_delete() would be needed to support removal of nodes.
     # [ticket:1172] needs to be implemented for deletion to work as well.
-    
+
 #def node_base(bind=None, metadata=None, mapper=None, cls=object,
 #                     name='Base', constructor=_declarative_constructor,
 #                     metaclass=DeclarativeMeta, engine=None):
@@ -425,10 +427,10 @@ class DeclarativeMixin(object):
 #                     name, constructor, metaclass, engine)
 #
 #    Base.__mapper_args__ = {
-#        'extension':NestedSetExtension(), 
+#        'extension':NestedSetExtension(),
 #        'batch':False  # allows extension to fire for each instance before going to the next.
 #    }
-#    
+#
 #    Base.parent = None
 #    Base.upper_sibling = None
 #    Base.lower_sibling = None
@@ -457,26 +459,26 @@ class SmallIntBool(sqlalchemy.types.TypeDecorator):
 
 def run_module_sql(module, target, use_dialect=False):
     ''' used to run SQL from files in a modules "sql" directory:
-    
+
             run_module_sql('mymod', 'create_views')
-        
+
         will run the file "<myapp>/modules/mymod/sql/create_views.sql"
-        
+
             run_module_sql('mymod', 'create_views', True)
-        
+
         will run the files:
-            
+
             # sqlite DB
             <myapp>/modules/mymod/sql/create_views.sqlite.sql
             # postgres DB
             <myapp>/modules/mymod/sql/create_views.pgsql.sql
             ...
-        
+
         The dialect prefix used is the same as the sqlalchemy prefix.
-        
+
         The SQL file can contain multiple statements.  They should be seperated
         with the text "--statement-break".
-            
+
     '''
     if use_dialect:
         relative_sql_path = 'modules/%s/sql/%s.%s.sql' % (module, target, db.engine.dialect.name )
@@ -486,26 +488,26 @@ def run_module_sql(module, target, use_dialect=False):
 
 def run_app_sql(target, use_dialect=False):
     ''' used to run SQL from files in an apps "sql" directory:
-    
+
             run_app_sql('test_setup')
-        
+
         will run the file "<myapp>/sql/test_setup.sql"
-        
+
             run_app_sql('test_setup', True)
-        
+
         will run the files:
-            
+
             # sqlite DB
             <myapp>/sql/test_setup.sqlite.sql
             # postgres DB
             <myapp>/sql/test_setup.pgsql.sql
             ...
-        
+
         The dialect prefix used is the same as the sqlalchemy prefix.
-        
+
         The SQL file can contain multiple statements.  They should be seperated
         with the text "--statement-break".
-            
+
     '''
     if use_dialect:
         relative_sql_path = 'sql/%s.%s.sql' % (target, db.engine.dialect.name )
@@ -517,7 +519,7 @@ def run_app_sql(target, use_dialect=False):
 def _run_sql(relative_sql_path):
     from pysmvt import appfilepath
     full_path = appfilepath(relative_sql_path)
-    
+
     sqlfile = file(full_path)
     sql = sqlfile.read()
     sqlfile.close()
@@ -568,7 +570,7 @@ def clear_db():
         rows = db.engine.execute(sql)
         for row in rows:
             db.engine.execute('drop view %s' % row['name'])
-        
+
         # drop the tables
         db.meta.reflect(bind=db.engine)
         for table in reversed(db.meta.sorted_tables):

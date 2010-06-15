@@ -27,6 +27,7 @@ class SQLAlchemyApp(object):
         self.application = application
         self.container = SQLAlchemyContainer()
         db._push_object(self.container)
+        print 'created db'
         db.sess = self.container.Session
         visitmods('model.orm')
         visitmods('model.metadata')

@@ -34,12 +34,12 @@ pysmvt as a requirement.
 #. `python setup.py -q develop`
 #. `cd <myapp>`
 #. `pysmvt broadcast initdb` setup the database tables
-#. `pysmvt broadcast initdata <user>` put basic data in the database, use the 
+#. `pysmvt broadcast initdata <user>` put basic data in the database, use the
    settings profile for your user
-#. `pysmvt serve <user>` run a development http server with the user's settings 
+#. `pysmvt serve <user>` run a development http server with the user's settings
    profile
 #. point your browser at http://localhost:5000/
-    
+
 Creating a New Application Module
 ---------------------------------
 This step creates a Application Module directory structure in <myapp>/modules/<mymod>:
@@ -85,7 +85,7 @@ setup(
         'License :: OSI Approved :: BSD License',
       ],
     license='BSD',
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+    packages=find_packages(exclude=['ez_setup', 'tests']),
     include_package_data=True,
     install_requires = [
         "Elixir>=0.6.1",
@@ -100,6 +100,9 @@ setup(
 
     [pysmvt.pysmvt_module_template]
     pysapp = pysapp.lib.paster_tpl:ModuleTemplate
+
+    [console_scripts]
+    pysapp = pysapp.application:script_entry
     """,
     zip_safe=False
 )
