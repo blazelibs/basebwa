@@ -1,45 +1,43 @@
-# -*- coding: utf-8 -*-
+from pysmvt import ag, rg, settings, user
 
-from pysmvt import ag, rg, appimportauto, settings, user
+from appstack.utils import control_panel_permission_filter
 import forms
-appimportauto('base', ['PublicSnippetView', 'PublicPageView', 'ProtectedPageView'])
-appimportauto('utils', 'control_panel_permission_filter')
 
 class UserMessagesSnippet(PublicSnippetView):
-    
-    def default(self, heading = 'System Message(s)'):        
+
+    def default(self, heading = 'System Message(s)'):
         self.assign('heading', heading)
 
 class SystemError(PublicPageView):
-    
+
     def default(self):
         if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
             # internal server error
             self.response.status_code = 500
 
 class AuthError(PublicPageView):
-    
+
     def default(self):
         if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
             # unauthorized
             self.response.status_code = 401
 
 class Forbidden(PublicPageView):
-    
+
     def default(self):
         if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
             # forbidden
             self.response.status_code = 403
 
 class BadRequestError(PublicPageView):
-    
+
     def default(self):
         if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
             # Bad Request
             self.response.status_code = 400
 
 class NotFoundError(PublicPageView):
-    
+
     def default(self):
         if not rg.environ.has_key('pysmvt.controller.error_docs_handler.response'):
             # Bad Request
@@ -47,21 +45,21 @@ class NotFoundError(PublicPageView):
 
 
 class BlankPage(PublicPageView):
-    
+
     def default(self):
         pass
-    
+
 class ControlPanel(ProtectedPageView):
     def prep(self):
         self.require = 'webapp-controlpanel'
-        
+
     def default(self):
         pass
-    
+
 class DynamicControlPanel(ProtectedPageView):
     def prep(self):
         self.require = 'webapp-controlpanel'
-        
+
     def default(self):
         sections = []
         for mod in settings.modules:
@@ -84,10 +82,10 @@ class HomePage(PublicPageView):
 class TestForm(ProtectedPageView):
     def prep(self):
         self.require = 'webapp-controlpanel'
-        
+
     def post_auth_setup(self, is_static=False):
         self.form = forms.TestForm(is_static)
-    
+
     def post(self, is_static=False):
         if self.form.is_cancel():
             user.add_message('notice', 'form submission cancelled, data not changed')
@@ -104,11 +102,11 @@ class TestForm(ProtectedPageView):
         elif not self.form.is_submitted():
             # form was not submitted, nothing left to do
             return
-        
+
         # form was either invalid or caught an exception, assign error
         # messages
         self.form.assign_user_errors()
         self.default(is_static)
-        
+
     def default(self, is_static=False):
         self.assign('form', self.form)

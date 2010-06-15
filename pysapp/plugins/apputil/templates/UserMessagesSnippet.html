@@ -1,11 +1,11 @@
 <% for msg in sesuser.get_messages() %>
     <% if loop.first %>
         <div id="user_messages">
-        <h2 id="user_messages_header"><{ heading }></h2>
+        <h2 id="user_messages_header"><{ heading|e }></h2>
         <ul>
     <% endif %>
             <li>
-                <strong class="sev_<{ msg.severity }>"><{msg.severity}></strong>: <{msg.text}>
+                <strong class="sev_<{ msg.severity }>"><{msg.severity}></strong>: <{msg.text|e}>
             </li>
     <% if loop.last %>
         </ul>
