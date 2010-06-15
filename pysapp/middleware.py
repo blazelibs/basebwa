@@ -29,6 +29,7 @@ class SQLAlchemyApp(object):
         db._push_object(self.container)
         db.sess = self.container.Session
         visitmods('model.orm')
+        visitmods('model.metadata')
 
     def __call__(self, environ, start_response):
         def response_cycle_teardown():

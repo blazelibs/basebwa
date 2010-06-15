@@ -8,10 +8,11 @@ from sqlalchemy.sql.functions import sum
 from sqlalchemy.orm import join
 from pysmvt import user as usr
 from pysmvt import db
-from pysmvt.utils import randchars, tolist
+from pysutils.strings import randchars
+from pysutils.helpers import tolist
 from plugstack.users.lib.utils import send_new_user_email, send_change_password_email, send_password_reset_email
 from plugstack.users.lib.db import query_user_group_permissions, query_users_permissions
-    
+
 def user_update(id, **kwargs):
 
     if id is None:
@@ -24,7 +25,7 @@ def user_update(id, **kwargs):
             kwargs['password'] = randchars(8)
     else:
         u = user_get(id)
-    
+
     # automatically turn on reset_password when the password get set manually
     # (i.e. when an admin does it), unless told not to (when a user does it
     # for their own account)
@@ -81,7 +82,7 @@ def create_groups(group_ids):
 
 def hash_pass(password):
     return sha512(password).hexdigest()
-    
+
 def user_update_password(id, **kwargs):
     dbsession = db.sess
     u = user_get(id)
@@ -94,7 +95,7 @@ def user_lost_password(email_address):
     u = user_get_by_email(email_address)
     if not u:
         return False
-    
+
     u.pass_reset_key = randchars(12)
     u.pass_reset_ts = datetime.datetime.utcnow()
     try:
@@ -126,7 +127,7 @@ def user_get_by_email(email_address):
 
 def user_get_by_login(login_id):
     return db.sess.query(User).filter(User.login_id==login_id).first()
-    
+
 def user_delete(id):
     dbsession = db.sess
     user = user_get(id)
@@ -207,7 +208,7 @@ def user_permission_map(uid):
                 nrow[key] = 0
             else:
                 nrow[key] = value
-        
+
         if nrow['user_approved'] == -1:
             approved = False
         elif nrow['user_approved'] == 1:
@@ -218,7 +219,7 @@ def user_permission_map(uid):
             approved = True
         else:
             approved = False
-        
+
         nrow[u'resulting_approval'] = approved
         retval.append(nrow)
     return retval
@@ -251,7 +252,7 @@ def load_session_user(user):
     usr.set_attr('super_user', user.super_user)
     usr.set_attr('reset_required', user.reset_required)
     usr.authenticated()
-    
+
     # now permissions
     for row in user_permission_map(user.id):
         if row['resulting_approval'] or user.super_user:
@@ -315,11 +316,11 @@ def group_get(id):
 
 def group_get_by_name(name):
     return db.sess.query(Group).filter(Group.name==name).first()
-    
+
 def group_delete(id):
     dbsession = db.sess
     group = group_get(id)
-    
+
     if group is not None:
         db.sess.delete(group)
         try:
@@ -371,7 +372,7 @@ def group_add_permissions_to_existing(gname, approved=[], denied=[]):
     except:
         db.sess.rollback()
         raise
-        
+
 ## Permissions
 
 def permission_update(id, **kwargs):
@@ -394,7 +395,7 @@ def permission_update(id, **kwargs):
     except Exception, e:
         dbsession.rollback()
         raise
-        
+
 def permission_add(safe=False, **kwargs):
     try:
         return permission_update(None, **kwargs)
@@ -411,7 +412,7 @@ def permission_list_options():
 
 def permission_get(id):
     return db.sess.query(Permission).get(id)
-    
+
 def permission_get_by_name(name):
     return db.sess.query(Permission).filter_by(name=name).first()
 
@@ -431,7 +432,7 @@ def permission_assignments_group(group, approved_perm_ids, denied_perm_ids):
     dbsession = db.sess
     # delete existing permission assignments for this group (i.e. we start over)
     dbsession.execute(tbl_gpa.delete(tbl_gpa.c.group_id == group.id))
-    
+
     # insert "approved" records
     if approved_perm_ids is not None and len(approved_perm_ids) != 0:
         # prep insert values
@@ -441,7 +442,7 @@ def permission_assignments_group(group, approved_perm_ids, denied_perm_ids):
             insval.append({'group_id' : group.id, 'permission_id' : pid, 'approved' : 1})
         # do inserts
         dbsession.execute(tbl_gpa.insert(), insval)
-    
+
     # insert "denied" records
     if denied_perm_ids is not None and len(denied_perm_ids) != 0:
         # prep insert values
@@ -466,7 +467,7 @@ def permission_assignments_user(user, approved_perm_ids, denied_perm_ids):
     dbsession = db.sess
     # delete existing permission assignments for this user (i.e. we start over)
     dbsession.execute(tbl_upa.delete(tbl_upa.c.user_id == user.id))
-    
+
     # insert "approved" records
     if approved_perm_ids is not None and len(approved_perm_ids) != 0:
         # prep insert values
@@ -475,7 +476,7 @@ def permission_assignments_user(user, approved_perm_ids, denied_perm_ids):
             insval.append({'user_id' : user.id, 'permission_id' : pid, 'approved' : 1})
         # do inserts
         dbsession.execute(tbl_upa.insert(), insval)
-    
+
     # insert "denied" records
     if denied_perm_ids is not None and len(denied_perm_ids) != 0:
         # prep insert values

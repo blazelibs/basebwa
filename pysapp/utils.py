@@ -6,9 +6,9 @@ from pysapp import exc
 from pysapp.lib import db as libdb
 
 class ControlPanelSection(object):
-    
+
     def __init__(self, heading , has_perm, *args):
-        self.heading = heading 
+        self.heading = heading
         self.has_perm = has_perm
         self.groups = []
         for group in args:
@@ -16,26 +16,26 @@ class ControlPanelSection(object):
 
     def add_group(self, group):
         self.groups.append(group)
-        
+
     def __repr__(self):
         return 'ControlPanelSection: %s; %s' % (self.heading, self.groups)
 
 class ControlPanelGroup(object):
-    
+
     def __init__(self, *args, **kwargs):
         self.links = []
         for link in args:
             self.add_link(link)
         self.has_perm = kwargs.get('has_perm', None)
-        
+
     def add_link(self, link):
         self.links.append(link)
-        
+
     def __repr__(self):
         return 'ControlPanelGroup: %s' % self.links
 
 class ControlPanelLink(object):
-    
+
     def __init__(self, text, endpoint, **kwargs):
         self.text = text
         self.endpoint = endpoint
@@ -43,7 +43,7 @@ class ControlPanelLink(object):
         if kwargs.has_key('has_perm'):
             del kwargs['has_perm']
         self.linkargs = kwargs
-        
+
     def __repr__(self):
         return 'ControlPanelLink: %s -> %s' % (self.text, self.endpoint)
 
@@ -56,14 +56,14 @@ def control_panel_permission_filter(session_user, *sections):
     retval = []
     for sec in sections:
         sec_groups = []
-        if sec.has_perm and not session_user.has_perm(sec.has_perm):
+        if sec.has_perm and not session_user.has_token(sec.has_perm):
             continue
         for lg in sec.groups:
             group_links = []
-            if lg.has_perm and not session_user.has_perm(lg.has_perm):
+            if lg.has_perm and not session_user.has_token(lg.has_perm):
                 continue
             for link in lg.links:
-                if session_user.has_perm(link.has_perm) or not link.has_perm:
+                if session_user.has_token(link.has_perm) or not link.has_perm:
                     group_links.append(link)
             if group_links:
                 sec_groups.append({'group': lg, 'group_links' : group_links})
@@ -183,7 +183,7 @@ def excignore(f, *args, **kwargs):
                 raise
             db.sess.rollback()
     return innerfunc
-    
+
 
 ############### DEPRECATED FUNCTIONS #########################
 @deprecated('use pysapp.lib.db.run_module_sql instead')
@@ -193,15 +193,15 @@ def run_module_sql(module, target, use_dialect=False):
 @deprecated('use pysapp.lib.db.run_app_sql instead')
 def run_app_sql(target, use_dialect=False):
     libdb.run_app_sql(target, use_dialect)
-    
+
 @deprecated('raise the appropriate HTTP exception instead')
 def fatal_error(user_desc = None, dev_desc = None, orig_exception = None):
     # log stuff
     ag.logger.debug('Fatal error: "%s" -- %s', dev_desc, str(orig_exception))
-    
+
     # set user message
     if user_desc != None:
         user.add_message('error', user_desc)
-        
+
     # forward to fatal error view
     forward('apputil:SystemError')
