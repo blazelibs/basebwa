@@ -40,10 +40,10 @@ class DynamicControlPanel(SecureView):
 
     def default(self):
         sections = []
-        for mod in settings.modules:
+        for plugin in settings.plugins:
             try:
-                if mod.cp_nav.enabled:
-                    sections.append(mod.cp_nav.section)
+                if plugin.cp_nav.enabled:
+                    sections.append(plugin.cp_nav.section)
             except AttributeError:
                 pass
 

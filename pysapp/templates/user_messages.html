@@ -1,4 +1,4 @@
-{% for msg in sesuser.get_messages() %}
+{% for msg in user.get_messages() %}
     {% if loop.first %}
         <div id="user_messages">
         <h2 id="user_messages_header">{{ heading|e }}</h2>

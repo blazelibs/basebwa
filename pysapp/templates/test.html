@@ -1,6 +1,3 @@
-<% set user_message_html = process_view('apputil:UserMessagesSnippet') -%>
+{% include('user_messages.html') %}
 
-<{ user_message_html }>
-
-<% block body %><% endblock %>
-          
+{% block body %}{% endblock %}
