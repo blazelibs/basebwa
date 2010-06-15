@@ -73,6 +73,7 @@ class Default(DefaultSettings):
         self.add_plugin(self.app_package, 'sqlalchemy', 'sqlalchemybwp')
         self.add_plugin(self.app_package, 'auth', 'authbwp')
         self.add_plugin(self.app_package, 'apputil')
+        self.add_plugin(self.app_package, 'datagrid')
 
     def turn_on_sql_logging(self):
         sl = logging.getLogger('sqlalchemy.engine')

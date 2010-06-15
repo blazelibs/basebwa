@@ -2,23 +2,26 @@
 See tests for example usage
 """
 from decimal import Decimal, InvalidOperation
+
 from dateutil.parser import parse
+from pysmvt import rg
+from pysmvt.content import getcontent
+from pysmvt.htmltable import Table
+from pysmvt.routing import current_url
+from pysutils.datastructures import OrderedProperties, OrderedDict
+from pysutils.strings import simplify_string
 from sqlalchemy import types
 from sqlalchemy.sql import select, not_, func
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy import schema
-from pysmvt.utils import OrderedProperties, simplify_string, OrderedDict
+from webhelpers.html import literal, escape
 from werkzeug import Request, cached_property, Href, MultiDict
 from werkzeug.exceptions import BadRequest
-from pysmvt import rg, getview
-from pysmvt.htmltable import Table
-from pysmvt.routing import current_url
-from webhelpers.html import literal, escape
 
 class SADeclarativeAttributeHelper(object):
     def __init__(self, sacol):
         self.saattr = sacol
-    
+
     @property
     def type(self):
         return self.saattr.property.columns[0].type
@@ -26,7 +29,7 @@ class SADeclarativeAttributeHelper(object):
 class SATableColumnHelper(object):
     def __init__(self, sacol):
         self.sacol = sacol
-        
+
     @property
     def type(self):
         return self.sacol.type
@@ -47,10 +50,10 @@ class DataColumn(object):
         # resultsets, etc.
         self.inresult = inresult
         self.sort = sort
-        
+
     def __repr__(self):
         return "<DataColumn: %s" % self.label
-        
+
 class TableColumn(DataColumn):
     def __init__(self, tblcol, sacol, **kwargs):
         inresult = kwargs.pop('inresult', True)
@@ -59,7 +62,7 @@ class TableColumn(DataColumn):
         self.tblcol = tblcol
 
 class DataGrid(object):
-    
+
     def __init__(self, executable, def_sort=None, def_filter=None,
                  rs_customizer=None, page=None, per_page=None, environ=None,
                  row_dec=None, **kwargs ):
@@ -67,8 +70,8 @@ class DataGrid(object):
         self.rs_customizer = rs_customizer
         self.def_filter = def_filter
         self.def_sort = def_sort
-        self.data_cols = OrderedDict()        
-        self._filter_ons = OrderedDict()        
+        self.data_cols = OrderedDict()
+        self._filter_ons = OrderedDict()
         self._table_cols = OrderedDict()
         self.sql_columns = []
         self.environ = environ
@@ -89,7 +92,7 @@ class DataGrid(object):
         self._html_table_attributes = kwargs
         self._current_sort_desc = False
         self._row_dec = row_dec
-    
+
     def add_tablecol(self, tblcolobj, sacol, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
         kwargs.setdefault('sort', 'header')
@@ -99,7 +102,7 @@ class DataGrid(object):
                 **kwargs
             )
         self._add_col(tc, filter_on, kwargs)
-        
+
     def add_col(self, label, sacol, **kwargs):
         filter_on = kwargs.pop('filter_on', None)
         dc = DataColumn(
@@ -108,7 +111,7 @@ class DataGrid(object):
                 **kwargs
             )
         self._add_col(dc, filter_on, kwargs)
-    
+
     def _add_col(self, dc, filter_on, kwargs):
         ident = self._col_ident(dc.label)
         self.data_cols[ident] = dc
@@ -122,11 +125,11 @@ class DataGrid(object):
         if sorttype in ('drop-down', 'both'):
             self.add_sort(dc.label + ' ASC', dc.sacol)
             self.add_sort(dc.label + ' DESC', dc.sacol.desc())
-        
+
     def add_sort(self, label, *args):
         ident = simplify_string(label, replace_with='')
         self._sortdd[ident] = {'args':args, 'label':label}
-    
+
     def _col_ident(self, label):
         ident = None
         count = 1
@@ -136,27 +139,27 @@ class DataGrid(object):
                 ident = '%s%s' % (ident, count)
             count += 1
         return ident
-    
+
     def get_select_query(self):
         for col in self.data_cols.values():
             if col.inresult:
                 self.sql_columns.append(col.sacol)
-        
+
         query = select(self.sql_columns)
         return query
-     
+
     def base_query(self):
         if self._base_query is None:
             query = self.get_select_query()
             query = self._apply_filters(query)
             query = self._apply_sort(query)
-            
+
             if self.rs_customizer:
                 query = self.rs_customizer(query)
-            
+
             self._base_query = query
         return self._base_query
-    
+
     def get_query(self):
         if self._query is None:
             query = self.base_query()
@@ -164,11 +167,11 @@ class DataGrid(object):
             query = query.apply_labels()
             self._query = query
         return self._query
-    
+
     def force_request_process(self):
         if self._query is None:
             self.get_query()
-    
+
     def _req_obj(self):
         if self._request:
             return self._request
@@ -178,13 +181,13 @@ class DataGrid(object):
             ro = rg.request
         self._request = ro
         return self._request
-    
+
     def _replace_environ(self, environ):
         self.environ = environ
         self._request = None
         self._query = None
         self._base_query = None
-    
+
     def _sanitize_filter_input(self, ident, input):
         sahlpr = self._filter_ons[ident].sacol_helper
         if input.strip() == '':
@@ -214,14 +217,14 @@ class DataGrid(object):
             except InvalidOperation:
                 raise BadRequest('"%s" was not a decimal value' % input)
         return input
-    
+
     def _apply_filters(self, query):
         args = self._req_obj().args
         filter_in_request = False
         use_like = False
         self._filter_ons_selected = None
         self._filterons_op_selected = None
-        
+
         fokey = self._args_prefix('filteron')
         foopkey = self._args_prefix('filteronop')
         forkey = self._args_prefix('filterfor')
@@ -231,20 +234,20 @@ class DataGrid(object):
             if ident:
                 if not self._filter_ons.has_key(ident):
                     raise BadRequest('The Filter On value "%s" is invalid' % ident)
-            
+
                 if not args.has_key(foopkey):
                     raise BadRequest('When using a filter, a "filteronop" value must also be sent')
-                
+
                 if not args.has_key(forkey):
                     raise BadRequest('When using a filter, a "filterfor" value must also be sent')
-                    
+
                 fsacol = self._filter_ons[ident].sacol
                 ffor = self._sanitize_filter_input(ident, args[forkey])
                 foop = args[foopkey]
-                
+
                 if ffor is None and foop in ('lt', 'gt', 'lte', 'gte'):
                     raise BadRequest('A blank value can only be used with "equal" or "not equal" operators')
-                
+
                 if foop not in self._fo_operators:
                     if foop:
                         raise BadRequest('The filter comparison operator "%s" is invalid' % foop)
@@ -260,7 +263,7 @@ class DataGrid(object):
                         raise BadRequest('wildcards are invalid when using "less than" or "greater than"')
                     ffor = ffor.replace('*', '%')
                     use_like = True
-                    
+
                 if foop == 'lt':
                     query = query.where(fsacol < ffor)
                 elif foop == 'lte':
@@ -279,16 +282,16 @@ class DataGrid(object):
                         query = query.where(not_(fsacol.like(ffor)))
                     else:
                         query = query.where(fsacol != ffor)
-                
+
                 self._filter_ons_selected = ident
                 self._filterons_op_selected = foop
                 filter_in_request = True
-        
+
         if self.def_filter and not filter_in_request:
             query = self.def_filter(query)
-        
+
         return query
-    
+
     def _apply_sort(self, query):
         args = self._req_obj().args
         sort_in_request = False
@@ -296,17 +299,17 @@ class DataGrid(object):
         self._current_sort_desc = False
         self._current_sort_direction = None
         self._current_sortdd_ident = None
-        
+
         # drop-down sorting (takes precedence over header sorting)
         sortkey = self._args_prefix('sortdd')
         ident = args.get(sortkey, None)
         if ident:
             if not self._sortdd.has_key(ident):
                 raise BadRequest('The sort ident "%s" is invalid' % ident)
-                
+
             sortargs = self._sortdd[ident]['args']
             query = query.order_by(*sortargs)
-            
+
             sort_in_request = True
             self._current_sortdd_ident = ident
         else:
@@ -314,32 +317,32 @@ class DataGrid(object):
             sortkey = self._args_prefix('sort')
             sortcol = args.get(sortkey, None)
             if sortcol:
-            
+
                 if sortcol.startswith('-'):
                     sortcol = sortcol[1:]
                     desc = True
                     self._current_sort_desc = True
                 else:
                     desc = False
-                
+
                 if not self._sortheaders.has_key(sortcol):
                     raise BadRequest('The sort column "%s" is invalid' % sortcol)
-                
+
                 sortcolobj = self._sortheaders[sortcol].sacol
                 if desc:
                     query = query.order_by(sortcolobj.desc())
                 else:
                     query = query.order_by(sortcolobj)
-                
+
                 sort_in_request = True
                 self._current_sort_header = sortcol
 
         # default sorting
         if self.def_sort and not sort_in_request:
             query = self.def_sort(query)
-        
-        return query    
-    
+
+        return query
+
     def _apply_paging(self, query):
         args = self._req_obj().args
 
@@ -352,7 +355,7 @@ class DataGrid(object):
             except ValueError:
                 raise BadRequest('The perpage arg must be a positive integer')
             self.per_page = per_page
-        
+
         pagekey = self._args_prefix('page')
         if args.has_key(pagekey):
             try:
@@ -371,7 +374,7 @@ class DataGrid(object):
                              .limit(self.per_page)
 
         return query
-    
+
     def _args_prefix(self, key):
         return key
 
@@ -392,17 +395,17 @@ class DataGrid(object):
     has_next = property(lambda x: x.page < x.pages)
     previous = property(lambda x: x.page - 1)
     next = property(lambda x: x.page + 1)
-    
+
     @property
     def pages(self):
         if self.per_page is None:
             return 0
         return max(0, self.count - 1) // self.per_page + 1
-    
+
     @property
     def html_table(self):
         self.force_request_process()
-        
+
         def extractor_helper(row, label, extractor):
             if extractor:
                 return extractor(row)
@@ -412,85 +415,85 @@ class DataGrid(object):
         if not self._html_table:
             t = Table(row_dec = self._row_dec, **self._html_table_attributes)
             for ident, col in self._table_cols.items():
-                
+
                 # setup getting the correct column from the row data
                 try:
                     label = col.sacol.__clause_element__()._label
                 except AttributeError:
                     label = col.sacol._label
                 col.tblcol.extractor = lambda row, label=label, extractor=col.tblcol.extractor: extractor_helper(row, label, extractor)
-                
+
                 # setup adding sort links to our headers
                 col.tblcol.th_decorator = self._decorate_table_header(ident, col)
-                
+
                 # create the column on the HTML table
                 setattr(t, ident, col.tblcol)
             self._html_table = t.render(self.records)
 
         return self._html_table
-    
+
     @property
     def show_filter_controls(self):
         self.force_request_process()
         return len(self._filter_ons) > 0
-    
+
     @property
     def html_filter_controls(self):
-        return getview('datagrid:FilterControls', datagrid=self)
-    
+        return getcontent('datagrid:filter_controls.html', datagrid=self).primary
+
     def selected_filteron_opt(self, ident):
         self.force_request_process()
         if self._filter_ons_selected == ident:
             return ' selected="selected"'
         return ''
-    
+
     def selected_filteronop_opt(self, op):
         self.force_request_process()
         if self._filterons_op_selected == op:
             return ' selected="selected"'
         return ''
-    
+
     @property
     def value_filterfor(self):
         req = self._req_obj()
         fokey = self._args_prefix('filterfor')
         return req.args.get(fokey, '')
-        
+
     @property
     def value_sort(self):
         req = self._req_obj()
         skey = self._args_prefix('sort')
         return req.args.get(skey, '')
-    
+
     @property
     def show_sort_controls(self):
         self.force_request_process()
         return len(self._sortdd) > 0
-    
+
     @property
     def html_sort_controls(self):
-        return getview('datagrid:SortControls', datagrid=self)
-    
+        return getcontent('datagrid:sort_controls.html', datagrid=self).primary
+
     def selected_sortdd_opt(self, ident):
         self.force_request_process()
         if self._current_sortdd_ident == ident:
             return ' selected="selected"'
         return ''
-    
+
     @property
     def show_pager_controls_upper(self):
         self.force_request_process()
         return self.page and self.pages
-    
+
     def selected_page_opt(self, page):
         self.force_request_process()
         if self.page == page:
             return ' selected="selected"'
         return ''
-    
+
     @property
     def html_pager_controls_upper(self):
-        return getview('datagrid:PagerControlsUpper', datagrid=self)
+        return getcontent('datagrid:pager_controls_upper.html', datagrid=self).primary
 
     @property
     def value_perpage(self):
@@ -498,32 +501,32 @@ class DataGrid(object):
 
     @property
     def html_pager_controls_lower(self):
-        return getview('datagrid:PagerControlsLower', datagrid=self)
-    
+        return getcontent('datagrid:pager_controls_lower.html', datagrid=self).primary
+
     @property
     def show_pager_controls_lower(self):
         self.force_request_process()
         return self.page and self.pages
-    
+
     @property
     def link_pager_first(self):
         return self._current_url(page=1)
-    
+
     @property
     def link_pager_previous(self):
         return self._current_url(page=self.page-1)
-    
+
     @property
     def link_pager_next(self):
         return self._current_url(page=self.page+1)
-    
+
     @property
     def link_pager_last(self):
-        return self._current_url(page=self.pages)       
+        return self._current_url(page=self.pages)
 
     @property
     def html_everything(self):
-        return getview('datagrid:Everything', datagrid=self)
+        return getcontent('datagrid:everything.html', datagrid=self).primary
 
     @property
     def url_reset(self):
@@ -560,18 +563,18 @@ class DataGrid(object):
                     link_class = ''
                     sortimg = ''
                     linktitle = ''
-                    
+
                 sortvalue = '%s%s' % (desc_prefix,ident)
                 url = escape(self._current_url(sort=sortvalue))
                 return literal('<a href="%s" class="%s" title="%s">%s</a>%s' % (url, link_class, linktitle, todecorate, sortimg))
             else:
                 return todecorate
         return inner_decorator
-    
+
     def _current_url(self, **kwargs):
         req = self._req_obj()
         href = Href(current_url(strip_querystring=True, strip_host=True, environ=req.environ), sort=True)
-        
+
         args = MultiDict(req.args)
         # multidicts extend, not replace, so we need to get rid of the keys first
         for key in kwargs.keys():
@@ -579,7 +582,7 @@ class DataGrid(object):
                 del args[key]
             except KeyError:
                 pass
-        
+
         # convert to md first so that if we have lists in the kwargs, they
         # are converted appropriately
         args.update(MultiDict(kwargs))

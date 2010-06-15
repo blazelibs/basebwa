@@ -1,13 +1,15 @@
-from werkzeug import create_environ
-from pysmvt import db
-from pysmvt.routing import current_url
-from _supporting import Person, assertEqualSQL
-from sqlalchemy.sql import select
 from pysmvt.htmltable import Col, YesNo
-from pysapp.modules.datagrid.utils import DataGrid, DataColumn, TableColumn
+from pysmvt.routing import current_url
+from sqlalchemy.sql import select
+from werkzeug import create_environ
+
+from pysapp.plugins.datagrid.utils import DataGrid, DataColumn, TableColumn
+from plugstack.sqlalchemy import db
+
+from _supporting import Person, assertEqualSQL
 
 class TestQueryBuilding(object):
-    
+
     def test_ident_creation(self):
         tbl = Person.__table__
         p = DataGrid(Person)
@@ -33,7 +35,7 @@ class TestQueryBuilding(object):
             Person.sortorder,
         )
         assert p.data_cols.keys() == ['id', 'firstname', 'lastname', 'sortorder', 'sortorder2'], p.data_cols.keys()
-    
+
     def test_sortdd(self):
         environ = create_environ('/foo', 'http://localhost')
         tbl = Person.__table__
@@ -67,14 +69,14 @@ class TestQueryBuilding(object):
             'Sort Order',
             Person.sortorder,
         )
-        
+
         p.add_sort('inactive state DESC', Person.inactive, Person.state.desc())
         p.add_sort('inactive state ASC', Person.inactive, Person.state)
-        
+
         assert len(p._sortdd) == 6, len(p._sortdd)
-    
+
     def test_reset_url(self):
-        
+
         environ = create_environ('/foo', 'http://localhost')
         tbl = Person.__table__
         p = DataGrid(
@@ -107,6 +109,6 @@ class TestQueryBuilding(object):
             'Sort Order',
             Person.sortorder,
         )
-        
+
         p.add_sort('inactive state DESC', Person.inactive, Person.state.desc())
         p.add_sort('inactive state ASC', Person.inactive, Person.state)

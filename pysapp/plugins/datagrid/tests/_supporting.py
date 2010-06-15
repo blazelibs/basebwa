@@ -1,16 +1,18 @@
 from datetime import datetime
+import difflib
+
 from sqlalchemy import Column, Integer, Unicode, SmallInteger, DateTime, \
     UniqueConstraint, ForeignKey, String, Float, Numeric, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import text
-from pysmvt import db
-import difflib
+
+from plugstack.sqlalchemy import db
 
 Base = declarative_base()
 
 class Person(Base):
     __tablename__ = 'persons'
-    
+
     id = Column(Integer, primary_key=True)
     firstname = Column(String(50))
     lastname = Column('last_name', String(50))
@@ -23,24 +25,24 @@ class Person(Base):
     floatcol = Column(Float)
     numericcol = Column(Numeric)
     boolcol = Column(Boolean)
-    
+
     def __repr__(self):
         return '<Person: "%s, created: %s">' % (self.id, self.createdts)
 
 
 class Email(Base):
     __tablename__ = 'emails'
-    
+
     id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     email = Column(String(50), nullable=False)
 
 class Status(Base):
     __tablename__ = 'statuses'
-    
+
     id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
-    email = Column(String(50), nullable=False)    
+    email = Column(String(50), nullable=False)
 
 def prettifySQL(sql):
     """Returns a prettified version of the SQL as a list of lines to help
@@ -61,5 +63,5 @@ def assertEqualSQL(sql, correct_sql):
 
 def dodiff(actual, expected):
     return '\n'.join(list(
-        difflib.unified_diff(actual.split('\n'), expected.split('\n'))
+        difflib.unified_diff(actual.replace('\r', '').split('\n'), expected.replace('\r', '').split('\n'))
     ))
