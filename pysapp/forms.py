@@ -12,7 +12,7 @@ class Form(Pysform):
     error_prefix = '- '
     req_note_level = 'section'
     req_note = None
-    
+
     def __init__(self, name, **kwargs):
         if registry_has_object(rg):
             curl = current_url(strip_host=True)
@@ -40,16 +40,16 @@ class Form(Pysform):
                 self.assign_from_request(rg.request)
             self._request_submitted = True
         return Pysform.is_submitted(self)
-    
+
     def assign_user_errors(self):
         # set the form error messages first
         for msg in self._errors:
             user.add_message('error', msg)
         # set element error messages
-        for el in self._submittable_els.values():
+        for el in self.submittable_els:
             for msg in el.errors:
                 user.add_message('error', '%s: %s' % (el.label, msg))
-    
+
     def render(self, **kwargs):
         if self.note_prefix:
             kwargs.setdefault('note_prefix', self.note_prefix)
@@ -66,7 +66,7 @@ class UniqueValidator(FancyValidator):
     Calls the given callable with the value of the field.  If the return value
     does not evaluate to false, Invalid is raised
     """
-    
+
     __unpackargs__ = ('fn')
     messages = {
         'notunique': "the value for this field must be unique",

@@ -11,6 +11,7 @@ class Dev(SettingsDev):
         SettingsDev.init(self)
         self.emails.override = 'randy@rcs-comp.com'
         self.emails.from_default = 'randy@rcs-comp.com'
+        self.apply_dev_settings()
 dev = Dev
 
 # have to redefine this so its based on the correct class object
