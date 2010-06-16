@@ -1334,12 +1334,12 @@ class TestNavigationLayout(object):
         assert el.depth == 2
 
 def test_is_unique_exc():
-    from nose.plugins.skip import SkipTest
-    raise SkipTest
     from plugstack.auth.model.orm import Group
     try:
         u1 = Group(name=u'test')
         u2 = Group(name=u'test')
+        db.sess.add(u1)
+        db.sess.add(u2)
         db.sess.commit()
         assert False, 'expected exception'
     except Exception, e:
@@ -1351,6 +1351,8 @@ def test_is_unique_exc():
     try:
         u1 = Group(name=u'test')
         u2 = Group(name=u'test')
+        db.sess.add(u1)
+        db.sess.add(u2)
         db.sess.commit()
         assert False, 'expected exception'
     except Exception, e:

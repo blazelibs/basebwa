@@ -14,7 +14,7 @@ class TestDynamicControlPanel(object):
     def setup_class(cls):
 
         cls.c = Client(testapp, BaseResponse)
-        login_client_with_permissions(cls.c, (u'webapp-controlpanel', u'users-manage'))
+        login_client_with_permissions(cls.c, (u'webapp-controlpanel', u'auth-manage'))
 
     def test_panel(self):
         r = self.c.get('/control-panel')
