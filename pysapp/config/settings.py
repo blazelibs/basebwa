@@ -66,7 +66,7 @@ class Default(DefaultSettings):
         #######################################################################
         # TESTING
         #######################################################################
-        self.testing.init_callables = 'testing.setup_db_structure'
+        self.testing.init_callables = 'helpers.setup_db_structure'
 
     def init_plugins(self):
         # application modules from our application or supporting applications
