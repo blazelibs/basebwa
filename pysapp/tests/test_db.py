@@ -1344,7 +1344,7 @@ def test_is_unique_exc():
         assert False, 'expected exception'
     except Exception, e:
         db.sess.rollback()
-        if not is_unique_exc('name', 'ix_users_group_name', e):
+        if not is_unique_exc('name', 'ix_auth_group_name', e):
             raise
 
     # test curry
@@ -1357,12 +1357,12 @@ def test_is_unique_exc():
         assert False, 'expected exception'
     except Exception, e:
         db.sess.rollback()
-        f1 = is_unique_exc('name', 'ix_users_group_name')
+        f1 = is_unique_exc('name', 'ix_auth_group_name')
         if not f1(e):
             raise
 
-    assert not is_unique_exc('name', 'ix_users_group_name', Exception('ix_users_group_name unique'))
-    assert not is_unique_exc('name', 'ix_users_group_name', Exception('column name is not unique'))
+    assert not is_unique_exc('name', 'ix_auth_group_name', Exception('ix_auth_group_name unique'))
+    assert not is_unique_exc('name', 'ix_auth_group_name', Exception('column name is not unique'))
 
 def sa_one_to_none():
     from plugstack.auth.testing import create_user_with_permissions
