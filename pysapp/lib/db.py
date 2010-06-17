@@ -537,7 +537,7 @@ def is_unique_exc(field_name, constraint_name, exc):
     if not isinstance(exc, IntegrityError):
         return False
     msg = str(exc)
-    if db.engine.dialect.name == 'postgres':
+    if db.engine.dialect.name == 'postgresql':
         if 'unique' in msg and constraint_name in msg:
             return True
     elif db.engine.dialect.name == 'mssql':
@@ -552,7 +552,7 @@ def is_unique_exc(field_name, constraint_name, exc):
     return False
 
 def clear_db():
-    if db.engine.dialect.name == 'postgres':
+    if db.engine.dialect.name == 'postgresql':
         sql = []
         sql.append('DROP SCHEMA public cascade;')
         sql.append('CREATE SCHEMA public AUTHORIZATION %s;' % db.engine.url.username)
