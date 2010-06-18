@@ -3,7 +3,7 @@ from pysmvt import ag
 from pysmvt.users import User
 from pysmvt.testing import inrequest
 from pysmvt.wrappers import Request
-from pysapp.utils import ControlPanelGroup, ControlPanelSection, \
+from pysapp.lib.cpanel import ControlPanelGroup, ControlPanelSection, \
     ControlPanelLink, control_panel_permission_filter
 import pysapp.forms
 

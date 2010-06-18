@@ -1,6 +1,6 @@
 from pysmvt.tasks import attributes
 
-from plugstack.auth.actions import permission_update
+from plugstack.auth.model.actions import permission_update
 
 @attributes('base-data')
 def action_30_base_data():

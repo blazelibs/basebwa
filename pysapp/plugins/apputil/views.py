@@ -1,7 +1,7 @@
 from pysmvt import ag, rg, settings, user
 from pysmvt.views import View, SecureView
 
-from appstack.utils import control_panel_permission_filter
+from appstack.lib.cpanel import control_panel_permission_filter
 import forms
 
 class SystemError(View):
