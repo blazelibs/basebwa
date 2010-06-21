@@ -4,7 +4,7 @@ See tests for example usage
 from decimal import Decimal, InvalidOperation
 
 from dateutil.parser import parse
-from blazeweb import rg
+from blazeweb.globals import rg
 from blazeweb.content import getcontent
 from blazeweb.htmltable import Table
 from blazeweb.routing import current_url

@@ -72,7 +72,7 @@ except ImportError:
 version = '0.2.1'
 
 setup(
-    name = "basebwa",
+    name = "BaseBWA",
     version = version,
     description = "A blazeweb supporting application",
     long_description = __doc__,
@@ -88,8 +88,8 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'tests']),
     include_package_data=True,
     install_requires = [
-        "blazeweb>=0.2",
-        "blazeform>=0.2",
+        "BlazeWeb>=0.2",
+        "BlazeForm>=0.2",
         "SQLiteFKTG4SA>=0.1.1",
         "python-dateutil>=1.4.1"
     ],

@@ -1,4 +1,4 @@
-from blazeweb import db
+from plugstack.sqlalchemy import db
 
 def action_000_task_begin():  
     db.sess.commit()

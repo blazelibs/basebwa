@@ -1,4 +1,4 @@
-from blazeweb import ag
+from blazeweb.globals import ag
 from webtest import TestApp
 
 ta = TestApp(ag.wsgi_test_app)

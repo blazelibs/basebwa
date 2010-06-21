@@ -517,7 +517,7 @@ def run_app_sql(target, use_dialect=False):
     _run_sql(relative_sql_path)
 
 def _run_sql(relative_sql_path):
-    from blazeweb import appfilepath
+    from blazeweb.globals import appfilepath
     full_path = appfilepath(relative_sql_path)
 
     sqlfile = file(full_path)

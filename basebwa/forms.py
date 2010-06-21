@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from blazeweb import rg, user
+from blazeweb.globals import rg, user
 from blazeform.form import Form as blazeform
 from blazeweb.routing import current_url
 from blazeform.util import NotGiven

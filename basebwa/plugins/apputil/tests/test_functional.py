@@ -1,6 +1,6 @@
 from blazeutils.strings import randchars
 from werkzeug import BaseResponse
-from blazeweb import settings, ag
+from blazeweb.globals import settings, ag
 from blazeweb.testing import Client
 
 from plugstack.auth.lib.testing import login_client_with_permissions

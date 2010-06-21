@@ -1,5 +1,5 @@
 from StringIO import StringIO
-from blazeweb import ag
+from blazeweb.globals import ag
 from blazeweb.users import User
 from blazeweb.testing import inrequest
 from blazeweb.wrappers import Request

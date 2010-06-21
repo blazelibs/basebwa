@@ -1,4 +1,4 @@
-from blazeweb import ag, rg, settings, user
+from blazeweb.globals import ag, rg, settings, user
 from blazeweb.views import View, SecureView
 
 from appstack.lib.cpanel import control_panel_permission_filter

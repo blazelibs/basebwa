@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from blazeweb import ag
+from blazeweb.globals import ag
 from blazeweb.htmltable import Col, YesNo
 from blazeweb.testing import inrequest
 from blazeutils.strings import normalizews
