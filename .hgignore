@@ -1,5 +1,5 @@
 ^MANIFEST$
-^(build|dist|pysapp\.egg-info)/
+^(build|dist|basebwa\.egg-info)/
 \.py[co]$
 \.DS_Store$
 ^env$

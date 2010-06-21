@@ -1,2 +1,2 @@
-recursive-include pysapp *
+recursive-include basebwa *
 global-exclude *.pyc

@@ -1,4 +1,4 @@
-pysapp is maintained primarily by:
+basebwa is maintained primarily by:
 
     Randy Syring <rsyring@gmail.com>
 
