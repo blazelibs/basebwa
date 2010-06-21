@@ -2,5 +2,5 @@
 {% block title %}{{ pagetitle|title}} | {{super()}}{% endblock %}
 {% block body %}
     <h2>{{ pagetitle|title }}</h2>
-    {{ formobj.render() }}
+    {{ formobj.render()|safe }}
 {% endblock body%}
