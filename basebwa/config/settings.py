@@ -68,6 +68,11 @@ class Default(DefaultSettings):
         #######################################################################
         self.testing.init_callables = 'helpers.setup_db_structure'
 
+        #######################################################################
+        # BEAKER SESSIONS
+        #######################################################################
+        self.init_beaker()
+
     def init_plugins(self):
         # application modules from our application or supporting applications
         self.add_plugin(self.app_package, 'sqlalchemy', 'sqlalchemybwp')
@@ -75,21 +80,7 @@ class Default(DefaultSettings):
         self.add_plugin(self.app_package, 'apputil')
         self.add_plugin(self.app_package, 'datagrid')
 
-    def turn_on_sql_logging(self):
-        sl = logging.getLogger('sqlalchemy.engine')
-        sl.setLevel(logging.INFO)
-        format_str = "%(asctime)s - %(message)s"
-        formatter = logging.Formatter(format_str)
-        app_handler = RotatingFileHandler(
-            path.join(self.dirs.logs, 'sql.log'),
-              maxBytes=self.logs.max_bytes,
-              backupCount=self.logs.backup_count,
-        )
-        app_handler.setLevel(logging.INFO)
-        app_handler.setFormatter(formatter)
-        sl.addHandler(app_handler)
-
-    def setup_beaker_db_sessions(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
+    def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
         #http://beaker.groovie.org/configuration.html
         self.beaker.type = 'ext:database'
         self.beaker.cookie_expires = cookie_expires
@@ -99,61 +90,17 @@ class Default(DefaultSettings):
     def assign_beaker_url(self):
         self.beaker.url = self.db.url
 
-class Dev(Default):
-    """ this custom "user" class is designed to be used for
-    user specific development environments.  It can be used like:
-
-        `blazeweb serve dev`
-    """
-    def init(self):
-        Default.init(self)
-
-        #######################################################################
-        # EMAIL SETTINGS
-        #######################################################################
-        # a single or list of emails that will be used to override every email sent
-        # by the system.  Useful for debugging.  Original recipient information
-        # will be added to the body of the email
-        #self.emails.override = 'devemail@example.com'
-
-        # if using emails, this must be set
-        #self.emails.from_default = 'devemail@example.com'
+    def apply_dev_settings(self, override_email, admin_user, admin_pass):
 
         #######################################################################
         # USERS: DEFAULT ADMIN
-        # --------------------------------------------------------------------
-        #
-        # This section is used when `blazeweb users_initmod` or
-        # `blazeweb broadcast initmod` is used to create the default user.
-        # If left commented out, you will be promted for the information.
-        #
         #######################################################################
-        #self.modules.users.admin.username = 'devuser'
-        #self.modules.users.admin.password = 'MSsfej'
-        #self.modules.users.admin.email = 'devemail@example.com'
+        self.plugins.users.admin.username = admin_user
+        self.plugins.users.admin.password = admin_pass
 
-        #######################################################################
-        # EXCEPTION HANDLING
-        #######################################################################
-        self.exceptions.hide = False
-        self.exceptions.email = False
-
-        #######################################################################
-        # DEBUGGING
-        #######################################################################
-        self.debugger.enabled = True
-        # this is a security risk on a live system, so we only turn it on
-        # for a specific user config
-        self.debugger.interactive = True
+        DefaultSettings.apply_dev_settings(self, override_email)
 
     def apply_test_settings(self):
-        Default.apply_test_settings(self)
-        #######################################################################
-        # EMAIL SETTINGS
-        #######################################################################
-        # if using emails, this must be set
-        self.emails.from_default = 'devemail@example.com'
-
         #######################################################################
         # TEMPLATES
         #######################################################################
@@ -166,53 +113,12 @@ class Dev(Default):
         #######################################################################
         # in memory sqlite DB is the fastest
         self.db.url = 'sqlite://'
-        # uncomment this if you want to use a database you can inspect
-        #self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'test_application.db')
-# this is just a convenience so we don't have to type the capital letter on the
-# command line when running `blazeweb serve dev`
-dev = Dev
+        self.assign_beaker_url()
 
-class Test(Dev):
-    """ default profile when running tests """
-    def __init__(self):
-        # call parent init to setup default settings
-        Dev.init(self)
-        self.apply_test_settings()
-test=Test
-
-# often times, you will need developer or computer specific configurations
-# that you don't want to be part of the main settings file (because it clutters
-# up the file).  Therefore, we can conditionally include a site-specific
-# settings file with the profiles needed at only that site.  We do it at the
-# bottom of this file to allow the site-specific file to inherit items from this
-# file:
+        DefaultSettings.apply_test_settings(self)
 
 try:
     from site_settings import *
 except ImportError, e:
     if 'No module named site_settings' not in str(e):
         raise
-
-## Example site_settings.py file:
-#from settings import Dev as SettingsDev
-#
-#class Dev(SettingsDev):
-#    """ this custom "user" class is designed to be used for
-#    user specific development environments.  It can be used like:
-#
-#        `blazeweb serve dev`
-#    """
-#    def __init__(self):
-#        SettingsDev.__init__(self)
-#        self.emails.override = 'rsyring@inteli-com.com'
-#        self.emails.from_default = 'rsyring@inteli-com.com'
-#dev = Dev
-#
-# have to redefine this so its based on the correct class object
-#class Test(Dev):
-#    """ default profile when running tests """
-#    def __init__(self):
-#         call parent init to setup default settings
-#        Dev.__init__(self)
-#        self.apply_test_settings()
-#test=Test
