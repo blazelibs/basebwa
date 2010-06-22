@@ -15,12 +15,14 @@ class Default(DefaultSettings):
         # most of the time, these values will be based from applications
         # higher in the stack, but basebwa also needs to work as a standalone
         # application
-        if not bd or not ap:
+        if ap and bd:
+            self.dirs.base = bd
+            self.app_package = ap
+            is_primary = False
+        else:
             self.dirs.base = basedir
             self.app_package = app_package
             is_primary = True
-        else:
-            is_primary = False
         DefaultSettings.init(self)
 
         self.name.full = 'basebwa application'
@@ -75,10 +77,10 @@ class Default(DefaultSettings):
 
     def init_plugins(self):
         # application modules from our application or supporting applications
-        self.add_plugin(self.app_package, 'sqlalchemy', 'sqlalchemybwp')
-        self.add_plugin(self.app_package, 'auth', 'authbwp')
-        self.add_plugin(self.app_package, 'apputil')
-        self.add_plugin(self.app_package, 'datagrid')
+        self.add_plugin(app_package, 'sqlalchemy', 'sqlalchemybwp')
+        self.add_plugin(app_package, 'auth', 'authbwp')
+        self.add_plugin(app_package, 'apputil')
+        self.add_plugin(app_package, 'datagrid')
 
     def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
         #http://beaker.groovie.org/configuration.html
