@@ -1,5 +1,5 @@
 ^MANIFEST$
-^(build|dist|basebwa\.egg-info)/
+^(build|dist|BaseBWA\.egg-info)/
 \.py[co]$
 \.DS_Store$
 ^env$
