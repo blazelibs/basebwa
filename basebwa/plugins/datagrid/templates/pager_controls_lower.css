@@ -1,0 +1,13 @@
+
+ul.datagrid-pager-controls-lower-wrapper{
+	float: right;
+}
+
+ul.datagrid-pager-controls-lower-wrapper li {
+	display: inline;
+	margin-left: 10px;
+}
+
+ul.datagrid-pager-controls-lower-wrapper li.dead {
+	color: #999;
+}

@@ -1,0 +1,22 @@
+
+div.datagrid-pager-controls-upper-wrapper{
+	float: right;
+}
+
+div.datagrid-pager-controls-upper-wrapper label {
+    font-weight: bold;
+    font-size: .8em;
+    padding-left: 3px;
+}
+
+div.page-wrapper {
+    float: left;
+}
+
+div.perpage-wrapper {
+    float: left;
+}
+
+div.perpage-wrapper input {
+    width: 45px;
+}
