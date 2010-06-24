@@ -1,5 +1,5 @@
 ^MANIFEST$
-^(build|dist|basebwa\.egg-info)/
+^(build|dist|BaseBWA\.egg-info)/
 \.py[co]$
 \.DS_Store$
 ^env$
@@ -8,3 +8,4 @@
 
 glob:writeable/logs/*.log
 glob:writeable/tmp/*
+glob:basebwa/config/site_settings.py

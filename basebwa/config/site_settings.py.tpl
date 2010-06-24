@@ -1,34 +1,24 @@
-from os import path
-from settings import Dev as SettingsDev
+from settings import Default
 
-class Dev(SettingsDev):
-    """ this custom "user" class is designed to be used for
-    user specific development environments.  It can be used like:
-
-        `blazeweb serve dev`
-    """
+class Dev(Default):
+    """ default profile for command based actions """
     def init(self):
-        SettingsDev.init(self)
-        self.emails.override = 'randy@rcs-comp.com'
-        self.emails.from_default = 'randy@rcs-comp.com'
-dev = Dev
+        Default.init(self)
 
-# have to redefine this so its based on the correct class object
+        self.apply_dev_settings('devemail@example.com', 'myuser', 'password')
+        self.emails.from_default = 'devemail@example.com'
+
+        # beaker sessions
+        self.init_beaker(timeout=60*60*24*7)
+
 class Test(Dev):
     """ default profile when running tests """
     def init(self):
         # call parent init to setup default settings
         Dev.init(self)
         self.apply_test_settings()
-test=Test
 
-# have to redefine this so its based on the correct class object
-class TestInspDb(Dev):
-    """ default profile when running tests """
-    def init(self):
-        # call parent init to setup default settings
-        Dev.init(self)
-        self.apply_test_settings()
         # uncomment this if you want to use a database you can inspect
-        self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'test_application.db')
-testinspdb=TestInspDb
+        #from os import path
+        #self.db.url = 'sqlite:///%s' % path.join(self.dirs.data, 'test_application.db')
+        #self.assign_beaker_url()
