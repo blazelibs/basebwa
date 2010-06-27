@@ -72,10 +72,11 @@ class Default(DefaultSettings):
 
     def init_plugins(self):
         # application modules from our application or supporting applications
+        self.add_plugin(app_package, 'common', 'commonbwp')
         self.add_plugin(app_package, 'sqlalchemy', 'sqlalchemybwp')
         self.add_plugin(app_package, 'auth', 'authbwp')
         self.add_plugin(app_package, 'apputil')
-        self.add_plugin(app_package, 'datagrid')
+        self.add_plugin(app_package, 'datagrid', 'datagridbwp')
 
     def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
         #http://beaker.groovie.org/configuration.html
