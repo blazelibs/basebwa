@@ -92,8 +92,9 @@ class Default(DefaultSettings):
         #######################################################################
         # USERS: DEFAULT ADMIN
         #######################################################################
-        self.plugins.users.admin.username = admin_user
-        self.plugins.users.admin.password = admin_pass
+        self.plugins.auth.admin.username = admin_user
+        self.plugins.auth.admin.password = admin_pass
+        self.plugins.auth.admin.email = override_email
 
         DefaultSettings.apply_dev_settings(self, override_email)
 
