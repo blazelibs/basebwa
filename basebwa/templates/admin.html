@@ -1,26 +1,25 @@
-{% set user_message_html = process_view('apputil:UserMessagesSnippet') -%}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <base href="{{ current_url(root_only=True) }}" />
     <title>
         {% block title %}{{ settings.name.short|title }} Control Panel{% endblock %}
     </title>
-    
+
     <style type="text/css">
     /*<![CDATA[*/
-        @import "{{ style_url('default.css')}}";
-        @import "{{ style_url('admin_template.css')}}";
-        
-        {{ page_css() }}
+        @import "static/app/c/default.css";
+        @import "static/app/c/admin_template.css";
+
+        {{ page_css()|safe }}
     /*]]>*/
     </style>
-    
-    <script type="text/javascript" src="{{ js_url('jquery-etal.js', app='rcsappbase')}}"></script>
+
+    <script type="text/javascript" src="static/app/js/jquery-etal.js"></script>
     <script type="text/javascript">
     /*<![CDATA[*/
-        {{ page_js() }}
+        {{ page_js()|safe }}
     /*]]>*/
     </script>
 </head>
@@ -31,30 +30,30 @@
         </div>
         <ul id="top_nav">
             <li><a href="{{ current_url(root_only=True) }}">Home</a> | </li>
-            {% if sesuser.is_authenticated() %}
+            {% if user.is_authenticated %}
             <li><a href="{{ url_for('apputil:DynamicControlPanel')}}">Control Panel</a> | </li>
-            <li><a href="{{ url_for('users:ChangePassword')}}">Change Password</a> | </li>
-            <li><a href="{{ url_for('users:Logout') }}">Logout</a></li>
+            <li><a href="{{ url_for('auth:ChangePassword')}}">Change Password</a> | </li>
+            <li><a href="{{ url_for('auth:Logout') }}">Logout</a></li>
             {% else %}
-            <li><a href="{{ url_for('users:Login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth:Login') }}">Login</a></li>
             {% endif %}
-            
+
         </ul>
         <div id="page_body">
-            <div id="page_content">    
+            <div id="page_content">
 
-                {{ user_message_html }}
-                
+                {% include('user_messages.html') %}
+
                 {% block body %}{% endblock %}
             </div>
         </div>
-        
+
         <div id="page_footer">
             <p>&nbsp;</p>
         </div>
     </div>
     <p class="credits"><strong><a class="blended" href="http://www.rcsws.com">Web Design</a></strong> &amp; <strong><a class="blended" href="http://www.rcsws.com">Web Development</a></strong> by <strong><a href="http://www.rcsws.com/">RCS Web Solutions</a></strong></p>
-    
+
     <div id="session_controls">
         {#{if $pUserIsAuthenticated == true }}
             <p>Welcome, <strong>{{$pUserName}}</strong>. <a href="{{pGenURL view='Users-Logout'}}">Logout</a>.</p>
@@ -63,7 +62,7 @@
         {{/if}}
         {{if "programmer"|pUserHasAuthlevel }}
             <p>performance: <<page_performance>></p>
-        {{/if}#} 
+        {{/if}#}
     </div>
 </body>
 </html>
