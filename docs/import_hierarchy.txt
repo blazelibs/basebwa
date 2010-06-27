@@ -1,0 +1,12 @@
+My App
+    - BaseBWA
+        - CommonBWP
+            - BlazeForm
+            - BlazeWeb
+                - BlazeUtils
+        - DataGridBWP
+            - BlazeWeb
+            - SQLAlchemyBWP
+                - savalidation
+        - AuthBWP
+            - SQLAlchemyBWP
