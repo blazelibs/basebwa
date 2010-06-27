@@ -49,10 +49,9 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'tests']),
     include_package_data=True,
     install_requires = [
-        "BlazeWeb>=0.3.0dev",
-        "BlazeForm>=0.3.0dev",
-        "SQLiteFKTG4SA>=0.1.1",
-        "python-dateutil>=1.4.1"
+        'AuthBWP>=0.1dev',
+        'CommonBWP>=0.1dev',
+        'DataGridBWP>=0.1dev',
     ],
     entry_points="""
     [console_scripts]
