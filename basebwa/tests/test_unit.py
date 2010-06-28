@@ -1,11 +1,6 @@
-from StringIO import StringIO
-from blazeweb.globals import ag
 from blazeweb.users import User
-from blazeweb.testing import inrequest
-from blazeweb.wrappers import Request
 from basebwa.lib.cpanel import ControlPanelGroup, ControlPanelSection, \
     ControlPanelLink, control_panel_permission_filter
-import basebwa.forms
 
 class TestControlPanelFilter(object):
 
@@ -65,37 +60,3 @@ class TestControlPanelFilter(object):
         assert len(filtered[0]['sec_groups']) == 1
         assert filtered[0]['sec_groups'][0]['group_links'][0] is foo_cpsec.groups[1].links[0]
         assert len(filtered[0]['sec_groups'][0]['group_links']) == 1
-
-class TestForm(object):
-
-    @classmethod
-    def setup_class(cls):
-        class Form(basebwa.forms.Form):
-            def __init__(self):
-                basebwa.forms.Form.__init__(self, 'test-form')
-                self.add_text('name_first', 'First name', maxlength=30)
-                self.add_file('txtfile', 'Text File')
-        cls.Form = Form
-
-    def test_with_no_request_object(self):
-        f = self.Form()
-        assert not f.is_submitted()
-
-    @inrequest()
-    def test_auto_form_submit(self):
-        # setup the request, which will bind to the app's rg.request
-        # which should result in the form values getting submitted
-        Request.from_values(
-            {
-            'name_first': 'bob',
-            'txtfile': (StringIO('my file contents'), 'test.txt'),
-            'test-form-submit-flag': 'submitted'},
-            bind_to_context=True
-            )
-        # test the form
-        f = self.Form()
-        assert f.is_submitted()
-        assert f.is_valid()
-        assert f.name_first.value == 'bob'
-        assert f.txtfile.value.file_name == 'test.txt'
-        assert f.txtfile.value.content_type == 'text/plain'
