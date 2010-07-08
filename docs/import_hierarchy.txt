@@ -4,9 +4,9 @@ My App
             - BlazeForm
             - BlazeWeb
                 - BlazeUtils
-        - DataGridBWP
-            - BlazeWeb
-            - SQLAlchemyBWP
-                - savalidation
         - AuthBWP
+            - DataGridBWP
+                - BlazeWeb
+                - SQLAlchemyBWP
+                    - savalidation
             - SQLAlchemyBWP
