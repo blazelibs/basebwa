@@ -2,8 +2,8 @@ from blazeweb.globals import user
 from blazeweb.views import View, asview
 from commonbwp.lib.views import CrudBase, FormMixin
 
-import cbwptestapp.forms as forms
-import cbwptestapp.model.orm as orm
+import basebwa_ta.forms as forms
+import basebwa_ta.model.orm as orm
 from plugstack.datagrid.lib import DataGrid, Col, DateTime
 from plugstack.sqlalchemy import db
 

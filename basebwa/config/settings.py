@@ -104,8 +104,8 @@ class Default(DefaultSettings):
         # TEMPLATES
         #######################################################################
         # use test template instead of real templates to speed up the tests
-        self.template.default = 'test.html'
-        self.template.admin = 'test.html'
+        self.template.default = 'common:layout_testing.html'
+        self.template.admin = 'common:layout_testing.html'
 
         #######################################################################
         # DATABASE

@@ -5,7 +5,7 @@ from blazeweb.middleware import full_wsgi_stack
 from blazeweb.scripting import application_entry
 from sqlalchemybwp.lib.middleware import SQLAlchemyApp
 
-import cbwptestapp.config.settings as settingsmod
+import basebwa_ta.config.settings as settingsmod
 
 def make_wsgi(profile='Dev'):
     app = WSGIApp(settingsmod, profile)
