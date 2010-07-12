@@ -1,12 +1,23 @@
-My App
-    - BaseBWA
-        - CommonBWP
-            - BlazeForm
-            - BlazeWeb
-                - BlazeUtils
-        - AuthBWP
-            - DataGridBWP
-                - BlazeWeb
-                - SQLAlchemyBWP
-                    - savalidation
-            - SQLAlchemyBWP
+
+Dependency Outline:
+--------------------
+
+- BlazeUtils
+- BlazeWeb
+    - BlazeUtils
+- BlazeForm
+    - BlazeUtils
+- CommonBWP
+    - BlazeForm
+    - BlazeWeb
+- SA Validation
+- SQLAlchemyBWP
+    - BlazeWeb
+    - SA Validation
+- DataGridBWP
+    - SQLAlchemyBWP
+- AUthBWP
+    - CommonBWP
+    - DataGridBWP
+- BaseBWA
+    - AuthBWP
