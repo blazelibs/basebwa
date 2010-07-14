@@ -1,15 +1,15 @@
 from os import path
 
-from blazeweb.config import DefaultSettings
+from basebwa.config.settings import Default as BaseDefaults
 
 basedir = path.dirname(path.dirname(__file__))
 app_package = path.basename(basedir)
 
-class Default(DefaultSettings):
+class Default(BaseDefaults):
     def init(self):
-        self.dirs.base = basedir
-        self.app_package = app_package
-        DefaultSettings.init(self)
+        BaseDefaults.init(self, app_package, basedir)
+
+        self.supporting_apps.append('basebwa')
 
         self.init_plugins()
         self.init_routing()
@@ -24,13 +24,6 @@ class Default(DefaultSettings):
         # TEMPLATES
         #######################################################################
         self.template.admin = 'testing.html'
-
-    def init_plugins(self):
-        # application modules from our application or supporting applications
-        self.add_plugin(app_package, 'common', 'commonbwp')
-        self.add_plugin(app_package, 'sqlalchemy', 'sqlalchemybwp')
-        self.add_plugin(app_package, 'auth', 'authbwp')
-        self.add_plugin(app_package, 'datagrid', 'datagridbwp')
 
     def init_routing(self):
         self.add_route('/ft1', endpoint='FormTest1')

@@ -57,15 +57,6 @@ class Default(DefaultSettings):
         self.db.echo = False
 
         #######################################################################
-        # ERROR DOCUMENTS
-        #######################################################################
-        self.error_docs[400] = 'apputil:BadRequestError'
-        self.error_docs[401] = 'apputil:AuthError'
-        self.error_docs[403] = 'apputil:Forbidden'
-        self.error_docs[404] = 'apputil:NotFoundError'
-        self.error_docs[500] = 'apputil:SystemError'
-
-        #######################################################################
         # BEAKER SESSIONS
         #######################################################################
         self.init_beaker()
