@@ -20,7 +20,7 @@ class TestCrud(object):
 
     def test_add(self):
         r = self.ta.get('/widget/add/999999', status=400)
-        
+
         r = self.ta.get('/widget/add')
         d = r.pyq
         eq_(d('form:first').attr('id'), 'widget-form', r)
@@ -32,9 +32,9 @@ class TestCrud(object):
         r.form['color'] = 'silver'
         r = r.form.submit('submit', status=200)
         assert '/widget/add' in r.request.url
-        
+
         r.form['quantity'] = '87'
-        r = r.form.submit('submit', status=302)        
+        r = r.form.submit('submit', status=302)
         assert '/widget/add' in r.request.url
         r = r.follow(status=200)
         assert '/widget/manage' in r.request.url
@@ -42,7 +42,7 @@ class TestCrud(object):
     def test_edit(self):
         r = self.ta.get('/widget/edit', status=404)
         r = self.ta.get('/widget/edit/999999', status=404)
-    
+
         w_id = self.create_widget(u'edit_test_widget', u'black', 150).id
         r = self.ta.get('/widget/edit/%s'%w_id)
         d = r.pyq
@@ -61,13 +61,13 @@ class TestCrud(object):
 
         w = Widget.get(w_id)
         assert w.quantity == 75
-        
+
     def test_manage(self):
         r = self.ta.get('/widget/manage/999999', status=400)
         r = self.ta.post('/widget/manage', status=400)
-        
+
         w_id = self.create_widget(u'manage_test_widget', u'black', 150).id
-    
+
         r = self.ta.get('/widget/manage?filteron=type&filteronop=eq&filterfor=manage_test_widget')
         d = r.pyq
         assert d('form#widget-form').html() is None
@@ -79,15 +79,15 @@ class TestCrud(object):
     def test_delete(self):
         r = self.ta.get('/widget/delete', status=404)
         r = self.ta.get('/widget/delete/999999', status=404)
-        
+
         w_id = self.create_widget(u'delete_test_widget', u'black', 150).id
         r = self.ta.post('/widget/delete/%s'%w_id, status=400)
         r = self.ta.get('/widget/delete/%s'%w_id, status=302)
         assert '/widget/delete/%s'%w_id in r.request.url
-        
+
         r = r.follow(status=200)
         assert '/widget/manage' in r.request.url
-    
+
         w = Widget.get(w_id)
         assert w is None
 
@@ -109,7 +109,7 @@ class TestCrud(object):
         d = r.pyq
         assert d('a[href="/widget-auth/edit/%s"]'%w_id).html() is not None
         assert d('a[href="/widget-auth/delete/%s"]'%w_id).html() is not None
-        r = self.ta.get('/widget-auth/delete/%s'%w_id, status=302)        
+        r = self.ta.get('/widget-auth/delete/%s'%w_id, status=302)
         self.ta.get('/users/logout')
 
 class TestFormErrors(object):
@@ -123,7 +123,7 @@ class TestFormErrors(object):
         r.form['color'] = 'silver'
         r = r.form.submit('submit', status=200)
         d = r.pyq
-        assert 'Quantity: field is required' in d('div#user_messages li:eq(0)').html()
+        assert has_message(d, 'error', 'Quantity: field is required')
 
     def test_maxlength(self):
         r = self.ta.get('/widget/add')
@@ -132,5 +132,4 @@ class TestFormErrors(object):
         r.form['quantity'] = 125
         r = r.form.submit('submit', status=200)
         d = r.pyq
-        assert 'Type: Enter a value not greater than 255 characters long' in d('div#user_messages li:eq(0)').html()
-    
+        assert has_message(d, 'error', 'Type: Enter a value not greater than 255 characters long')
