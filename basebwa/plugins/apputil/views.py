@@ -16,7 +16,7 @@ class DynamicControlPanel(SecureView):
         self.require_all = 'webapp-controlpanel'
 
     def default(self):
-        sections = []
+        sections = list(settings.cp_nav_sections)
         for plugin in settings.plugins:
             try:
                 if plugin.cp_nav.enabled:
