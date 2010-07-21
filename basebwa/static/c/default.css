@@ -1,6 +1,6 @@
 /****************************** TYPOGRAPHY **************************/
 /*  NOTE: This file should stay as non-site-specific as possible.
-**  It should be able to be dropped in from one app to another 
+**  It should be able to be dropped in from one app to another
 **  with ZERO modification and very little extranious classes, etc.
 */
 
@@ -10,7 +10,7 @@ body {
     font-size: 80%;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
-	
+
 /*typography*/
 a {
     text-decoration: underline;
@@ -95,11 +95,11 @@ select          { font-size: .9em; }
 
 textarea        { font-size: 1.1em; }
 
-/*the following classes are to demonstrate better line heights for narrow columns*/	
+/*the following classes are to demonstrate better line heights for narrow columns*/
 .narrow1{
 	line-height: 1.3em;
 	}
-	
+
 .slim {
     line-height: 1.2em;
 	margin: 0;
@@ -121,48 +121,48 @@ textarea        { font-size: 1.1em; }
 
 /******************* USER MESSAGES *********************/
 
-#user_messages {
+#user-messages {
     margin-top: 15px;
     margin-bottom: 15px;
-    border: none;    
+    border: none;
     background: #E6F2FF;
     border: solid 1px #0052A0;
     padding: 10px 10px 10px 10px;
     color: black;
 }
 
-#user_messages h2 {
+#user-messages h2 {
     margin: 0 0 10px 0;
     font-size: 1.3em;
     font-weight: bold;
     color: black;
 }
 
-#user_messages ul{
+#user-messages ul{
     margin: 0px;
     padding: 0px;
     list-style-type: none;
 }
-#user_messages li {
+#user-messages li {
     margin-left: 15px;
     font-weight: normal;
 }
 
-#user_messages li strong {
+#user-messages li strong {
     font-weight: bold;
 }
 
-#user_messages li strong.sev_error{
+#user-messages li strong.sev-error{
     color: red;
     text-transform: capitalize;
 }
 
-#user_messages li strong.sev_warning{
+#user-messages li strong.sev-warning{
     color: #998300;
     text-transform: capitalize;
 }
 
-#user_messages li strong.sev_notice{
+#user-messages li strong.sev-notice{
     color: black;
     text-transform: capitalize;
 }
@@ -170,7 +170,7 @@ textarea        { font-size: 1.1em; }
 /*************************************** FORMS **************************************************/
 form.generated,
 div.static-form {
-    margin: 0px; 
+    margin: 0px;
     padding: 0px;
 }
 
@@ -186,14 +186,14 @@ div.static-form div.row {
 /* http://csscreator.com/?q=attributes/containedfloat.php */
 form.generated div.row:after,
 div.static-form div.row:after {
-    content: "."; 
-    display: block; 
-    height: 0; 
-    font-size:0;	
-    clear: both; 
+    content: ".";
+    display: block;
+    height: 0;
+    font-size:0;
+    clear: both;
     visibility:hidden;
 }
-	
+
 form.generated div.row,
 div.static-form div.row {
 	display: inline-block;
@@ -208,7 +208,7 @@ form.generated div.row,
 div.static-form div.row {
 	display:block;
 }
-/* End Hack */ 
+/* End Hack */
 /* END: Expand row around floated child elements */
 
 form.generated div.row.first,
@@ -493,13 +493,13 @@ p.js_message_box.failed {
 /***************************** EXPAND AROUND FLOATS ******************************/
 
 .expand-around-floats:after{
-    content: "."; 
-    display: block; 
-    height: 0; 
-    font-size:0;	
-    clear: both; 
+    content: ".";
+    display: block;
+    height: 0;
+    font-size:0;
+    clear: both;
     visibility:hidden;
-}	
+}
 .expand-around-floats{
 	display: inline-block;
 }
