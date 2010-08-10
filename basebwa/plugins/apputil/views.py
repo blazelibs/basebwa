@@ -4,8 +4,6 @@ from blazeweb.views import View, SecureView
 from appstack.lib.cpanel import control_panel_permission_filter
 import forms
 
-
-
 class BlankPage(View):
     """ not truly blank, wrapped in the default layout """
     def default(self):
