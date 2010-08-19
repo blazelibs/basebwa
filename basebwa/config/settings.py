@@ -60,19 +60,24 @@ class Default(DefaultSettings):
         # CONTROL PANEL
         #######################################################################
         self.cp_nav_sections = []
-        
+
         #######################################################################
         # BEAKER SESSIONS
         #######################################################################
         self.init_beaker()
 
-    def init_plugins(self):
+    def init_plugins(self, common=True, sqlalchemy=True, auth=True, apputil=True, datagrid=True):
         # application modules from our application or supporting applications
-        self.add_plugin(app_package, 'common', 'commonbwp')
-        self.add_plugin(app_package, 'sqlalchemy', 'sqlalchemybwp')
-        self.add_plugin(app_package, 'auth', 'authbwp')
-        self.add_plugin(app_package, 'apputil')
-        self.add_plugin(app_package, 'datagrid', 'datagridbwp')
+        if common:
+            self.add_plugin(app_package, 'common', 'commonbwp')
+        if sqlalchemy:
+            self.add_plugin(app_package, 'sqlalchemy', 'sqlalchemybwp')
+        if auth:
+            self.add_plugin(app_package, 'auth', 'authbwp')
+        if apputil:
+            self.add_plugin(app_package, 'apputil')
+        if datagrid:
+            self.add_plugin(app_package, 'datagrid', 'datagridbwp')
 
     def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
         #http://beaker.groovie.org/configuration.html
@@ -95,13 +100,14 @@ class Default(DefaultSettings):
 
         DefaultSettings.apply_dev_settings(self, override_email)
 
-    def apply_test_settings(self):
+    def apply_test_settings(self, testing_layouts=True):
         #######################################################################
         # TEMPLATES
         #######################################################################
         # use test template instead of real templates to speed up the tests
-        self.template.default = 'common:layout_testing.html'
-        self.template.admin = 'common:layout_testing.html'
+        if testing_layouts:
+            self.template.default = 'common:layout_testing.html'
+            self.template.admin = 'common:layout_testing.html'
 
         #######################################################################
         # DATABASE
