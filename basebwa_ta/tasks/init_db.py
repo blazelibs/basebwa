@@ -1,4 +1,4 @@
-from plugstack.auth.model.actions import permission_update
+from plugstack.auth.model.orm import Permission
 
 def action_30_perms():
-    permission_update(None, name=u'widget-delete', _ignore_unique_exception=True)
+    Permission.add_iu(name=u'widget-delete')
