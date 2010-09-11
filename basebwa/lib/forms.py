@@ -10,9 +10,13 @@ class Form(CommonForm):
         self.add_handler(exc_type=ValidationError, callback=self.handle_validation_error)
 
     def handle_validation_error(self, exc):
+        # used to indicate if all errors were assignable for at least one instance.
+        # If not, consider handling the validation to have failed
+        all_errors_handled = False
         for inst in exc.invalid_instances:
-            self.add_field_errors(inst.validation_errors)
-        return True
+            if self.add_field_errors(inst.validation_errors):
+                all_errors_handled = True
+        return all_errors_handled
 
 class LookupMixin(object):
     def add_active_flag(self):
