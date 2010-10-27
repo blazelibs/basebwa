@@ -9,7 +9,7 @@ class TestControlPanelFilter(object):
 
         # now permissions
         for perm in perms:
-            user.add_token(perm)
+            user.add_perm(perm)
         return user
 
     def test_no_perms(self):

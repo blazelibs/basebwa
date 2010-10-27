@@ -49,14 +49,14 @@ def control_panel_permission_filter(session_user, *sections):
     retval = []
     for sec in sections:
         sec_groups = []
-        if sec.has_perm and not session_user.has_token(sec.has_perm):
+        if sec.has_perm and not session_user.has_perm(sec.has_perm):
             continue
         for lg in sec.groups:
             group_links = []
-            if lg.has_perm and not session_user.has_token(lg.has_perm):
+            if lg.has_perm and not session_user.has_perm(lg.has_perm):
                 continue
             for link in lg.links:
-                if session_user.has_token(link.has_perm) or not link.has_perm:
+                if session_user.has_perm(link.has_perm) or not link.has_perm:
                     group_links.append(link)
             if group_links:
                 sec_groups.append({'group': lg, 'group_links' : group_links})
