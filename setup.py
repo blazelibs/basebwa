@@ -49,9 +49,9 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'tests']),
     include_package_data=True,
     install_requires = [
-        'AuthBWP>=0.1dev',
-        'CommonBWP>=0.1dev',
-        'DataGridBWP>=0.1dev',
+        'AuthBWC>=0.1dev',
+        'CommonBWC>=0.1dev',
+        'DataGridBWC>=0.1dev',
     ],
     entry_points="""
     [console_scripts]
