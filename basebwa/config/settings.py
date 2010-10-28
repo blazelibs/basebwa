@@ -69,15 +69,15 @@ class Default(DefaultSettings):
     def init_components(self, common=True, sqlalchemy=True, auth=True, apputil=True, datagrid=True):
         # application modules from our application or supporting applications
         if common:
-            self.add_component(app_package, 'common', 'commonbwp')
+            self.add_component(app_package, 'common', 'commonbwc')
         if sqlalchemy:
-            self.add_component(app_package, 'sqlalchemy', 'sqlalchemybwp')
+            self.add_component(app_package, 'sqlalchemy', 'sqlalchemybwc')
         if auth:
-            self.add_component(app_package, 'auth', 'authbwp')
+            self.add_component(app_package, 'auth', 'authbwc')
         if apputil:
             self.add_component(app_package, 'apputil')
         if datagrid:
-            self.add_component(app_package, 'datagrid', 'datagridbwp')
+            self.add_component(app_package, 'datagrid', 'datagridbwc')
 
     def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
         #http://beaker.groovie.org/configuration.html
