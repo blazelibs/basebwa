@@ -11,7 +11,7 @@ class Default(BaseDefaults):
 
         self.supporting_apps.append('basebwa')
 
-        self.init_plugins()
+        self.init_components()
         self.init_routing()
 
         ################################################################

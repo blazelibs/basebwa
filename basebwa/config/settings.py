@@ -29,7 +29,7 @@ class Default(DefaultSettings):
         self.name.short = 'basebwa app'
 
         if is_primary:
-            self.init_plugins()
+            self.init_components()
 
         #######################################################################
         # ROUTING
@@ -66,18 +66,18 @@ class Default(DefaultSettings):
         #######################################################################
         self.init_beaker()
 
-    def init_plugins(self, common=True, sqlalchemy=True, auth=True, apputil=True, datagrid=True):
+    def init_components(self, common=True, sqlalchemy=True, auth=True, apputil=True, datagrid=True):
         # application modules from our application or supporting applications
         if common:
-            self.add_plugin(app_package, 'common', 'commonbwp')
+            self.add_component(app_package, 'common', 'commonbwp')
         if sqlalchemy:
-            self.add_plugin(app_package, 'sqlalchemy', 'sqlalchemybwp')
+            self.add_component(app_package, 'sqlalchemy', 'sqlalchemybwp')
         if auth:
-            self.add_plugin(app_package, 'auth', 'authbwp')
+            self.add_component(app_package, 'auth', 'authbwp')
         if apputil:
-            self.add_plugin(app_package, 'apputil')
+            self.add_component(app_package, 'apputil')
         if datagrid:
-            self.add_plugin(app_package, 'datagrid', 'datagridbwp')
+            self.add_component(app_package, 'datagrid', 'datagridbwp')
 
     def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
         #http://beaker.groovie.org/configuration.html
@@ -94,9 +94,9 @@ class Default(DefaultSettings):
         #######################################################################
         # USERS: DEFAULT ADMIN
         #######################################################################
-        self.plugins.auth.admin.username = admin_user
-        self.plugins.auth.admin.password = admin_pass
-        self.plugins.auth.admin.email = override_email
+        self.components.auth.admin.username = admin_user
+        self.components.auth.admin.password = admin_pass
+        self.components.auth.admin.email = override_email
 
         DefaultSettings.apply_dev_settings(self, override_email)
 

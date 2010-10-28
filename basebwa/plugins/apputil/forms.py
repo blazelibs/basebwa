@@ -1,5 +1,5 @@
 import datetime
-from plugstack.common.lib.forms import Form
+from compstack.common.lib.forms import Form
 
 class TestForm(Form):
     def __init__(self, static):

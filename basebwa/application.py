@@ -10,7 +10,7 @@ def make_wsgi(profile='Default'):
 
     # can't run this until after the app is initilized or else the
     # app globals are not setup
-    from plugstack.sqlalchemy.lib.middleware import SQLAlchemyApp
+    from compstack.sqlalchemy.lib.middleware import SQLAlchemyApp
     app = SQLAlchemyApp(app)
 
     return full_wsgi_stack(app)

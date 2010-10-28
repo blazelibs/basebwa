@@ -3,7 +3,7 @@ from werkzeug import BaseResponse
 from blazeweb.globals import settings, ag
 from blazeweb.testing import Client
 
-from plugstack.auth.lib.testing import login_client_with_permissions
+from compstack.auth.lib.testing import login_client_with_permissions
 
 testapp = ag.wsgi_test_app
 

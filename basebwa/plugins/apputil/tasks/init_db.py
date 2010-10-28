@@ -3,7 +3,7 @@ from blazeweb.tasks import attributes
 try:
     # if the auth module is not available, then give a placeholder function
     # to avoid the exception
-    from plugstack.auth.model.orm import Permission
+    from compstack.auth.model.orm import Permission
 except ImportError:
     Permission = None
 

@@ -2,7 +2,7 @@ from blazeweb.routing import url_for
 from savalidation import ValidationError
 from webhelpers.html.tags import link_to
 
-from plugstack.common.lib.forms import Form as CommonForm
+from compstack.common.lib.forms import Form as CommonForm
 
 class Form(CommonForm):
     def __init__(self, name=None, **kwargs):

@@ -4,7 +4,7 @@ from nose.tools import eq_
 
 from authbwp.lib.testing import login_client_with_permissions
 from commonbwp.lib.testing import has_message
-from plugstack.sqlalchemy import db
+from compstack.sqlalchemy import db
 from basebwa_ta.model.orm import Widget
 
 class TestCrud(object):

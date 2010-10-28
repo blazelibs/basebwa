@@ -4,8 +4,8 @@ from commonbwp.lib.views import CrudBase, FormMixin
 
 import basebwa_ta.forms as forms
 import basebwa_ta.model.orm as orm
-from plugstack.datagrid.lib import DataGrid, Col, DateTime
-from plugstack.sqlalchemy import db
+from compstack.datagrid.lib import DataGrid, Col, DateTime
+from compstack.sqlalchemy import db
 
 class FormTest1(View, FormMixin):
     def setup_view(self):
