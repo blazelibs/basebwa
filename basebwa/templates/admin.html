@@ -41,28 +41,16 @@
         </ul>
         <div id="page_body">
             <div id="page_content">
-
                 {% include('common:user_messages.html') %}
 
                 {% block body %}{% endblock %}
+                {% block primary_content %}{% endblock %}
             </div>
         </div>
 
         <div id="page_footer">
             <p>&nbsp;</p>
         </div>
-    </div>
-    <p class="credits"><strong><a class="blended" href="http://www.rcsws.com">Web Design</a></strong> &amp; <strong><a class="blended" href="http://www.rcsws.com">Web Development</a></strong> by <strong><a href="http://www.rcsws.com/">RCS Web Solutions</a></strong></p>
-
-    <div id="session_controls">
-        {#{if $pUserIsAuthenticated == true }}
-            <p>Welcome, <strong>{{$pUserName}}</strong>. <a href="{{pGenURL view='Users-Logout'}}">Logout</a>.</p>
-        {{else}}
-            <p><a href="{{pGenURL module='users' view='login'}}">Login</a></p>
-        {{/if}}
-        {{if "programmer"|pUserHasAuthlevel }}
-            <p>performance: <<page_performance>></p>
-        {{/if}#}
     </div>
 </body>
 </html>

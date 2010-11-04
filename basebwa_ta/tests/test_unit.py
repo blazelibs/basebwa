@@ -4,8 +4,8 @@ from blazeweb.testing import inrequest
 from blazeweb.views import View
 from blazeweb.wrappers import Request
 
-from commonbwp.lib.forms import Form as CommonForm
-from commonbwp.lib.views import FormMixin
+from commonbwc.lib.forms import Form as CommonForm
+from commonbwc.lib.views import FormMixin
 
 class TestForms(object):
 

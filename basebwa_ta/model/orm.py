@@ -1,9 +1,9 @@
 import sqlalchemy as sa
 
 import savalidation.validators as val
-from sqlalchemybwp import db
-from sqlalchemybwp.lib.declarative import declarative_base, DefaultMixin
-from sqlalchemybwp.lib.decorators import ignore_unique, transaction
+from sqlalchemybwc import db
+from sqlalchemybwc.lib.declarative import declarative_base, DefaultMixin
+from sqlalchemybwc.lib.decorators import ignore_unique, transaction
 
 Base = declarative_base()
 

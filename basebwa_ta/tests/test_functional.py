@@ -1,9 +1,9 @@
-from blazeweb.globals import ag
+from blazeweb.globals import ag, settings
 from blazeweb.testing import TestApp
 from nose.tools import eq_
 
-from authbwp.lib.testing import login_client_with_permissions
-from commonbwp.lib.testing import has_message
+from authbwc.lib.testing import login_client_with_permissions
+from commonbwc.lib.testing import has_message
 from compstack.sqlalchemy import db
 from basebwa_ta.model.orm import Widget
 
@@ -133,3 +133,21 @@ class TestFormErrors(object):
         r = r.form.submit('submit', status=200)
         d = r.pyq
         assert has_message(d, 'error', 'Type: Enter a value not greater than 255 characters long')
+
+class TestAdminTemplating(object):
+
+    @classmethod
+    def setup_class(cls):
+        cls.ta = TestApp(ag.wsgi_test_app)
+        settings.template.admin = 'admin.html'
+
+    def test_primary_content_block(self):
+        r = self.ta.get('/admin-templating/pc-block')
+        assert 'pc content' in r
+
+class TestDefaultTemplating(TestAdminTemplating):
+
+    @classmethod
+    def setup_class(cls):
+        cls.ta = TestApp(ag.wsgi_test_app)
+        settings.template.admin = 'default.html'

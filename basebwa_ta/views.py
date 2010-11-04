@@ -1,6 +1,6 @@
 from blazeweb.globals import user
 from blazeweb.views import View, asview
-from commonbwp.lib.views import CrudBase, FormMixin
+from commonbwc.lib.views import CrudBase, FormMixin
 
 import basebwa_ta.forms as forms
 import basebwa_ta.model.orm as orm
@@ -105,4 +105,3 @@ class WidgetCrudDeletePerm(WidgetCrud):
 @asview('/')
 def home_page():
     return user.get_messages()
-    
