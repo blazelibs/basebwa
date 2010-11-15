@@ -1,7 +1,7 @@
 
 /****************************** TYPOGRAPHY **************************/
 /*  NOTE: This file should stay as non-site-specific as possible.
-**  It should be able to be dropped in from one app to another 
+**  It should be able to be dropped in from one app to another
 **  with ZERO modification and very little extranious classes, etc.
 */
 
@@ -11,7 +11,7 @@ body {
     font-size: 76%;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
-	
+
 /*typography*/
 a {
     text-decoration: underline;
@@ -135,7 +135,7 @@ table.dataTable .first_col {
     border-left: solid 1px white;
 }
 
-table.manage td a.edit_link {
+table.datagrid td a.edit_link {
     float: left;
     background: url(../images/icons/b_edit.png);
     height: 16px;
@@ -144,7 +144,7 @@ table.manage td a.edit_link {
     margin-left: 1em;
 }
 
-table.manage td a.delete_link {
+table.datagrid td a.delete_link {
     float: left;
     background: url(../images/icons/b_drop.png);
     height: 16px;
@@ -206,9 +206,9 @@ ul#top_nav li {
     margin: 0 10px 0 10px;
 }
 
-#page_footer { 
+#page_footer {
     font-size: .9em;
-    margin: 0; 
+    margin: 0;
     padding:0.8em;
     background: black;
     color: #CABC74;
@@ -221,12 +221,12 @@ ul#top_nav li {
 /* ############  TYPOGRAPHY ############### */
 
 p {
-    margin:0.2em 0 1.2em 0; 
+    margin:0.2em 0 1.2em 0;
     padding:0.3em;
 }
 
 a, a:link, a:active {
-    color:#01238F; 
+    color:#01238F;
     text-decoration:underline;
 }
 a:hover {
@@ -272,11 +272,11 @@ h2.title {
 }
 
 div.content_box h2 {
-    color:#fff; 
+    color:#fff;
     font-size: 1.7em;
     text-align: center;
-    margin: 0 0.0em 0.4em 0em; 
-    padding:0; 
+    margin: 0 0.0em 0.4em 0em;
+    padding:0;
     font-family : "Times New Roman", Times, serif;
     text-transform: lowercase;
 }
@@ -291,11 +291,11 @@ div.content_box.first h2 {
 }
 
 div.content_box h3 {
-    color:#fff; 
+    color:#fff;
     font-size: 1.1em;
     text-align: left;
-    margin:0.2em 0.0em 0.4em 0em; 
-    padding:0; 
+    margin:0.2em 0.0em 0.4em 0em;
+    padding:0;
     text-transform: capitalize;
 }
 
