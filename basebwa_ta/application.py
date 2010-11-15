@@ -10,7 +10,7 @@ import basebwa_ta.config.settings as settingsmod
 def make_wsgi(profile='Dev'):
     app = WSGIApp(settingsmod, profile)
     app = SQLAlchemyApp(app)
-    
+
     return full_wsgi_stack(app)
 
 def script_entry():

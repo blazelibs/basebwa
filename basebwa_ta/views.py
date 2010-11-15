@@ -105,4 +105,3 @@ class WidgetCrudDeletePerm(WidgetCrud):
 @asview('/')
 def home_page():
     return user.get_messages()
-    

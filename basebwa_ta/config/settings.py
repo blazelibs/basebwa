@@ -33,6 +33,8 @@ class Default(BaseDefaults):
         self.add_route('/widget/<action>/<int:objid>', endpoint='WidgetCrud')
         self.add_route('/widget-auth/<action>', endpoint='WidgetCrudDeletePerm')
         self.add_route('/widget-auth/<action>/<int:objid>', endpoint='WidgetCrudDeletePerm')
+        self.add_route('/admin-templating/pc-block', endpoint='admin_templating_primary_block.html')
+        self.add_route('/control-panel', endpoint='apputil:DynamicControlPanel')
 
 class Dev(Default):
     def init(self):
