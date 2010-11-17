@@ -390,22 +390,22 @@ form.generated p.frozen {
 
 /******************* TABLE GENERATOR *********************/
 
-table.datagrid {
+table.dataTable {
     width: 100%;
     margin: 1em 0px .5em 0px;
     color: black;
 }
 
-table.datagrid th, table.datagrid td{
+table.dataTable th, table.dataTable td{
     padding: 2px 4px 2px 4px;
     margin: 0px;
 }
 
-table.datagrid td {
+table.dataTable td {
     vertical-align: top;
 }
 
-table.datagrid th {
+table.dataTable th {
     font-weight: bold;
     color: black;
     background-color: rgb(211, 220, 227);
@@ -415,28 +415,28 @@ table.datagrid th {
     border-top: solid 1px white;
 }
 
-table.datagrid th img{
+table.dataTable th img{
 	margin-left: 10px;
 }
 
-table.datagrid td {
+table.dataTable td {
     border-bottom: solid 1px white;
     border-right: solid 1px white;
 }
 
-table.datagrid tr.even td{
+table.dataTable tr.even td{
     background-color: #d5d5d5;
 }
 
-table.datagrid td, table.datagrid tr.odd td{
+table.dataTable td, table.dataTable tr.odd td{
     background-color: #e5e5e5;
 }
 
-table.datagrid .first_col {
+table.dataTable .first_col {
     border-left: solid 1px white;
 }
 
-table.datagrid td a.edit_link {
+table.manage td a.edit_link {
     float: left;
     background: url(../images/icons/b_edit.png);
     height: 16px;
@@ -445,7 +445,7 @@ table.datagrid td a.edit_link {
     margin-left: 1em;
 }
 
-table.datagrid td a.delete_link {
+table.manage td a.delete_link {
     float: left;
     background: url(../images/icons/b_drop.png);
     height: 16px;
@@ -467,6 +467,89 @@ table.datagrid td a.delete_link {
 .js-action-link:hover {
 	text-decoration: none;
 	cursor: pointer;
+}
+
+/*
+
+###
+### datagrid tables
+###
+
+*/
+
+table.datagrid {
+    margin-top: 1em;
+}
+
+table.datagrid th,
+table.datagrid td {
+    padding: .5em 1em;
+    margin: 0px;
+    text-align: center;
+}
+
+table.datagrid td.ta-left {
+    text-align: left;
+}
+
+table.datagrid th {
+    font-weight: bold;
+    color: #ececec;
+    background-color: #31527C;
+    text-align: center;
+    border-bottom: solid 1px white;
+    border-right: solid 1px white;
+    border-top: solid 1px white;
+}
+
+table.datagrid th a {
+    color: #ececec;
+}
+
+table.datagrid th a.sort-asc {
+    padding-right: 40px;
+    background: url(../icons/th_arrow_up.png) no-repeat right -7px;
+}
+
+table.datagrid th a.sort-desc {
+    padding-right: 40px;
+    background: url(../icons/th_arrow_down.png) no-repeat right -7px;
+}
+
+table.datagrid td {
+    border-bottom: solid 1px white;
+    border-right: solid 1px white;
+}
+
+table.datagrid tr.even td{
+    background-color: #d5d5d5;
+}
+
+table.datagrid td,
+table.datagrid tr.odd td{
+    background-color: #e5e5e5;
+}
+
+table.datagrid td a.edit_link,
+table.datagrid td a.delete_link {
+    float: left;
+    height: 16px;
+    width: 16px;
+    text-indent: -1200px;
+}
+
+table.datagrid td a.edit_link:focus,
+table.datagrid td a.delete_link:focus {
+    outline: 0;
+}
+
+table.datagrid td a.edit_link {
+    background: url(../icons/application_form_edit.png);
+    margin-left: 1em;
+}
+
+table.datagrid td a.delete_link {
+    background: url(../icons/delete.png);
 }
 
 /************************* JS BOXES ***************************/
