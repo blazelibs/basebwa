@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <base href="{{ current_url(root_only=True) }}" />
+    <title>
+        {% block title %}{{ settings.name.short|title }} Control Panel{% endblock %}
+    </title>
+
+    <style type="text/css">
+    /*<![CDATA[*/
+        @import "static/app/c/default.css";
+        @import "static/app/c/admin_template.css";
+
+        {{ page_css()|safe }}
+    /*]]>*/
+    </style>
+
+    <script type="text/javascript" src="static/app/js/jquery-etal.js"></script>
+    <script type="text/javascript">
+    /*<![CDATA[*/
+        {{ page_js()|safe }}
+    /*]]>*/
+    </script>
+</head>
+<body>
+    <div id="page_wrapper">
+        <div id="page_header">
+            <h1><a href="{{ current_url(root_only=True) }}">{{ settings.name.full|title }} Control Panel</a></h1>
+        </div>
+        <ul id="top_nav">
+            <li><a href="{{ current_url(root_only=True) }}">Home</a> | </li>
+            {% if user.is_authenticated %}
+            <li><a href="{{ url_for('apputil:DynamicControlPanel')}}">Control Panel</a> | </li>
+            <li><a href="{{ url_for('auth:ChangePassword')}}">Change Password</a> | </li>
+            <li><a href="{{ url_for('auth:Logout') }}">Logout</a></li>
+            {% else %}
+            <li><a href="{{ url_for('auth:Login') }}">Login</a></li>
+            {% endif %}
+
+        </ul>
+        <div id="page_body">
+            <div id="page_content">
+                {% include('common:user_messages.html') %}
+
+                {% block body %}{% endblock %}
+                {% block primary_content %}{% endblock %}
+            </div>
+        </div>
+
+        <div id="page_footer">
+            <p>&nbsp;</p>
+        </div>
+    </div>
+</body>
+</html>

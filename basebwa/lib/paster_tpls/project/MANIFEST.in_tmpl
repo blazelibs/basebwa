@@ -1,0 +1,3 @@
+recursive-include {{project}} *
+recursive-include {{project}}sm *
+prune {{project}}/writeable/tmp
