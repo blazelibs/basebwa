@@ -469,6 +469,89 @@ table.manage td a.delete_link {
 	cursor: pointer;
 }
 
+/*
+
+###
+### datagrid tables
+###
+
+*/
+
+table.datagrid {
+    margin-top: 1em;
+}
+
+table.datagrid th,
+table.datagrid td {
+    padding: .5em 1em;
+    margin: 0px;
+    text-align: center;
+}
+
+table.datagrid td.ta-left {
+    text-align: left;
+}
+
+table.datagrid th {
+    font-weight: bold;
+    color: #ececec;
+    background-color: #31527C;
+    text-align: center;
+    border-bottom: solid 1px white;
+    border-right: solid 1px white;
+    border-top: solid 1px white;
+}
+
+table.datagrid th a {
+    color: #ececec;
+}
+
+table.datagrid th a.sort-asc {
+    padding-right: 40px;
+    background: url(../icons/th_arrow_up.png) no-repeat right -7px;
+}
+
+table.datagrid th a.sort-desc {
+    padding-right: 40px;
+    background: url(../icons/th_arrow_down.png) no-repeat right -7px;
+}
+
+table.datagrid td {
+    border-bottom: solid 1px white;
+    border-right: solid 1px white;
+}
+
+table.datagrid tr.even td{
+    background-color: #d5d5d5;
+}
+
+table.datagrid td,
+table.datagrid tr.odd td{
+    background-color: #e5e5e5;
+}
+
+table.datagrid td a.edit_link,
+table.datagrid td a.delete_link {
+    float: left;
+    height: 16px;
+    width: 16px;
+    text-indent: -1200px;
+}
+
+table.datagrid td a.edit_link:focus,
+table.datagrid td a.delete_link:focus {
+    outline: 0;
+}
+
+table.datagrid td a.edit_link {
+    background: url(../icons/application_form_edit.png);
+    margin-left: 1em;
+}
+
+table.datagrid td a.delete_link {
+    background: url(../icons/delete.png);
+}
+
 /************************* JS BOXES ***************************/
 
 p.js_message_box {
