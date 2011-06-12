@@ -9,3 +9,7 @@
 glob:writeable/logs/*.log
 glob:writeable/tmp/*
 glob:basebwa/config/site_settings.py
+syntax: glob
+.coverage
+coverage.xml
+nosetests.xml

@@ -1,26 +1,4 @@
-"""
-Introduction
----------------
-
-BaseBWA is a library designed as a "supporting application" for
-`BlazeWeb <http://pypi.python.org/pypi/BlazeWeb/>`_ applications.
-
-It incorporates sqlalchemy, auth, forms, and other basic functionality needed
-for most web applications.
-
-Questions & Comments
----------------------
-
-Please visit: http://groups.google.com/group/blazelibs
-
-Current Status
----------------
-
-The code stays pretty stable, but the API is likely to change in the future.
-
-The `BaseBWA tip <http://bitbucket.org/rsyring/basebwa/get/tip.zip#egg=BaseBWA-dev>`_
-is installable via `easy_install` with ``easy_install BaseBWA==dev``
-"""
+import os
 import sys
 try:
     from setuptools import setup, find_packages
@@ -29,6 +7,10 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+cdir = os.path.abspath(os.path.dirname(__file__))
+README = open(os.path.join(cdir, 'readme.rst')).read()
+CHANGELOG = open(os.path.join(cdir, 'changelog.rst')).read()
+
 import basebwa
 version = basebwa.VERSION
 
@@ -36,7 +18,7 @@ setup(
     name = "BaseBWA",
     version = version,
     description = "A supporting application for BlazeWeb applications.",
-    long_description = __doc__,
+    long_description=README + '\n\n' + CHANGELOG,
     author = "Randy Syring",
     author_email = "rsyring@gmail.com",
     url='http://pypi.python.org/pypi/BaseBWA/',
@@ -44,6 +26,11 @@ setup(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Internet :: WWW/HTTP'
       ],
     license='BSD',
     packages=find_packages(exclude=['ez_setup', 'tests']),

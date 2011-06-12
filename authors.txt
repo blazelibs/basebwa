@@ -1,7 +1,0 @@
-basebwa is maintained primarily by:
-
-    Randy Syring <rsyring@gmail.com>
-
-other regular contributors:
-
-    Matt Lewellyn <guruofgentoo@gmail.com>
