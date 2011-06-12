@@ -10,7 +10,7 @@ class Form(CommonForm):
     def __init__(self, name=None, **kwargs):
         CommonForm.__init__(self, name, **kwargs)
         self.add_handler(exc_type=ValidationError, callback=self.handle_validation_error)
-        warnings.warn('basebwa.lib.forms.Form is deprecated; commonbwc.lib.forms.Form should be used instead', DeprecationWarning, 1)
+        warnings.warn('basebwa.lib.forms.Form is deprecated; commonbwc.lib.forms.Form should be used instead', DeprecationWarning, 2)
 
     def handle_validation_error(self, exc):
         # used to indicate if all errors were assignable for at least one instance.
