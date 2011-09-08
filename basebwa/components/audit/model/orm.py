@@ -4,20 +4,22 @@ from sqlalchemy import Column, Integer, Unicode, DateTime, \
 from sqlalchemy.sql import text
 from sqlalchemy.orm import relation
 from sqlalchemy.ext.declarative import declarative_base
-from blazeweb import db, modimport
 
-Base = declarative_base(metadata=db.meta)
-User = modimport('users.model.orm', 'User')
+from compstack.auth.model.orm import User
+from compstack.sqlalchemy import db
+from compstack.sqlalchemy.lib.declarative import declarative_base
+
+Base = declarative_base()
 
 class AuditRecord(Base):
     __tablename__ = 'audit_records'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users_user.id', name='fk_audit_records_to_user_id'), nullable=True)
+    user_id = Column(Integer, ForeignKey('auth_users.id', name='fk_audit_records_to_user_id'), nullable=True)
     identifier = Column(Unicode(50), nullable=False)
     audit_text = Column(UnicodeText, nullable=False)
     comments = Column(Unicode(256))
-    
+
     createdts = Column(DateTime, nullable=False, default=datetime.now, server_default=text('CURRENT_TIMESTAMP'))
     lastupdatets = Column(DateTime, onupdate=datetime.now)
 

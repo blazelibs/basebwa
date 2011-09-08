@@ -1,25 +1,24 @@
-from blazeweb import appimportauto, settings
+from blazeweb.globals import settings
+from blazeweb.views import SecureView
 from werkzeug.exceptions import NotFound
 import actions
 import difflib
 
-appimportauto('base', ['ProtectedPageView'])
-
-class AuditDiffBase(ProtectedPageView):
-    def prep(self):
+class AuditDiffBase(SecureView):
+    def init(self):
         self.extend_from = settings.template.default
         self.template_name = 'audit:audit_diff'
         self.pagetitle = 'Change History'
 
-    def auth(self, rev1, rev2=None):
-        ProtectedPageView.auth(self)
+    def auth_calculate(self, rev1, rev2=None):
+        SecureView.auth_calculate(self)
         self.ar = actions.audit_record_get(rev1)
         if not self.ar:
             raise NotFound
-    
+
     def default(self, rev1, rev2=None):
         prev_ar = actions.audit_record_get(rev2) if rev2 else actions.get_previous_audit_record(rev1)
-        
+
         diff_text = []
         a = prev_ar.audit_text.splitlines(True) if prev_ar else []
         b = self.ar.audit_text.splitlines(True)
@@ -40,4 +39,3 @@ class AuditDiffBase(ProtectedPageView):
         self.assign('pagetitle', self.pagetitle)
         self.assign('old_rev_ts', prev_ar.createdts if prev_ar else None)
         self.assign('new_rev_ts', self.ar.createdts)
-        

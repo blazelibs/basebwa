@@ -1,7 +1,7 @@
-from blazeweb import getview
-from blazeweb.htmltable import Table, Col, Link, DateTime, Links, A
 from blazeweb.routing import url_for
 from webhelpers.html.tags import link_to
+
+from compstack.datagrid.lib import Table, Col, Link, DateTime, Links, A
 import actions
 
 def audit_record_display(identifier, diff_view):
