@@ -1,20 +1,24 @@
 from blazeweb.globals import settings
 from blazeweb.views import SecureView
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, BadRequest
 import actions
 import difflib
+import re
 
 class AuditDiffBase(SecureView):
     def init(self):
         self.extend_from = settings.template.default
         self.template_name = 'audit:audit_diff'
         self.pagetitle = 'Change History'
+        self.ident_mask = None
 
     def auth_calculate(self, rev1, rev2=None):
         SecureView.auth_calculate(self)
         self.ar = actions.audit_record_get(rev1)
         if not self.ar:
             raise NotFound
+        if not re.match(self.ident_mask, self.ar.identifier):
+            raise BadRequest
 
     def default(self, rev1, rev2=None):
         prev_ar = actions.audit_record_get(rev2) if rev2 else actions.get_previous_audit_record(rev1)

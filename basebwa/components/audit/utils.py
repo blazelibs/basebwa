@@ -5,7 +5,7 @@ from compstack.datagrid.lib import Table, Col, Link, DateTime, Links, A
 import actions
 
 def audit_record_display(identifier, diff_view):
-    t = Table(class_='dataTable')
+    t = Table(class_='datagrid')
     t.createdts = DateTime('Date', format='%m/%d/%Y %H:%M:%S', width_th='20%')
     t.user_id = Col('User', extractor=lambda x: (('%s %s' % (x.user.name_first or '', x.user.name_last or '')).strip() or x.user.login_id) if x.user else 'no user', width_th='20%')
     t.comments = Col('Comments')
