@@ -8,7 +8,6 @@ import re
 class AuditDiffBase(SecureView):
     def init(self):
         self.extend_from = settings.template.default
-        self.template_name = 'audit:audit_diff'
         self.pagetitle = 'Change History'
         self.ident_mask = None
 
@@ -43,3 +42,4 @@ class AuditDiffBase(SecureView):
         self.assign('pagetitle', self.pagetitle)
         self.assign('old_rev_ts', prev_ar.createdts if prev_ar else None)
         self.assign('new_rev_ts', self.ar.createdts)
+        self.render_endpoint('audit:audit_diff.html')
