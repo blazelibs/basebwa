@@ -5,3 +5,4 @@ Change Log
 =========================
 
 * deprecate lib.forms.Form, use commonbwc.lib.forms:Form instead
+* convert the audit module to work with blazeweb
