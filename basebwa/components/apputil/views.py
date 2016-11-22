@@ -1,13 +1,15 @@
-from blazeweb.globals import ag, rg, settings, user
+from blazeweb.globals import settings, user
 from blazeweb.views import View, SecureView
 
 from appstack.lib.cpanel import control_panel_permission_filter
 from . import forms
 
+
 class BlankPage(View):
     """ not truly blank, wrapped in the default layout """
     def default(self):
         self.render_template()
+
 
 class DynamicControlPanel(SecureView):
     def init(self):
@@ -27,9 +29,11 @@ class DynamicControlPanel(SecureView):
         self.assign('sections', sections)
         self.render_template()
 
+
 class HomePage(View):
     def default(self):
         self.render_template()
+
 
 class TestForm(SecureView):
     def prep(self):

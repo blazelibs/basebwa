@@ -1,6 +1,4 @@
 from datetime import timedelta
-import logging
-from logging.handlers import RotatingFileHandler
 from os import path
 
 from blazeweb.config import DefaultSettings
@@ -8,6 +6,7 @@ from werkzeug.routing import Rule
 
 basedir = path.dirname(path.dirname(__file__))
 app_package = path.basename(basedir)
+
 
 class Default(DefaultSettings):
 
@@ -80,8 +79,8 @@ class Default(DefaultSettings):
         if webgrid:
             self.add_component(app_package, 'webgrid', 'webgrid')
 
-    def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
-        #http://beaker.groovie.org/configuration.html
+    def init_beaker(self, timeout=60 * 60 * 12, cookie_expires=timedelta(weeks=10)):
+        # http://beaker.groovie.org/configuration.html
         self.beaker.type = 'ext:database'
         self.beaker.cookie_expires = cookie_expires
         self.beaker.timeout = timeout
@@ -118,6 +117,7 @@ class Default(DefaultSettings):
         self.assign_beaker_url()
 
         DefaultSettings.apply_test_settings(self)
+
 
 try:
     from .site_settings import *  # noqa

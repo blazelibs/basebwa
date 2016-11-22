@@ -1,14 +1,12 @@
 from io import BytesIO
 from basebwa.lib.cpanel import ControlPanelGroup, ControlPanelSection, \
     ControlPanelLink, control_panel_permission_filter
-from blazeweb.globals import ag
 from blazeweb.testing import inrequest
 from blazeweb.users import User
 from blazeweb.views import View
 from blazeweb.wrappers import Request
 
 from commonbwc.lib.forms import Form as CommonForm
-from commonbwc.lib.views import FormMixin
 
 
 class TestForms(object):
@@ -42,11 +40,12 @@ class TestForms(object):
         # which should result in the form values getting submitted
         Request.from_values(
             {
-            'name_first': 'bob',
-            'txtfile': (BytesIO(b'my file contents'), 'test.txt'),
-            'test-form-submit-flag': 'submitted'},
+                'name_first': 'bob',
+                'txtfile': (BytesIO(b'my file contents'), 'test.txt'),
+                'test-form-submit-flag': 'submitted'
+            },
             bind_to_context=True
-            )
+        )
         # test the form
         f = self.Form()
         assert f.is_submitted()
@@ -54,6 +53,7 @@ class TestForms(object):
         assert f.name_first.value == 'bob'
         assert f.txtfile.value.file_name == 'test.txt'
         assert f.txtfile.value.content_type == 'text/plain'
+
 
 class TestControlPanelFilter(object):
 
@@ -91,11 +91,11 @@ class TestControlPanelFilter(object):
             )
         )
         user = self._setup_session_user()
-        filtered = control_panel_permission_filter(user, users_cpsec, foo_cpsec )
+        filtered = control_panel_permission_filter(user, users_cpsec, foo_cpsec)
         assert not filtered
 
         user = self._setup_session_user('users-manage')
-        filtered = control_panel_permission_filter(user, users_cpsec, foo_cpsec )
+        filtered = control_panel_permission_filter(user, users_cpsec, foo_cpsec)
         assert len(filtered) == 1
         assert filtered[0]['sec'] is users_cpsec
         assert filtered[0]['sec_groups'][0]['group'] is users_cpsec.groups[0]
@@ -106,7 +106,7 @@ class TestControlPanelFilter(object):
         assert len(filtered[0]['sec_groups'][1]['group_links']) == 1
 
         user = self._setup_session_user('foo-manage')
-        filtered = control_panel_permission_filter(user, users_cpsec, foo_cpsec )
+        filtered = control_panel_permission_filter(user, users_cpsec, foo_cpsec)
         assert len(filtered) == 1
         assert filtered[0]['sec'] is foo_cpsec
         assert filtered[0]['sec_groups'][0]['group'] is foo_cpsec.groups[1]

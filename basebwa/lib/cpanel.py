@@ -1,6 +1,6 @@
 class ControlPanelSection(object):
 
-    def __init__(self, heading , has_perm, *args):
+    def __init__(self, heading, has_perm, *args):
         self.heading = heading
         self.has_perm = has_perm
         self.groups = []
@@ -12,6 +12,7 @@ class ControlPanelSection(object):
 
     def __repr__(self):
         return 'ControlPanelSection: %s; %s' % (self.heading, self.groups)
+
 
 class ControlPanelGroup(object):
 
@@ -27,6 +28,7 @@ class ControlPanelGroup(object):
     def __repr__(self):
         return 'ControlPanelGroup: %s' % self.links
 
+
 class ControlPanelLink(object):
 
     def __init__(self, text, endpoint, **kwargs):
@@ -39,6 +41,7 @@ class ControlPanelLink(object):
 
     def __repr__(self):
         return 'ControlPanelLink: %s -> %s' % (self.text, self.endpoint)
+
 
 def control_panel_permission_filter(session_user, *sections):
     """
@@ -59,7 +62,7 @@ def control_panel_permission_filter(session_user, *sections):
                 if session_user.has_perm(link.has_perm) or not link.has_perm:
                     group_links.append(link)
             if group_links:
-                sec_groups.append({'group': lg, 'group_links' : group_links})
+                sec_groups.append({'group': lg, 'group_links': group_links})
         if sec_groups:
-            retval.append({'sec': sec, 'sec_groups' : sec_groups})
+            retval.append({'sec': sec, 'sec_groups': sec_groups})
     return retval

@@ -8,6 +8,7 @@ from blazeweb import routing
 from werkzeug import SharedDataMiddleware, DebuggedApplication
 import settings as settingsmod
 
+
 def make_wsgi(profile='Default'):
 
     config.appinit(settingsmod, profile)
@@ -27,7 +28,7 @@ def make_wsgi(profile='Default'):
     for appname in config.appslist(reverse=True):
         app_py_mod = __import__(appname)
         fs_static_path = path.join(path.dirname(app_py_mod.__file__), 'static')
-        static_map = {routing.add_prefix('/') : fs_static_path}
+        static_map = {routing.add_prefix('/'): fs_static_path}
         app = SharedDataMiddleware(app, static_map)
 
     # show nice stack traces and debug output if enabled

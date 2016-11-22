@@ -1,6 +1,7 @@
 import datetime
 from compstack.common.lib.forms import Form
 
+
 class TestForm(Form):
     def __init__(self, static):
         Form.__init__(self, 'testform', static=static)
@@ -8,11 +9,20 @@ class TestForm(Form):
         el = self.add_button('button', 'Button', defaultval='PushMe')
         el = self.add_checkbox('checkbox', 'Checkbox')
         el = self.add_file('file', 'File')
-        el.add_note('a note that has a lot of text in it Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent justo massa, porttitor id malesuada in, ultricies ac odio. Morbi sit amet sapien a nisl tincidunt luctus ultricies euismod erat. Integer tempor, tortor id ornare iaculis, nibh nisi imperdiet eros, ut tristique turpis eros ac ligula.')
+        el.add_note('a note that has a lot of text in it Lorem ipsum dolor sit amet, consectetur '
+                    'adipiscing elit. Praesent justo massa, porttitor id malesuada in, ultricies '
+                    'ac odio. Morbi sit amet sapien a nisl tincidunt luctus ultricies euismod '
+                    'erat. Integer tempor, tortor id ornare iaculis, nibh nisi imperdiet eros, ut '
+                    'tristique turpis eros ac ligula.')
         el = self.add_hidden('hidden', defaultval='my hidden val')
-        el = self.add_image('image', 'Image', defaultval='my image val', src='images/icons/b_edit.png')
+        el = self.add_image('image', 'Image', defaultval='my image val',
+                            src='images/icons/b_edit.png')
         el = self.add_text('text', 'Text')
-        el.add_note('a note that has a lot of text in it Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent justo massa, porttitor id malesuada in, ultricies ac odio. Morbi sit amet sapien a nisl tincidunt luctus ultricies euismod erat. Integer tempor, tortor id ornare iaculis, nibh nisi imperdiet eros, ut tristique turpis eros ac ligula.')
+        el.add_note('a note that has a lot of text in it Lorem ipsum dolor sit amet, consectetur '
+                    'adipiscing elit. Praesent justo massa, porttitor id malesuada in, ultricies '
+                    'ac odio. Morbi sit amet sapien a nisl tincidunt luctus ultricies euismod '
+                    'erat. Integer tempor, tortor id ornare iaculis, nibh nisi imperdiet eros, '
+                    'ut tristique turpis eros ac ligula.')
         el.add_note('an <strong>HTML</strong> note', False)
         el = self.add_text('nolabel', defaultval='No Label', required=True)
         el.add_note('a note')
@@ -27,7 +37,7 @@ class TestForm(Form):
         el.add_note('when not confirming password field, characters are not masked')
         el = self.add_time('time', 'Time')
         el = self.add_url('url', 'URL')
-        options = [('1', 'one'), ('2','two')]
+        options = [('1', 'one'), ('2', 'two')]
         el = self.add_select('select', options, 'Select')
         el = self.add_mselect('mselect', options, 'Multi Select')
         el = self.add_textarea('textarea', 'Text Area')

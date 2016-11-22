@@ -1,2 +1,1 @@
-from basebwa.forms import Form
-
+from basebwa.forms import Form  # noqa

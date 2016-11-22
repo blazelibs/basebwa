@@ -1,11 +1,10 @@
 import sqlalchemy as sa
 
 import savalidation.validators as val
-from sqlalchemybwc import db
 from sqlalchemybwc.lib.declarative import declarative_base, DefaultMixin
-from sqlalchemybwc.lib.decorators import ignore_unique, transaction
 
 Base = declarative_base()
+
 
 class Widget(Base, DefaultMixin):
     __tablename__ = 'basebwa_ta_widgets'

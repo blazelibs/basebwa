@@ -4,6 +4,7 @@ from werkzeug import BaseResponse
 
 testapp = ag._wsgi_test_app
 
+
 def test_default():
     c = Client(testapp, BaseResponse)
     r = c.get('/')

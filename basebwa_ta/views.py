@@ -5,7 +5,7 @@ from commonbwc.lib.views import CrudBase, FormMixin
 import basebwa_ta.forms as forms
 import basebwa_ta.grids as grids
 import basebwa_ta.model.orm as orm
-from compstack.sqlalchemy import db
+
 
 class FormTest1(View, FormMixin):
     def setup_view(self):
@@ -25,6 +25,7 @@ class FormTest1(View, FormMixin):
     def form_on_invalid(self):
         return 'invalid'
 
+
 class FormTest2(View, FormMixin):
     def setup_view(self, cancel_type=None):
         self.form_init(forms.NameForm)
@@ -37,6 +38,7 @@ class FormTest2(View, FormMixin):
         if not self.form.els.email.value:
             raise ValueError('email is empty')
         user.add_message('notice', 'Hello %s' % self.form.els.name.value)
+
 
 class WidgetCrud(CrudBase):
 
@@ -53,6 +55,7 @@ class WidgetCrudDeletePerm(WidgetCrud):
         self.gridcls = grids.WidgetAuthGrid
         self.delete_protect = True
         self.delete_require_any = 'widget-delete'
+
 
 @asview('/')
 def home_page():
