@@ -7,6 +7,7 @@ try:
 except ImportError:
     Permission = None
 
+
 @attributes('base-data')
 def action_30_base_data():
     if Permission:

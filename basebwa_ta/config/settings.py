@@ -5,6 +5,7 @@ from basebwa.config.settings import Default as BaseDefaults
 basedir = path.dirname(path.dirname(__file__))
 app_package = path.basename(basedir)
 
+
 class Default(BaseDefaults):
     def init(self):
         BaseDefaults.init(self, app_package, basedir)
@@ -36,10 +37,12 @@ class Default(BaseDefaults):
         self.add_route('/admin-templating/pc-block', endpoint='admin_templating_primary_block.html')
         self.add_route('/control-panel', endpoint='apputil:DynamicControlPanel')
 
+
 class Dev(Default):
     def init(self):
         Default.init(self)
         self.apply_dev_settings()
+
 
 class Test(Default):
     def init(self):

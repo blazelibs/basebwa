@@ -1,6 +1,4 @@
 from datetime import timedelta
-import logging
-from logging.handlers import RotatingFileHandler
 from os import path
 
 from blazeweb.config import DefaultSettings
@@ -8,6 +6,7 @@ from werkzeug.routing import Rule
 
 basedir = path.dirname(path.dirname(__file__))
 app_package = path.basename(basedir)
+
 
 class Default(DefaultSettings):
 
@@ -66,7 +65,8 @@ class Default(DefaultSettings):
         #######################################################################
         self.init_beaker()
 
-    def init_components(self, common=True, sqlalchemy=True, auth=True, apputil=True, datagrid=True):
+    def init_components(self, common=True, sqlalchemy=True, auth=True, apputil=True,
+                        webgrid=True):
         # application modules from our application or supporting applications
         if common:
             self.add_component(app_package, 'common', 'commonbwc')
@@ -76,11 +76,11 @@ class Default(DefaultSettings):
             self.add_component(app_package, 'auth', 'authbwc')
         if apputil:
             self.add_component(app_package, 'apputil')
-        if datagrid:
-            self.add_component(app_package, 'datagrid', 'datagridbwc')
+        if webgrid:
+            self.add_component(app_package, 'webgrid', 'webgrid')
 
-    def init_beaker(self, timeout=60*60*12, cookie_expires=timedelta(weeks=10)):
-        #http://beaker.groovie.org/configuration.html
+    def init_beaker(self, timeout=60 * 60 * 12, cookie_expires=timedelta(weeks=10)):
+        # http://beaker.groovie.org/configuration.html
         self.beaker.type = 'ext:database'
         self.beaker.cookie_expires = cookie_expires
         self.beaker.timeout = timeout
@@ -118,8 +118,11 @@ class Default(DefaultSettings):
 
         DefaultSettings.apply_test_settings(self)
 
+
 try:
-    from site_settings import *
-except ImportError, e:
-    if 'No module named site_settings' not in str(e):
+    from .site_settings import *  # noqa
+except ImportError as e:
+    msg = str(e).replace("'", '')
+    if 'No module named site_settings' not in msg and \
+            'No module named basebwa.config.site_settings' not in msg:
         raise

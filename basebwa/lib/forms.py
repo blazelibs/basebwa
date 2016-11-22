@@ -2,15 +2,17 @@ import warnings
 
 from blazeweb.routing import url_for
 from savalidation import ValidationError
-from webhelpers.html.tags import link_to
+from webhelpers2.html.tags import link_to
 
 from compstack.common.lib.forms import Form as CommonForm
+
 
 class Form(CommonForm):
     def __init__(self, name=None, **kwargs):
         CommonForm.__init__(self, name, **kwargs)
         self.add_handler(exc_type=ValidationError, callback=self.handle_validation_error)
-        warnings.warn('basebwa.lib.forms.Form is deprecated; commonbwc.lib.forms.Form should be used instead', DeprecationWarning, 2)
+        warnings.warn('basebwa.lib.forms.Form is deprecated; commonbwc.lib.forms.Form '
+                      'should be used instead', DeprecationWarning, 2)
 
     def handle_validation_error(self, exc):
         # used to indicate if all errors were assignable for at least one instance.
@@ -20,6 +22,7 @@ class Form(CommonForm):
             if self.add_field_errors(inst.validation_errors):
                 all_errors_handled = True
         return all_errors_handled
+
 
 class LookupMixin(object):
     def add_active_flag(self):
@@ -32,7 +35,8 @@ class LookupMixin(object):
         sg = self.add_elgroup('submit-group', class_='submit-only')
         sg.add_submit('submit')
         crud_view = crud_view or self.__class__.__name__ + 'Crud'
-        sg.add_static('cancel', None, link_to('Cancel', url_for(crud_view, action='manage'), title='Go back to the manage page'))
+        sg.add_static('cancel', None, link_to('Cancel', url_for(crud_view, action='manage'),
+                                              title='Go back to the manage page'))
         return sg
 
     def add_lookup_fields(self, crud_view=None):

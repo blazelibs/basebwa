@@ -76,6 +76,6 @@ class Default(pysapp.settings.Default):
 # file:
 try:
     from site_settings import *
-except ImportError, e:
+except ImportError as e:
     if 'No module named site_settings' not in str(e):
         raise

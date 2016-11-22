@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from paste.script.templates import Template, var
 from paste.util.template import paste_script_template_renderer
 from blazeutils import randchars
@@ -12,13 +14,13 @@ class ProjectTemplate(Template):
         var('author', 'Your name'),
         var('programmer_email', 'Your email'),
     ]
-    
+
     def pre(self, command, output_dir, vars):
         # convert user's name into a username var
         author = vars['author']
         vars['username'] = author.split(' ')[0].capitalize()
         vars['password'] = randchars(6)
-        
+
     def post(self, command, output_dir, vars):
         print ''
         print '-'*70

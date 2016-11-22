@@ -4,6 +4,7 @@ from blazeweb.scripting import application_entry
 
 import config.settings as settingsmod
 
+
 def make_wsgi(profile='Default'):
 
     app = WSGIApp(settingsmod, profile)
@@ -15,8 +16,10 @@ def make_wsgi(profile='Default'):
 
     return full_wsgi_stack(app)
 
+
 def script_entry():
     application_entry(make_wsgi)
+
 
 if __name__ == '__main__':
     script_entry()
