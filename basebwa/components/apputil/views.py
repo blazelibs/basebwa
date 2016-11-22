@@ -2,7 +2,7 @@ from blazeweb.globals import ag, rg, settings, user
 from blazeweb.views import View, SecureView
 
 from appstack.lib.cpanel import control_panel_permission_filter
-import forms
+from . import forms
 
 class BlankPage(View):
     """ not truly blank, wrapped in the default layout """
@@ -22,9 +22,7 @@ class DynamicControlPanel(SecureView):
             except AttributeError:
                 pass
 
-        def seccmp(first, second):
-            return cmp(first.heading.lower(), second.heading.lower())
-        sections.sort(seccmp)
+        sections.sort(key=lambda x: x.heading.lower())
         sections = control_panel_permission_filter(user, *sections)
         self.assign('sections', sections)
         self.render_template()
@@ -49,7 +47,7 @@ class TestForm(SecureView):
                 user.add_message('notice', 'form posted succesfully')
                 self.assign('result', self.form.get_values())
                 return
-            except Exception, e:
+            except Exception as e:
                 # if the form can't handle the exception, re-raise it
                 if not self.form.handle_exception(e):
                     raise

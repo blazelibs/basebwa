@@ -33,7 +33,7 @@ class ControlPanelLink(object):
         self.text = text
         self.endpoint = endpoint
         self.has_perm = kwargs.get('has_perm', None)
-        if kwargs.has_key('has_perm'):
+        if 'has_perm' in kwargs:
             del kwargs['has_perm']
         self.linkargs = kwargs
 

@@ -1,4 +1,4 @@
-from StringIO import StringIO
+from io import BytesIO
 from basebwa.lib.cpanel import ControlPanelGroup, ControlPanelSection, \
     ControlPanelLink, control_panel_permission_filter
 from blazeweb.globals import ag
@@ -22,7 +22,7 @@ class TestForms(object):
 
         ft = FormTest({}, 'formtest')
         r = ft.process()
-        assert r.data == 'foo', r.data
+        assert r.data == b'foo', r.data
 
     @classmethod
     def setup_class(cls):
@@ -43,7 +43,7 @@ class TestForms(object):
         Request.from_values(
             {
             'name_first': 'bob',
-            'txtfile': (StringIO('my file contents'), 'test.txt'),
+            'txtfile': (BytesIO(b'my file contents'), 'test.txt'),
             'test-form-submit-flag': 'submitted'},
             bind_to_context=True
             )

@@ -180,4 +180,4 @@ class TestDynamicControlPanel(object):
             <li><a href="/permissions/manage">Permissions Manage</a></li>
         </ul>
     </div>""".split())
-        assert expected in ''.join(r.body.split())
+        assert expected in ''.join(r.body.decode().split())

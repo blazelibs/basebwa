@@ -120,7 +120,9 @@ class Default(DefaultSettings):
         DefaultSettings.apply_test_settings(self)
 
 try:
-    from site_settings import *
-except ImportError, e:
-    if 'No module named site_settings' not in str(e):
+    from .site_settings import *  # noqa
+except ImportError as e:
+    msg = str(e).replace("'", '')
+    if 'No module named site_settings' not in msg and \
+            'No module named basebwa.config.site_settings' not in msg:
         raise
