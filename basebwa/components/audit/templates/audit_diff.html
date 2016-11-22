@@ -1,9 +1,0 @@
-{{ include_css() -}}
-{% extends extend_from %}
-{% block title %}{{pagetitle|title}} | {{super()}}{% endblock %}
-{% block body %}
-<h1 class="title">{{pagetitle}}</h1>
-<p><span class="old_revision">{{ old_rev_ts | datefmt('%m/%d/%Y %H:%M') }}</span>
-   {%- if new_rev_ts %}<br/><span class="new_revision">{{ new_rev_ts | datefmt('%m/%d/%Y %H:%M') }}</span>{% endif -%}</p>
-<p id="diff_text">{{ diff_text|safe }}</p>
-{% endblock %}

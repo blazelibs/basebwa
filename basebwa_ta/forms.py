@@ -1,6 +1,6 @@
 from basebwa.lib.forms import Form
 from blazeweb.routing import url_for
-from webhelpers.html.tags import link_to
+from webhelpers2.html.tags import link_to
 
 class NameForm(Form):
     def init(self):

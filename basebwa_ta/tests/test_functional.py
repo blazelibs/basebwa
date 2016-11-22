@@ -71,10 +71,10 @@ class TestCrud(object):
         r = self.ta.get('/widget/manage?filteron=type&filteronop=eq&filterfor=manage_test_widget')
         d = r.pyq
         assert d('form#widget-form').html() is None
-        assert d('h2:eq(0)').text() == 'Manage Widgets'
-        assert d('p a').eq(0).attr.href == '/widget/add'
-        assert d('a[href="/widget/edit/%s"]'%w_id).html() is not None
-        assert d('a[href="/widget/delete/%s"]'%w_id).html() is not None
+        assert d('h2:eq(0)').text().startswith('Manage Widgets')
+        assert d('p a').eq(0).attr.href.startswith('/widget/add')
+        assert d('a[href^="/widget/edit/%s"]'%w_id).html() is not None
+        assert d('a[href^="/widget/delete/%s"]'%w_id).html() is not None
 
     def test_delete(self):
         r = self.ta.get('/widget/delete', status=404)
@@ -100,15 +100,15 @@ class TestCrud(object):
 
         r = self.ta.get('/widget-auth/manage?filteron=type&filteronop=eq&filterfor=delete_protect_test_widget')
         d = r.pyq
-        assert d('a[href="/widget-auth/edit/%s"]'%w_id).html() is not None
-        assert d('a[href="/widget-auth/delete/%s"]'%w_id).html() is None
+        assert d('a[href^="/widget-auth/edit/%s"]'%w_id).html() is not None
+        assert d('a[href^="/widget-auth/delete/%s"]'%w_id).html() is None
         r = self.ta.get('/widget-auth/delete/%s'%w_id, status=403)
 
         login_client_with_permissions(self.ta, u'widget-delete')
         r = self.ta.get('/widget-auth/manage?filteron=type&filteronop=eq&filterfor=delete_protect_test_widget')
         d = r.pyq
-        assert d('a[href="/widget-auth/edit/%s"]'%w_id).html() is not None
-        assert d('a[href="/widget-auth/delete/%s"]'%w_id).html() is not None
+        assert d('a[href^="/widget-auth/edit/%s"]'%w_id).html() is not None
+        assert d('a[href^="/widget-auth/delete/%s"]'%w_id).html() is not None
         r = self.ta.get('/widget-auth/delete/%s'%w_id, status=302)
         self.ta.get('/users/logout')
 

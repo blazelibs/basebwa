@@ -2,7 +2,7 @@ import warnings
 
 from blazeweb.routing import url_for
 from savalidation import ValidationError
-from webhelpers.html.tags import link_to
+from webhelpers2.html.tags import link_to
 
 from compstack.common.lib.forms import Form as CommonForm
 
