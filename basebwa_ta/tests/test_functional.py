@@ -7,6 +7,7 @@ from commonbwc.lib.testing import has_message
 from compstack.sqlalchemy import db
 from basebwa_ta.model.orm import Widget
 
+
 class TestCrud(object):
     @classmethod
     def setup_class(cls):
@@ -151,3 +152,32 @@ class TestDefaultTemplating(TestAdminTemplating):
     def setup_class(cls):
         cls.ta = TestApp(ag.wsgi_test_app)
         settings.template.admin = 'default.html'
+
+
+class TestDynamicControlPanel(object):
+
+    @classmethod
+    def setup_class(cls):
+        cls.ta = TestApp(ag.wsgi_test_app)
+        login_client_with_permissions(cls.ta, (u'webapp-controlpanel', u'auth-manage'))
+
+    def test_panel(self):
+        r = self.ta.get('/control-panel')
+        assert r.status == '200 OK'
+        expected = ''.join("""
+    <div class="module_wrapper">
+        <h2>Users</h2>
+        <ul class="link_group">
+        <li><a href="/users/add">User Add</a></li>
+        <li><a href="/users/manage">Users Manage</a></li>
+        </ul>
+        <ul class="link_group">
+            <li><a href="/groups/add">Group Add</a></li>
+            <li><a href="/groups/manage">Groups Manage</a></li>
+        </ul>
+        <ul class="link_group">
+
+            <li><a href="/permissions/manage">Permissions Manage</a></li>
+        </ul>
+    </div>""".split())
+        assert expected in ''.join(r.body.split())
