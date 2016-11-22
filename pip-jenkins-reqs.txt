@@ -1,5 +1,0 @@
-PyQuery
-WebTest
-
-coverage
-nosexcover
